@@ -1,97 +1,90 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+<style>
+.config-tabs { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 2px solid var(--border-color, #dee2e6); padding-bottom: 0; }
+.config-tab { padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--subtitle, #718096); border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; background: transparent; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.config-tab:hover { background: rgba(var(--sidebar-accent-rgb, 4,103,252), 0.06); color: var(--title, #2d3748); }
+.config-tab.active { background: var(--widget-box, #fff); color: var(--title, #2d3748); border-color: var(--border-color, #dee2e6); border-bottom: 2px solid var(--widget-box, #fff); margin-bottom: -2px; font-weight: 600; }
+.config-tab .tab-count { background: rgba(var(--sidebar-accent-rgb, 4,103,252), 0.12); color: var(--sidebar-accent, #0467fc); font-size: 11px; padding: 1px 7px; border-radius: 10px; }
+body[data-theme="puredark"] .config-tab.active,
+body[data-theme="darkviolet"] .config-tab.active,
+body[data-theme="darkorange"] .config-tab.active { background: var(--dark-2); border-color: rgba(255,255,255,0.08); }
+.config-section { display: none; }
+.config-section.active { display: block; }
+.obra-status-color { display: inline-block; width: 16px; height: 16px; border-radius: 4px; vertical-align: middle; }
+.config-add-btn { float: right; }
+</style>
 
-<div class="obras-config-container">
-    <div class="obras-config-content" style="max-width: 100%; flex: unset; padding: 0;">
-        <div class="obras-main-header">
-            <div class="obras-header-content">
-                <div class="obras-header-title">
-                    <h1><?= svg_icon('cog', 28, 28) ?> Configurações do Sistema de Obras</h1>
-                    <p>Gerencie tipos, status, especialidades, funções e preferências</p>
-                </div>
-                <div class="obras-header-actions">
-                    <a href="<?php echo site_url('obras'); ?>" class="obras-filter-btn secondary">
-                        <?= svg_icon('chevron-left', 16, 16) ?> Voltar às Obras
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <?php if ($this->session->flashdata('success')): ?>
-        <div class="obras-alert-success">
-            <?= svg_icon('check-circle', 20, 20) ?> <strong><?php echo htmlspecialchars($this->session->flashdata('success')); ?></strong>
-        </div>
-        <?php endif; ?>
-        <?php if ($this->session->flashdata('error')): ?>
-        <div class="obras-alert-error">
-            <?= svg_icon('x', 20, 20) ?> <strong><?php echo htmlspecialchars($this->session->flashdata('error')); ?></strong>
-        </div>
-        <?php endif; ?>
-    </div>
-</div>
-
-<div class="obras-config-container">
-    <div class="obras-config-sidebar">
-        <div id="aba-btn-geral" class="aba-menu active" onclick="mostrarAba('geral')">
-            <i class="bx bx-slider"></i> <span>Geral</span>
-        </div>
-        <div id="aba-btn-tipos-obra" class="aba-menu" onclick="mostrarAba('tipos-obra')">
-            <i class="bx bx-building-house"></i> <span>Tipos de Obra</span>
-            <span class="aba-menu-count"><?php echo count($tipos_obra); ?></span>
-        </div>
-        <div id="aba-btn-tipos-atividade" class="aba-menu" onclick="mostrarAba('tipos-atividade')">
-            <i class="bx bx-task"></i> <span>Tipos de Atividade</span>
-            <span class="aba-menu-count"><?php echo count($tipos_atividades); ?></span>
-        </div>
-        <div id="aba-btn-status-obra" class="aba-menu" onclick="mostrarAba('status-obra')">
-            <i class="bx bx-flag"></i> <span>Status de Obra</span>
-            <span class="aba-menu-count"><?php echo count($status_obra); ?></span>
-        </div>
-        <div id="aba-btn-status-atividade" class="aba-menu" onclick="mostrarAba('status-atividade')">
-            <i class="bx bx-check-circle"></i> <span>Status de Atividade</span>
-            <span class="aba-menu-count"><?php echo count($status_atividade); ?></span>
-        </div>
-        <div id="aba-btn-especialidades" class="aba-menu" onclick="mostrarAba('especialidades')">
-            <i class="bx bx-hard-hat"></i> <span>Especialidades</span>
-            <span class="aba-menu-count"><?php echo count($especialidades); ?></span>
-        </div>
-        <div id="aba-btn-funcoes" class="aba-menu" onclick="mostrarAba('funcoes')">
-            <i class="bx bx-group"></i> <span>Funções da Equipe</span>
-            <span class="aba-menu-count"><?php echo count($funcoes_equipe); ?></span>
-        </div>
-        <div id="aba-btn-notificacoes" class="aba-menu" onclick="mostrarAba('notificacoes')">
-            <i class="bx bx-bell"></i> <span>Notificações</span>
+<div class="new122">
+    <div class="widget-title" style="margin: -20px 0 0">
+        <span class="icon">
+            <i class="bx bx-cog"></i>
+        </span>
+        <h5>Configurações - Obras</h5>
+        <div class="buttons">
+            <a href="<?php echo site_url('obras'); ?>" class="button btn btn-sm btn-warning">
+                <span class="button__icon"><i class="bx bx-arrow-back"></i></span>
+                <span class="button__text2">Voltar</span>
+            </a>
         </div>
     </div>
 
-    <div class="obras-config-content">
-        <div id="aba-geral" class="config-section active">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('cog', 22, 22) ?> Configurações Gerais</div>
+    <?php if ($this->session->flashdata('success')): ?>
+    <div class="col-12" style="margin-left:0;margin-top:8px;">
+        <div class="alert alert-success">
+            <i class="bx bx-check-circle"></i> <?php echo htmlspecialchars($this->session->flashdata('success')); ?>
+        </div>
+    </div>
+    <?php endif; ?>
+    <?php if ($this->session->flashdata('error')): ?>
+    <div class="col-12" style="margin-left:0;margin-top:8px;">
+        <div class="alert alert-danger">
+            <i class="bx bx-x-circle"></i> <?php echo htmlspecialchars($this->session->flashdata('error')); ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Tabs -->
+    <div class="col-12" style="margin-left:0;margin-top:8px;">
+        <div class="config-tabs">
+            <div class="config-tab active" onclick="mostrarAba('geral')"><i class="bx bx-slider"></i> Geral</div>
+            <div class="config-tab" onclick="mostrarAba('tipos-obra')"><i class="bx bx-building-house"></i> Tipos de Obra <span class="tab-count"><?php echo count($tipos_obra); ?></span></div>
+            <div class="config-tab" onclick="mostrarAba('tipos-atividade')"><i class="bx bx-task"></i> Tipos de Atividade <span class="tab-count"><?php echo count($tipos_atividades); ?></span></div>
+            <div class="config-tab" onclick="mostrarAba('status-obra')"><i class="bx bx-flag"></i> Status de Obra <span class="tab-count"><?php echo count($status_obra); ?></span></div>
+            <div class="config-tab" onclick="mostrarAba('status-atividade')"><i class="bx bx-check-circle"></i> Status de Atividade <span class="tab-count"><?php echo count($status_atividade); ?></span></div>
+            <div class="config-tab" onclick="mostrarAba('especialidades')"><i class="bx bx-hard-hat"></i> Especialidades <span class="tab-count"><?php echo count($especialidades); ?></span></div>
+            <div class="config-tab" onclick="mostrarAba('funcoes')"><i class="bx bx-group"></i> Funções da Equipe <span class="tab-count"><?php echo count($funcoes_equipe); ?></span></div>
+            <div class="config-tab" onclick="mostrarAba('notificacoes')"><i class="bx bx-bell"></i> Notificações</div>
+        </div>
+    </div>
+
+    <div class="widget-box" style="margin-top: -1px; border-top-left-radius: 0; border-top-right-radius: 0;">
+        <div class="widget-content nopadding tab-content">
+
+            <!-- ABA: GERAL -->
+            <div id="aba-geral" class="config-section active">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-slider"></i></span>
+                    <h5>Configurações Gerais</h5>
                 </div>
-                <div class="widget-content">
+                <div class="widget-content" style="padding: 12px;">
                     <form method="post" action="<?php echo site_url('obras/salvarConfiguracao'); ?>">
                         <div class="mb-3">
                             <label class="form-label">Nome do Sistema de Obras</label>
-                            <div class="controls">
-                                <input type="text" name="nome_sistema" class="form-input col-6" value="<?php echo htmlspecialchars($config['nome_sistema'] ?? 'Gestão de Obras'); ?>">
-                            </div>
+                            <input type="text" name="nome_sistema" class="form-input col-6" value="<?php echo htmlspecialchars($config['nome_sistema'] ?? 'Gestão de Obras'); ?>">
                         </div>
-                        <div class="form-grid">
-                            <div class="form-group">
+                        <div style="display:flex;gap:16px;margin-bottom:12px;">
+                            <div style="flex:1;">
                                 <label class="form-label">Prazo Padrão para Início (dias)</label>
                                 <input type="number" name="prazo_inicio_padrao" class="form-input" value="<?php echo (int)($config['prazo_inicio_padrao'] ?? 7); ?>" min="0">
                             </div>
-                            <div class="form-group">
+                            <div style="flex:1;">
                                 <label class="form-label">Prazo Padrão para Execução (dias)</label>
                                 <input type="number" name="prazo_execucao_padrao" class="form-input" value="<?php echo (int)($config['prazo_execucao_padrao'] ?? 30); ?>" min="1">
                             </div>
                         </div>
-                        <hr class="obras-modal-divider">
-                        <h5 style="margin: 0 0 12px 0;">Funcionalidades</h5>
-                        <table class="table table-sm table-bordered">
+                        <h5 style="margin: 16px 0 8px;">Funcionalidades</h5>
+                        <table class="table table-bordered">
                             <tbody>
                                 <tr><td>Sistema de Atividades</td><td class="text-center" style="width:60px;"><input type="checkbox" name="habilitar_atividades" <?php echo ($config['habilitar_atividades'] ?? true) ? 'checked' : ''; ?>></td></tr>
                                 <tr><td>Sistema de Etapas</td><td class="text-center" style="width:60px;"><input type="checkbox" name="habilitar_etapas" <?php echo ($config['habilitar_etapas'] ?? true) ? 'checked' : ''; ?>></td></tr>
@@ -101,23 +94,31 @@
                                 <tr><td>Portal do Técnico</td><td class="text-center" style="width:60px;"><input type="checkbox" name="habilitar_portal_tecnico" <?php echo ($config['habilitar_portal_tecnico'] ?? true) ? 'checked' : ''; ?>></td></tr>
                             </tbody>
                         </table>
-                        <div class="form-actions-bar">
-                            <button type="submit" class="form-btn form-btn-primary"><?= svg_icon('save', 16, 16) ?> Salvar Configurações</button>
+                        <div style="margin-top: 12px;">
+                            <button type="submit" class="button btn btn-sm btn-success">
+                                <span class="button__icon"><i class="bx bx-save"></i></span>
+                                <span class="button__text2">Salvar Configurações</span>
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
 
-        <div id="aba-tipos-obra" class="config-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('building-house', 22, 22) ?> Tipos de Obra</div>
-                    <button class="form-btn form-btn-primary" onclick="abrirModal('tipo-obra', null)"><?= svg_icon('plus', 16, 16) ?> Novo Tipo</button>
+            <!-- ABA: TIPOS DE OBRA -->
+            <div id="aba-tipos-obra" class="config-section">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-building-house"></i></span>
+                    <h5>Tipos de Obra</h5>
+                    <div class="buttons">
+                        <button class="button btn btn-sm btn-success" onclick="abrirModal('tipo-obra', null)">
+                            <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                            <span class="button__text2">Novo Tipo</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="widget-content">
-                    <div class="obras-alert-info">
-                        Tipos de Obra categorizam as obras no cadastro e relatórios.
+                <div class="widget-content nopadding">
+                    <div class="alert alert-info" style="margin:8px;border-radius:6px;">
+                        <i class="bx bx-info-circle"></i> Tipos de Obra categorizam as obras no cadastro e relatórios.
                     </div>
                     <table class="table table-bordered table-striped">
                         <thead><tr><th style="width:40px;">Cor</th><th>Nome</th><th>Descrição</th><th style="width:100px;">Ações</th></tr></thead>
@@ -127,9 +128,13 @@
                                 <td><span class="obra-status-color" style="background: <?php echo htmlspecialchars($tipo->cor); ?>;"></span></td>
                                 <td><i class="bx <?php echo htmlspecialchars($tipo->icone); ?>"></i> <?php echo htmlspecialchars($tipo->nome); ?></td>
                                 <td><?php echo htmlspecialchars($tipo->descricao ?? ''); ?></td>
-                                <td>
-                                    <button class="btn btn-sm" onclick="abrirModal('tipo-obra', <?php echo (int)$tipo->id; ?>)"><i class="bx bx-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" onclick="excluirItem('tipo-obra', <?php echo (int)$tipo->id; ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <td class="text-nowrap">
+                                    <a href="javascript:void(0)" class="btn-action btn-action-edit" title="Editar" onclick="abrirModal('tipo-obra', <?php echo (int)$tipo->id; ?>)">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#edit"/></svg>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn-action btn-action-delete" title="Excluir" onclick="excluirItem('tipo-obra', <?php echo (int)$tipo->id; ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
+                                    </a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -137,17 +142,22 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div id="aba-tipos-atividade" class="config-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('list-check', 22, 22) ?> Tipos de Atividade</div>
-                    <button class="form-btn form-btn-primary" onclick="abrirModal('tipo-atividade', null)"><?= svg_icon('plus', 16, 16) ?> Novo Tipo</button>
+            <!-- ABA: TIPOS DE ATIVIDADE -->
+            <div id="aba-tipos-atividade" class="config-section">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-task"></i></span>
+                    <h5>Tipos de Atividade</h5>
+                    <div class="buttons">
+                        <button class="button btn btn-sm btn-success" onclick="abrirModal('tipo-atividade', null)">
+                            <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                            <span class="button__text2">Novo Tipo</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="widget-content">
-                    <div class="obras-alert-info">
-                        Tipos de Atividade definem as categorias de trabalho nas obras.
+                <div class="widget-content nopadding">
+                    <div class="alert alert-info" style="margin:8px;border-radius:6px;">
+                        <i class="bx bx-info-circle"></i> Tipos de Atividade definem as categorias de trabalho nas obras.
                     </div>
                     <table class="table table-bordered table-striped">
                         <thead><tr><th style="width:40px;">Cor</th><th>Nome</th><th>Categoria</th><th>Descrição</th><th style="width:100px;">Ações</th></tr></thead>
@@ -158,9 +168,13 @@
                                 <td><i class="bx <?php echo htmlspecialchars($tipo->icone); ?>"></i> <?php echo htmlspecialchars($tipo->nome); ?></td>
                                 <td><span class="label"><?php echo htmlspecialchars($tipo->categoria ?? 'outro'); ?></span></td>
                                 <td><?php echo htmlspecialchars($tipo->descricao ?? ''); ?></td>
-                                <td>
-                                    <button class="btn btn-sm" onclick="abrirModal('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>)"><i class="bx bx-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" onclick="excluirItem('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <td class="text-nowrap">
+                                    <a href="javascript:void(0)" class="btn-action btn-action-edit" title="Editar" onclick="abrirModal('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>)">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#edit"/></svg>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn-action btn-action-delete" title="Excluir" onclick="excluirItem('tipo-atividade', <?php echo (int)($tipo->idTipo ?? $tipo->id); ?>, '<?php echo htmlspecialchars($tipo->nome); ?>')">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
+                                    </a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -168,16 +182,21 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div id="aba-status-obra" class="config-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('flag', 22, 22) ?> Status de Obra</div>
-                    <button class="form-btn form-btn-primary" onclick="abrirModal('status-obra', null)"><?= svg_icon('plus', 16, 16) ?> Novo Status</button>
+            <!-- ABA: STATUS DE OBRA -->
+            <div id="aba-status-obra" class="config-section">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-flag"></i></span>
+                    <h5>Status de Obra</h5>
+                    <div class="buttons">
+                        <button class="button btn btn-sm btn-success" onclick="abrirModal('status-obra', null)">
+                            <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                            <span class="button__text2">Novo Status</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="widget-content">
-                    <div class="alert alert-warning">
+                <div class="widget-content nopadding">
+                    <div class="alert alert-warning" style="margin:8px;border-radius:6px;">
                         <i class="bx bx-error-circle"></i> <strong>Atenção:</strong> Alterar status padrão pode afetar relatórios existentes.
                     </div>
                     <table class="table table-bordered table-striped">
@@ -190,10 +209,14 @@
                                 <td><?php echo (int)$status->ordem; ?></td>
                                 <td><?php echo ($status->finalizado ?? false) ? '<span class="badge bg-success">Sim</span>' : '<span class="label">Não</span>'; ?></td>
                                 <td><?php echo htmlspecialchars($status->descricao ?? ''); ?></td>
-                                <td>
-                                    <button class="btn btn-sm" onclick="abrirModal('status-obra', <?php echo (int)$status->id; ?>)"><i class="bx bx-edit"></i></button>
+                                <td class="text-nowrap">
+                                    <a href="javascript:void(0)" class="btn-action btn-action-edit" title="Editar" onclick="abrirModal('status-obra', <?php echo (int)$status->id; ?>)">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#edit"/></svg>
+                                    </a>
                                     <?php if (!in_array($status->nome, ['Prospeccao', 'Em Andamento', 'Concluida'])): ?>
-                                    <button class="btn btn-sm btn-danger" onclick="excluirItem('status-obra', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                    <a href="javascript:void(0)" class="btn-action btn-action-delete" title="Excluir" onclick="excluirItem('status-obra', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
+                                    </a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -202,17 +225,22 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div id="aba-status-atividade" class="config-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('check-circle', 22, 22) ?> Status de Atividade</div>
-                    <button class="form-btn form-btn-primary" onclick="abrirModal('status-atividade', null)"><?= svg_icon('plus', 16, 16) ?> Novo Status</button>
+            <!-- ABA: STATUS DE ATIVIDADE -->
+            <div id="aba-status-atividade" class="config-section">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-check-circle"></i></span>
+                    <h5>Status de Atividade</h5>
+                    <div class="buttons">
+                        <button class="button btn btn-sm btn-success" onclick="abrirModal('status-atividade', null)">
+                            <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                            <span class="button__text2">Novo Status</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="widget-content">
-                    <div class="obras-alert-info">
-                        Fluxo padrão: Agendada → Iniciada → Pausada (opcional) → Concluída/Cancelada
+                <div class="widget-content nopadding">
+                    <div class="alert alert-info" style="margin:8px;border-radius:6px;">
+                        <i class="bx bx-info-circle"></i> Fluxo padrão: Agendada → Iniciada → Pausada (opcional) → Concluída/Cancelada
                     </div>
                     <table class="table table-bordered table-striped">
                         <thead><tr><th style="width:40px;">Cor</th><th>Nome</th><th>Fluxo</th><th>Descrição</th><th style="width:100px;">Ações</th></tr></thead>
@@ -223,10 +251,14 @@
                                 <td><i class="bx <?php echo htmlspecialchars($status->icone); ?>"></i> <?php echo htmlspecialchars($status->nome); ?></td>
                                 <td><span class="label"><?php echo htmlspecialchars($status->fluxo ?? 'normal'); ?></span></td>
                                 <td><?php echo htmlspecialchars($status->descricao ?? ''); ?></td>
-                                <td>
-                                    <button class="btn btn-sm" onclick="abrirModal('status-atividade', <?php echo (int)$status->id; ?>)"><i class="bx bx-edit"></i></button>
+                                <td class="text-nowrap">
+                                    <a href="javascript:void(0)" class="btn-action btn-action-edit" title="Editar" onclick="abrirModal('status-atividade', <?php echo (int)$status->id; ?>)">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#edit"/></svg>
+                                    </a>
                                     <?php if (!in_array($status->nome, ['Agendada', 'Iniciada', 'Concluida'])): ?>
-                                    <button class="btn btn-sm btn-danger" onclick="excluirItem('status-atividade', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                    <a href="javascript:void(0)" class="btn-action btn-action-delete" title="Excluir" onclick="excluirItem('status-atividade', <?php echo (int)$status->id; ?>, '<?php echo htmlspecialchars($status->nome); ?>')">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
+                                    </a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -235,17 +267,22 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div id="aba-especialidades" class="config-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('hard-hat', 22, 22) ?> Especialidades (Etapas)</div>
-                    <button class="form-btn form-btn-primary" onclick="abrirModal('especialidade', null)"><?= svg_icon('plus', 16, 16) ?> Nova Especialidade</button>
+            <!-- ABA: ESPECIALIDADES -->
+            <div id="aba-especialidades" class="config-section">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-hard-hat"></i></span>
+                    <h5>Especialidades (Etapas)</h5>
+                    <div class="buttons">
+                        <button class="button btn btn-sm btn-success" onclick="abrirModal('especialidade', null)">
+                            <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                            <span class="button__text2">Nova Especialidade</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="widget-content">
-                    <div class="obras-alert-info">
-                        Especialidades classificam as etapas da obra (Ex: Elétrica, Hidráulica, Acabamento).
+                <div class="widget-content nopadding">
+                    <div class="alert alert-info" style="margin:8px;border-radius:6px;">
+                        <i class="bx bx-info-circle"></i> Especialidades classificam as etapas da obra (Ex: Elétrica, Hidráulica, Acabamento).
                     </div>
                     <table class="table table-bordered table-striped">
                         <thead><tr><th style="width:40px;">Cor</th><th>Nome</th><th>Descrição</th><th style="width:100px;">Ações</th></tr></thead>
@@ -255,9 +292,13 @@
                                 <td><span class="obra-status-color" style="background: <?php echo htmlspecialchars($esp->cor); ?>;"></span></td>
                                 <td><i class="bx <?php echo htmlspecialchars($esp->icone); ?>"></i> <?php echo htmlspecialchars($esp->nome); ?></td>
                                 <td><?php echo htmlspecialchars($esp->descricao ?? ''); ?></td>
-                                <td>
-                                    <button class="btn btn-sm" onclick="abrirModal('especialidade', <?php echo (int)$esp->id; ?>)"><i class="bx bx-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" onclick="excluirItem('especialidade', <?php echo (int)$esp->id; ?>, '<?php echo htmlspecialchars($esp->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <td class="text-nowrap">
+                                    <a href="javascript:void(0)" class="btn-action btn-action-edit" title="Editar" onclick="abrirModal('especialidade', <?php echo (int)$esp->id; ?>)">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#edit"/></svg>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn-action btn-action-delete" title="Excluir" onclick="excluirItem('especialidade', <?php echo (int)$esp->id; ?>, '<?php echo htmlspecialchars($esp->nome); ?>')">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
+                                    </a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -265,17 +306,22 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div id="aba-funcoes" class="config-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('group', 22, 22) ?> Funções da Equipe</div>
-                    <button class="form-btn form-btn-primary" onclick="abrirModal('funcao', null)"><?= svg_icon('plus', 16, 16) ?> Nova Função</button>
+            <!-- ABA: FUNÇÕES DA EQUIPE -->
+            <div id="aba-funcoes" class="config-section">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-group"></i></span>
+                    <h5>Funções da Equipe</h5>
+                    <div class="buttons">
+                        <button class="button btn btn-sm btn-success" onclick="abrirModal('funcao', null)">
+                            <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
+                            <span class="button__text2">Nova Função</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="widget-content">
-                    <div class="obras-alert-info">
-                        Funções definem os papéis dos membros da equipe na obra.
+                <div class="widget-content nopadding">
+                    <div class="alert alert-info" style="margin:8px;border-radius:6px;">
+                        <i class="bx bx-info-circle"></i> Funções definem os papéis dos membros da equipe na obra.
                     </div>
                     <table class="table table-bordered table-striped">
                         <thead><tr><th>Nome</th><th>Nível</th><th>Descrição</th><th style="width:100px;">Ações</th></tr></thead>
@@ -287,9 +333,13 @@
                                 <td><?php echo htmlspecialchars($funcao->nome); ?></td>
                                 <td><span class="label" style="background: <?php echo $nivelCor; ?>; color: white;"><?php echo htmlspecialchars($funcao->nivel ?? 'baixo'); ?></span></td>
                                 <td><?php echo htmlspecialchars($funcao->descricao ?? ''); ?></td>
-                                <td>
-                                    <button class="btn btn-sm" onclick="abrirModal('funcao', <?php echo (int)$funcao->id; ?>)"><i class="bx bx-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" onclick="excluirItem('funcao', <?php echo (int)$funcao->id; ?>, '<?php echo htmlspecialchars($funcao->nome); ?>')"><i class="bx bx-trash"></i></button>
+                                <td class="text-nowrap">
+                                    <a href="javascript:void(0)" class="btn-action btn-action-edit" title="Editar" onclick="abrirModal('funcao', <?php echo (int)$funcao->id; ?>)">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#edit"/></svg>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn-action btn-action-delete" title="Excluir" onclick="excluirItem('funcao', <?php echo (int)$funcao->id; ?>, '<?php echo htmlspecialchars($funcao->nome); ?>')">
+                                        <svg><use href="<?php echo base_url(); ?>assets/svg/icons.svg#delete"/></svg>
+                                    </a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -297,17 +347,17 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div id="aba-notificacoes" class="config-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><?= svg_icon('bell', 22, 22) ?> Configurações de Notificações</div>
+            <!-- ABA: NOTIFICAÇÕES -->
+            <div id="aba-notificacoes" class="config-section">
+                <div class="widget-title" style="margin:0;">
+                    <span class="icon"><i class="bx bx-bell"></i></span>
+                    <h5>Configurações de Notificações</h5>
                 </div>
-                <div class="widget-content">
+                <div class="widget-content" style="padding: 12px;">
                     <form method="post" action="<?php echo site_url('obras/salvarConfiguracaoNotificacoes'); ?>">
-                        <h5>Eventos que geram notificações</h5>
-                        <table class="table table-sm table-bordered">
+                        <h5 style="margin: 0 0 8px;">Eventos que geram notificações</h5>
+                        <table class="table table-bordered">
                             <tbody>
                                 <tr><td>Nova obra cadastrada</td><td class="text-center" style="width:60px;"><input type="checkbox" name="notif_nova_obra" <?php echo ($config_notif['nova_obra'] ?? true) ? 'checked' : ''; ?>></td></tr>
                                 <tr><td>Obra concluída</td><td class="text-center" style="width:60px;"><input type="checkbox" name="notif_obra_concluida" <?php echo ($config_notif['obra_concluida'] ?? true) ? 'checked' : ''; ?>></td></tr>
@@ -317,20 +367,23 @@
                                 <tr><td>Impedimento registrado</td><td class="text-center" style="width:60px;"><input type="checkbox" name="notif_impedimento" <?php echo ($config_notif['impedimento'] ?? true) ? 'checked' : ''; ?>></td></tr>
                             </tbody>
                         </table>
-                        <hr class="obras-modal-divider">
-                        <h5>Canais de Notificação</h5>
-                        <table class="table table-sm table-bordered">
+                        <h5 style="margin: 16px 0 8px;">Canais de Notificação</h5>
+                        <table class="table table-bordered">
                             <tbody>
                                 <tr><td>E-mail</td><td class="text-center" style="width:60px;"><input type="checkbox" name="canal_email" <?php echo ($config_notif['canal_email'] ?? true) ? 'checked' : ''; ?>></td></tr>
                                 <tr><td>Notificação no Sistema</td><td class="text-center" style="width:60px;"><input type="checkbox" name="canal_sistema" <?php echo ($config_notif['canal_sistema'] ?? true) ? 'checked' : ''; ?>></td></tr>
                             </tbody>
                         </table>
-                        <div class="form-actions-bar">
-                            <button type="submit" class="form-btn form-btn-primary"><?= svg_icon('save', 16, 16) ?> Salvar Configurações</button>
+                        <div style="margin-top: 12px;">
+                            <button type="submit" class="button btn btn-sm btn-success">
+                                <span class="button__icon"><i class="bx bx-save"></i></span>
+                                <span class="button__text2">Salvar Configurações</span>
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -355,22 +408,16 @@
 
 <script type="text/javascript">
 function mostrarAba(abaId) {
-    var botoes = document.getElementsByClassName('aba-menu');
-    for (var i = 0; i < botoes.length; i++) {
-        botoes[i].classList.remove('active');
-    }
-    var btn = document.getElementById('aba-btn-' + abaId);
-    if (btn) {
-        btn.classList.add('active');
-    }
-    var caixas = document.getElementsByClassName('config-section');
-    for (var j = 0; j < caixas.length; j++) {
-        caixas[j].classList.remove('active');
-    }
+    document.querySelectorAll('.config-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.config-section').forEach(function(s) { s.classList.remove('active'); });
+    var tabMap = {
+        'geral': 0, 'tipos-obra': 1, 'tipos-atividade': 2, 'status-obra': 3,
+        'status-atividade': 4, 'especialidades': 5, 'funcoes': 6, 'notificacoes': 7
+    };
+    var tabs = document.querySelectorAll('.config-tab');
+    if (tabs[tabMap[abaId]]) tabs[tabMap[abaId]].classList.add('active');
     var alvo = document.getElementById('aba-' + abaId);
-    if (alvo) {
-        alvo.classList.add('active');
-    }
+    if (alvo) alvo.classList.add('active');
 }
 
 var TIPO_ATUAL = null;
@@ -469,36 +516,35 @@ function abrirModal(tipo, id) {
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
             '<div class="mb-3"><label class="form-label">Nome</label><input type="text" id="f_nome" class="form-input" value="' + escapeHtml(nomeItem) + '" required></div>' +
             '<div class="mb-3"><label class="form-label">Descrição</label><textarea id="f_descricao" class="form-textarea" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div>' +
-            '<div class="form-grid"><div class="form-group"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div class="form-group"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div></div>';
+            '<div style="display:flex;gap:16px;"><div style="flex:1;"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div style="flex:1;"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div></div>';
     } else if (tipo === 'tipo-atividade') {
         titulo.innerHTML = (id ? 'Editar' : 'Novo') + ' Tipo de Atividade';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
             '<div class="mb-3"><label class="form-label">Nome</label><input type="text" id="f_nome" class="form-input" value="' + escapeHtml(nomeItem) + '" required></div>' +
             '<div class="mb-3"><label class="form-label">Descrição</label><textarea id="f_descricao" class="form-textarea" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div>' +
-            '<div class="form-grid"><div class="form-group"><label class="form-label">Categoria</label><select id="f_categoria" class="form-select"><option value="execucao"' + (categoriaItem === 'execucao' ? ' selected' : '') + '>Execução</option><option value="visita"' + (categoriaItem === 'visita' ? ' selected' : '') + '>Visita</option><option value="manutencao"' + (categoriaItem === 'manutencao' ? ' selected' : '') + '>Manutenção</option><option value="impedimento"' + (categoriaItem === 'impedimento' ? ' selected' : '') + '>Impedimento</option><option value="outro"' + (categoriaItem === 'outro' ? ' selected' : '') + '>Outro</option></select></div>' +
-            '<div class="form-group"><label class="form-label">Duração (min)</label><input type="number" id="f_duracao" class="form-input" value="' + duracaoItem + '" min="5"></div>' +
-            '<div class="form-group"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div>' +
-            '<div class="form-group"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div></div>';
+            '<div style="display:flex;gap:16px;"><div style="flex:1;"><label class="form-label">Categoria</label><select id="f_categoria" class="form-select"><option value="execucao"' + (categoriaItem === 'execucao' ? ' selected' : '') + '>Execução</option><option value="visita"' + (categoriaItem === 'visita' ? ' selected' : '') + '>Visita</option><option value="manutencao"' + (categoriaItem === 'manutencao' ? ' selected' : '') + '>Manutenção</option><option value="impedimento"' + (categoriaItem === 'impedimento' ? ' selected' : '') + '>Impedimento</option><option value="outro"' + (categoriaItem === 'outro' ? ' selected' : '') + '>Outro</option></select></div>' +
+            '<div style="flex:1;"><label class="form-label">Duração (min)</label><input type="number" id="f_duracao" class="form-input" value="' + duracaoItem + '" min="5"></div></div>' +
+            '<div style="display:flex;gap:16px;margin-top:8px;"><div style="flex:1;"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div style="flex:1;"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div></div>';
     } else if (tipo === 'status-obra') {
         titulo.innerHTML = (id ? 'Editar' : 'Novo') + ' Status de Obra';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
             '<div class="mb-3"><label class="form-label">Nome</label><input type="text" id="f_nome" class="form-input" value="' + escapeHtml(nomeItem) + '" required></div>' +
             '<div class="mb-3"><label class="form-label">Descrição</label><textarea id="f_descricao" class="form-textarea" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div>' +
-            '<div class="form-grid"><div class="form-group"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div class="form-group"><label class="form-label">Ordem</label><input type="number" id="f_ordem" class="form-input" value="' + ordemItem + '" min="1"></div><div class="form-group"><label class="form-label">Finalizado?</label><div class="checkbox-container"><input type="checkbox" id="f_finalizado"' + (finalizadoItem ? ' checked' : '') + '><label for="f_finalizado">Sim</label></div></div></div>' +
-            '<div class="mb-3"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div>';
+            '<div style="display:flex;gap:16px;"><div style="flex:1;"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div style="flex:1;"><label class="form-label">Ordem</label><input type="number" id="f_ordem" class="form-input" value="' + ordemItem + '" min="1"></div><div style="flex:1;"><label class="form-label">Finalizado?</label><div style="margin-top:6px;"><input type="checkbox" id="f_finalizado"' + (finalizadoItem ? ' checked' : '') + '> <label for="f_finalizado">Sim</label></div></div></div>' +
+            '<div class="mb-3" style="margin-top:8px;"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div>';
     } else if (tipo === 'status-atividade') {
         titulo.innerHTML = (id ? 'Editar' : 'Novo') + ' Status de Atividade';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
             '<div class="mb-3"><label class="form-label">Nome</label><input type="text" id="f_nome" class="form-input" value="' + escapeHtml(nomeItem) + '" required></div>' +
             '<div class="mb-3"><label class="form-label">Descrição</label><textarea id="f_descricao" class="form-textarea" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div>' +
-            '<div class="form-grid"><div class="form-group"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div class="form-group"><label class="form-label">Fluxo</label><select id="f_fluxo" class="form-select"><option value="inicial"' + (fluxoItem === 'inicial' ? ' selected' : '') + '>Inicial</option><option value="normal"' + (fluxoItem === 'normal' ? ' selected' : '') + '>Normal</option><option value="pausa"' + (fluxoItem === 'pausa' ? ' selected' : '') + '>Pausa</option><option value="final"' + (fluxoItem === 'final' ? ' selected' : '') + '>Final</option></select></div></div>' +
-            '<div class="mb-3"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div>';
+            '<div style="display:flex;gap:16px;"><div style="flex:1;"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div style="flex:1;"><label class="form-label">Fluxo</label><select id="f_fluxo" class="form-select"><option value="inicial"' + (fluxoItem === 'inicial' ? ' selected' : '') + '>Inicial</option><option value="normal"' + (fluxoItem === 'normal' ? ' selected' : '') + '>Normal</option><option value="pausa"' + (fluxoItem === 'pausa' ? ' selected' : '') + '>Pausa</option><option value="final"' + (fluxoItem === 'final' ? ' selected' : '') + '>Final</option></select></div></div>' +
+            '<div class="mb-3" style="margin-top:8px;"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div>';
     } else if (tipo === 'especialidade') {
         titulo.innerHTML = (id ? 'Editar' : 'Nova') + ' Especialidade';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
             '<div class="mb-3"><label class="form-label">Nome</label><input type="text" id="f_nome" class="form-input" value="' + escapeHtml(nomeItem) + '" required></div>' +
             '<div class="mb-3"><label class="form-label">Descrição</label><textarea id="f_descricao" class="form-textarea" rows="2">' + escapeHtml(descricaoItem) + '</textarea></div>' +
-            '<div class="form-grid"><div class="form-group"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div class="form-group"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div></div>';
+            '<div style="display:flex;gap:16px;"><div style="flex:1;"><label class="form-label">Cor</label><input type="color" id="f_cor" value="' + corItem + '" style="width:60px;height:40px;"></div><div style="flex:1;"><label class="form-label">Ícone</label><select id="f_icone" class="form-select">' + opcoesIcone(iconeItem) + '</select></div></div>';
     } else if (tipo === 'funcao') {
         titulo.innerHTML = (id ? 'Editar' : 'Nova') + ' Função';
         html = '<input type="hidden" id="f_id" value="' + (id || '') + '">' +
