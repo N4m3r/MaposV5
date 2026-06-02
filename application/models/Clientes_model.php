@@ -43,6 +43,9 @@ class Clientes_model extends MY_Model
 
     public function getById($id)
     {
+        if (empty($id) || !is_numeric($id)) {
+            return false;
+        }
         $this->db->select('idClientes, nomeCliente, documento, telefone, celular, email, sexo, rua, numero, complemento, bairro, cidade, estado, cep, contato, fornecedor, cpfCnpj, inscricao, situacao, dataExpiracao, obs, dataCadastro, asaas_id, consentimento_lgpd, data_consentimento, origem_dados, token_acesso');
         if ($this->db->field_exists('deleted_at', $this->mainTable)) {
             $this->db->where('clientes.deleted_at IS NULL', null, false);
@@ -50,7 +53,11 @@ class Clientes_model extends MY_Model
         $this->db->where('idClientes', $id);
         $this->db->limit(1);
 
-        return $this->db->get('clientes')->row();
+        $query = $this->db->get('clientes');
+        if (!$query) {
+            return false;
+        }
+        return $query->row();
     }
 
     /**
