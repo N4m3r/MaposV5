@@ -23,15 +23,16 @@ if (!function_exists('svg_icon')) {
      * @param string $style      Estilos inline (ex: 'margin-right:4px')
      * @return string            HTML do SVG inline
      */
-    function svg_icon($name, $width = 20, $height = 20, $class = '', $style = '')
+    function svg_icon($name, $width = 20, $height = 20, $class = '', $style = '', $id = '')
     {
         $base = base_url();
         $href = "{$base}assets/svg/icons.svg#{$name}";
 
         $classAttr = $class ? " class=\"svg-icon {$class}\"" : ' class="svg-icon"';
         $styleAttr = $style ? " style=\"{$style}\"" : '';
+        $idAttr = $id ? " id=\"{$id}\"" : '';
 
-        return "<svg{$classAttr} width=\"{$width}\" height=\"{$height}\"{$styleAttr} aria-hidden=\"true\">" .
+        return "<svg{$idAttr}{$classAttr} width=\"{$width}\" height=\"{$height}\"{$styleAttr} aria-hidden=\"true\">" .
                "<use href=\"{$href}\"/></svg>";
     }
 }

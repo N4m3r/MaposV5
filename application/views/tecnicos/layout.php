@@ -672,8 +672,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             flex-shrink: 0;
+        }
+        .tec-notif-icon svg.svg-icon {
+            width: 18px;
+            height: 18px;
         }
 
         .tec-notif-icon.info { background: #e3f2fd; color: #1976d2; }
@@ -892,29 +895,29 @@
 
             <nav class="tec-menu">
                 <a href="<?= site_url('tecnicos/dashboard') ?>" class="tec-menu-item <?= isset($menuDashboard) ? 'active' : '' ?>">
-                    <i class='bx bx-home-alt'></i>
+                    <?= svg_icon('dashboard', 20, 20) ?>
                     <span class="tec-menu-label">Dashboard</span>
                 </a>
                 <a href="<?= site_url('tecnicos/minhas_os') ?>" class="tec-menu-item <?= isset($menuMinhasOs) ? 'active' : '' ?>">
-                    <i class='bx bx-clipboard'></i>
+                    <?= svg_icon('clipboard', 20, 20) ?>
                     <span class="tec-menu-label">Minhas OS</span>
                 </a>
                 <a href="<?= site_url('tecnicos/minhas_obras') ?>" class="tec-menu-item <?= isset($menuObras) ? 'active' : '' ?>">
-                    <i class='bx bx-building'></i>
+                    <?= svg_icon('building', 20, 20) ?>
                     <span class="tec-menu-label">Minhas Obras</span>
                 </a>
                 <a href="<?= site_url('tecnicos/meu_estoque') ?>" class="tec-menu-item <?= isset($menuEstoque) ? 'active' : '' ?>">
-                    <i class='bx bx-package'></i>
+                    <?= svg_icon('package', 20, 20) ?>
                     <span class="tec-menu-label">Meu Estoque</span>
                 </a>
                 <a href="<?= site_url('tecnicos/perfil') ?>" class="tec-menu-item <?= isset($menuPerfil) ? 'active' : '' ?>">
-                    <i class='bx bx-user'></i>
+                    <?= svg_icon('user', 20, 20) ?>
                     <span class="tec-menu-label">Meu Perfil</span>
                 </a>
             </nav>
 
             <div class="tec-sidebar-toggle" onclick="toggleSidebar()">
-                <i class='bx bx-chevron-left' id="toggleIcon"></i>
+                <?= svg_icon('chevron-left', 20, 20, '', '', 'toggleIcon') ?>
             </div>
         </aside>
 
@@ -924,7 +927,7 @@
             <header class="tec-navbar">
                 <div class="tec-navbar-left">
                     <button class="tec-mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
-                        <i class='bx bx-menu'></i>
+                        <?= svg_icon('menu', 20, 20) ?>
                     </button>
                     <h1 class="tec-page-title"><?= $pageTitle ?? 'Dashboard' ?></h1>
                 </div>
@@ -933,7 +936,7 @@
                     <!-- Notificações -->
                     <div class="tec-notif-container">
                         <button class="tec-nav-btn" onclick="toggleNotificacoes(event)" title="Notificações" id="notifBtn">
-                            <i class='bx bx-bell'></i>
+                            <?= svg_icon('bell', 20, 20) ?>
                             <span class="tec-badge" id="notifCount" style="display:none">0</span>
                         </button>
                         <div class="tec-notif-dropdown" id="notifDropdown">
@@ -949,12 +952,12 @@
 
                     <!-- Tema -->
                     <button class="tec-nav-btn" onclick="toggleTheme()" title="Alternar Tema">
-                        <i class='bx bx-moon' id="themeIcon"></i>
+                        <?= svg_icon('moon', 20, 20, '', '', 'themeIcon') ?>
                     </button>
 
                     <!-- Sair -->
                     <a href="<?= site_url('tecnicos/logout') ?>" class="tec-nav-btn" title="Sair">
-                        <i class='bx bx-log-out'></i>
+                        <?= svg_icon('log-out', 20, 20) ?>
                     </a>
 
                     <!-- Usuário -->
@@ -987,12 +990,17 @@
             if (window.innerWidth > 768) {
                 sidebar.classList.toggle('collapsed');
 
+                var svgUse = icon.querySelector('use');
+                var svgBaseUrl = '<?= base_url() ?>assets/svg/icons.svg';
+
                 if (sidebar.classList.contains('collapsed')) {
-                    icon.classList.remove('bx-chevron-left');
-                    icon.classList.add('bx-chevron-right');
+                    if (svgUse) {
+                        svgUse.setAttribute('href', svgBaseUrl + '#chevron-right');
+                    }
                 } else {
-                    icon.classList.remove('bx-chevron-right');
-                    icon.classList.add('bx-chevron-left');
+                    if (svgUse) {
+                        svgUse.setAttribute('href', svgBaseUrl + '#chevron-left');
+                    }
                 }
             }
         }
@@ -1054,17 +1062,24 @@
             const body = document.body;
             const themeIcon = document.getElementById('themeIcon');
             const currentTheme = body.getAttribute('data-theme') || 'light';
+            const svgBaseUrl = '<?= base_url() ?>assets/svg/icons.svg';
 
             // Alternar entre light e dark
             if (currentTheme === 'dark') {
                 body.setAttribute('data-theme', 'light');
-                themeIcon.classList.remove('bx-sun');
-                themeIcon.classList.add('bx-moon');
+                // Mudar ícone para moon (tema claro ativo)
+                var svgUse = themeIcon.querySelector('use');
+                if (svgUse) {
+                    svgUse.setAttribute('href', svgBaseUrl + '#moon');
+                }
                 localStorage.setItem('tec-theme', 'light');
             } else {
                 body.setAttribute('data-theme', 'dark');
-                themeIcon.classList.remove('bx-moon');
-                themeIcon.classList.add('bx-sun');
+                // Mudar ícone para sun (tema escuro ativo)
+                var svgUse = themeIcon.querySelector('use');
+                if (svgUse) {
+                    svgUse.setAttribute('href', svgBaseUrl + '#sun');
+                }
                 localStorage.setItem('tec-theme', 'dark');
             }
         }
@@ -1073,15 +1088,20 @@
         (function loadTheme() {
             const savedTheme = localStorage.getItem('tec-theme') || 'light';
             const themeIcon = document.getElementById('themeIcon');
+            const svgBaseUrl = '<?= base_url() ?>assets/svg/icons.svg';
 
             if (savedTheme === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
-                themeIcon.classList.remove('bx-moon');
-                themeIcon.classList.add('bx-sun');
+                var svgUse = themeIcon ? themeIcon.querySelector('use') : null;
+                if (svgUse) {
+                    svgUse.setAttribute('href', svgBaseUrl + '#sun');
+                }
             } else {
                 document.body.setAttribute('data-theme', 'light');
-                themeIcon.classList.remove('bx-sun');
-                themeIcon.classList.add('bx-moon');
+                var svgUse = themeIcon ? themeIcon.querySelector('use') : null;
+                if (svgUse) {
+                    svgUse.setAttribute('href', svgBaseUrl + '#moon');
+                }
             }
         })();
 
@@ -1129,18 +1149,19 @@
                         item.className = 'tec-notif-item' + (n.lida == 0 ? ' nao-lida' : '');
                         item.onclick = function() { abrirNotificacao(n.id, n.url); };
 
-                        // Ícone baseado no tipo
+                        // Ícone baseado no tipo (SVG inline)
+                        const svgBase = '<?= base_url() ?>assets/svg/icons.svg';
                         const icones = {
-                            'info': 'bx-info-circle',
-                            'success': 'bx-check-circle',
-                            'warning': 'bx-error',
-                            'danger': 'bx-x-circle'
+                            'info': 'info-circle',
+                            'success': 'check-circle',
+                            'warning': 'error-circle',
+                            'danger': 'x-circle'
                         };
-                        const icone = icones[n.tipo] || 'bx-bell';
+                        const icone = icones[n.tipo] || 'bell';
 
                         item.innerHTML = `
                             <div class="tec-notif-icon ${n.tipo}">
-                                <i class='bx ${icone}'></i>
+                                <svg class="svg-icon" width="18" height="18" aria-hidden="true"><use href="${svgBase}#${icone}"/></svg>
                             </div>
                             <div class="tec-notif-content">
                                 <div class="tec-notif-titulo">${escapeHtml(n.titulo)}</div>

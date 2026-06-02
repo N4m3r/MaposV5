@@ -72,8 +72,31 @@ class Obras extends MY_Controller
 
         $this->data['results'] = $this->obras_model->getAll($filtros, $config['per_page'], $this->uri->segment(3));
 
+        // Recalcular progresso automaticamente para obras listadas
+        foreach ($this->data['results'] as $obra) {
+            $result = $this->obras_model->atualizarProgressoPorAtividades($obra->id);
+            if ($result === false) {
+                $this->obras_model->atualizarProgressoObra($obra->id);
+            }
+        }
+        // Recarregar com dados atualizados
+        $this->data['results'] = $this->obras_model->getAll($filtros, $config['per_page'], $this->uri->segment(3));
+
         // Carregar configs para uso nas views (cores/status dinâmicos)
         $this->data['status_obra'] = $this->obras_model->getStatusObra() ?? [];
+
+        // Contadores para stats
+        $this->data['total_obras'] = count($this->obras_model->getAll($filtros));
+        $statusCounts = ['em-andamento' => 0, 'contratada' => 0, 'concluida' => 0];
+        foreach ($this->data['results'] as $obra) {
+            $s = strtolower(preg_replace('/[^a-z]/', '', $obra->status ?? ''));
+            if (isset($statusCounts[$s])) {
+                $statusCounts[$s]++;
+            }
+        }
+        $this->data['obras_em_andamento'] = $statusCounts['em-andamento'];
+        $this->data['obras_contratadas'] = $statusCounts['contratada'];
+        $this->data['obras_concluidas'] = $statusCounts['concluida'];
 
         // Debug: log dos dados carregados
         log_message('debug', 'Obras::gerenciar - Total de obras carregadas: ' . count($this->data['results']));
@@ -419,6 +442,51 @@ class Obras extends MY_Controller
         if (!$this->data['obra']) {
             $this->session->set_flashdata('error', 'Obra não encontrada.');
             redirect('obras');
+        }
+
+        // Recalcular progresso automaticamente
+        $progresso_atividades = $this->obras_model->atualizarProgressoPorAtividades($id);
+        if ($progresso_atividades === false) {
+            // Sem atividades: calcular baseado nas etapas
+            $this->obras_model->atualizarProgressoObra($id);
+        }
+        // Recarregar obra com percentual atualizado
+        $this->data['obra'] = $this->obras_model->getById($id);
+
+        // Calcular métricas de prazo automaticamente
+        $obra = $this->data['obra'];
+        $hoje = new DateTime();
+        $this->data['dias_restantes'] = null;
+        $this->data['dias_corridos'] = null;
+        $this->data['percentual_tempo'] = null;
+        $this->data['prazo_class'] = '';
+        $this->data['dias_atraso'] = 0;
+        $this->data['total_dias_prazo'] = null;
+
+        if ($obra->data_fim_prevista) {
+            $previsto = new DateTime($obra->data_fim_prevista);
+            $this->data['dias_restantes'] = (int) $hoje->diff($previsto, false)->format('%r%a');
+
+            if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
+                $this->data['prazo_class'] = 'concluido';
+            } elseif ($this->data['dias_restantes'] < 0) {
+                $this->data['prazo_class'] = 'atrasado';
+                $this->data['dias_atraso'] = abs($this->data['dias_restantes']);
+            }
+
+            if ($obra->data_inicio_contrato) {
+                $inicio = new DateTime($obra->data_inicio_contrato);
+                $this->data['dias_corridos'] = (int) $inicio->diff($hoje, false)->format('%r%a');
+                if ($this->data['dias_corridos'] < 0) {
+                    $this->data['dias_corridos'] = 0;
+                }
+                $this->data['total_dias_prazo'] = (int) $inicio->diff($previsto)->format('%a');
+                if ($this->data['total_dias_prazo'] > 0) {
+                    $this->data['percentual_tempo'] = min(round(($this->data['dias_corridos'] / $this->data['total_dias_prazo']) * 100), 100);
+                } else {
+                    $this->data['percentual_tempo'] = 0;
+                }
+            }
         }
 
         $this->data['etapas'] = $this->obras_model->getEtapasComEstatisticas($id);

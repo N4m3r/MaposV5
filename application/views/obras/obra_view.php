@@ -45,20 +45,13 @@ if (isset($statusObraMap[$status_atual_norm])) {
 }
 $status_class = 'status-dinamico';
 
-// Calcular dias restantes
-$dias_restantes = null;
-$prazo_class = '';
-if ($obra->data_fim_prevista) {
-    $hoje = new DateTime();
-    $previsto = new DateTime($obra->data_fim_prevista);
-    $dias_restantes = $hoje->diff($previsto, false)->format('%r%a');
-    if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
-        $prazo_class = 'concluido';
-    } elseif ($dias_restantes < 0) {
-        $prazo_class = 'atrasado';
-    }
-}
-
+// Usar variáveis calculadas pelo controller (cálculo automático)
+$dias_restantes = $dias_restantes ?? null;
+$dias_corridos = $dias_corridos ?? null;
+$percentual_tempo = $percentual_tempo ?? null;
+$prazo_class = $prazo_class ?? '';
+$dias_atraso = $dias_atraso ?? 0;
+$total_dias_prazo = $total_dias_prazo ?? null;
 $progresso = $obra->percentual_concluido ?? 0;
 ?>
 
@@ -99,6 +92,19 @@ $progresso = $obra->percentual_concluido ?? 0;
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: <?php echo $progresso; ?>%"></div>
                     </div>
+                    <?php if ($percentual_tempo !== null && $obra->status != 'Concluida' && $obra->status != 'concluida'): ?>
+                    <div style="margin-top:6px;font-size:11px;color:var(--cinza0,#9aa6b3);">
+                        Tempo: <?php echo $percentual_tempo; ?>%
+                        <?php if ($progresso > 0 && $percentual_tempo > 0): ?>
+                        —
+                        <?php if ($progresso >= $percentual_tempo): ?>
+                            <span style="color:#27ae60;">Adiantado +<?php echo $progresso - $percentual_tempo; ?>%</span>
+                        <?php else: ?>
+                            <span style="color:#e74c3c;">Atrasado -<?php echo $percentual_tempo - $progresso; ?>%</span>
+                        <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -161,7 +167,7 @@ $progresso = $obra->percentual_concluido ?? 0;
                                 <?php
                                 if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
                                     echo 'Obra Concluída';
-                                } elseif ($dias_restantes < 0) {
+                                } elseif ($dias_restantes !== null && $dias_restantes < 0) {
                                     echo 'Dias de Atraso';
                                 } else {
                                     echo 'Dias Restantes';
@@ -172,12 +178,30 @@ $progresso = $obra->percentual_concluido ?? 0;
                                 <?php
                                 if ($obra->status == 'Concluida' || $obra->status == 'concluida') {
                                     echo svg_icon('check', 16, 16) . ' Finalizada';
-                                } else {
+                                } elseif ($dias_restantes !== null && $dias_restantes < 0) {
                                     echo abs($dias_restantes) . ' dias';
+                                } else {
+                                    echo ($dias_restantes ?? 0) . ' dias';
                                 }
                                 ?>
                             </div>
                         </div>
+                        <?php if ($obra->data_inicio_contrato && $dias_corridos !== null): ?>
+                        <div class="prazo-item">
+                            <div class="prazo-label">Dias Corridos</div>
+                            <div class="prazo-value">
+                                <?= svg_icon('calendar', 16, 16) ?>
+                                <?php echo $dias_corridos; ?> de <?php echo $total_dias_prazo; ?> dias
+                            </div>
+                        </div>
+                        <div class="prazo-item">
+                            <div class="prazo-label">Tempo Decorrido</div>
+                            <div class="prazo-value">
+                                <?= svg_icon('clock', 16, 16) ?>
+                                <?php echo $percentual_tempo; ?>%
+                            </div>
+                        </div>
+                        <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </div>
