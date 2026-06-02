@@ -97,6 +97,17 @@
       margin-right: 16px;
       flex-shrink: 0;
     }
+    .topbar-brand-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 6px;
+      filter: drop-shadow(0 2px 6px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.3));
+      transition: transform 0.2s ease;
+    }
+    .topbar-brand:hover .topbar-brand-logo {
+      transform: scale(1.1);
+    }
     .topbar-brand-name {
       font-size: 15px;
       font-weight: 700;
@@ -539,7 +550,15 @@
 
     <!-- Brand -->
     <div class="topbar-brand">
-      <?= svg_icon('cube-alt', 22, 22, '', 'color:var(--sidebar-accent, #0467fc);filter:drop-shadow(0 2px 6px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.3))') ?>
+      <?php
+      $emitente = $this->db->get('emitente')->row();
+      $topbarLogo = (!empty($emitente->url_logo)) ? $emitente->url_logo : null;
+      ?>
+      <?php if ($topbarLogo): ?>
+        <img src="<?= e($topbarLogo) ?>" alt="<?= e($configuration['app_name'] ?? 'Map-OS') ?>" class="topbar-brand-logo">
+      <?php else: ?>
+        <?= svg_icon('cube-alt', 22, 22, '', 'color:var(--sidebar-accent, #0467fc);filter:drop-shadow(0 2px 6px rgba(var(--sidebar-accent-rgb, 4, 103, 252), 0.3))') ?>
+      <?php endif; ?>
       <span class="topbar-brand-name"><?= $configuration['app_name'] ?? 'Map-OS' ?></span>
     </div>
 
@@ -867,7 +886,11 @@
   <div class="offcanvas offcanvas-start offcanvas-nav" tabindex="-1" id="mobileNavOffcanvas" style="background:var(--funSider, #333649); color:var(--cinza0, #a4a6b3); max-width:280px;">
     <div class="offcanvas-header" style="border-bottom:1px solid rgba(var(--sidebar-accent-rgb,4,103,252),0.15);">
       <div style="display:flex;align-items:center;gap:8px;">
-        <?= svg_icon('cube-alt', 22, 22, '', 'color:var(--sidebar-accent, #0467fc)') ?>
+        <?php if ($topbarLogo): ?>
+          <img src="<?= e($topbarLogo) ?>" alt="<?= e($configuration['app_name'] ?? 'Map-OS') ?>" class="topbar-brand-logo" style="width:28px;height:28px;object-fit:contain;">
+        <?php else: ?>
+          <?= svg_icon('cube-alt', 22, 22, '', 'color:var(--sidebar-accent, #0467fc)') ?>
+        <?php endif; ?>
         <span style="font-weight:700;font-size:15px;color:var(--sidebar-accent, #0467fc);"><?= $configuration['app_name'] ?? 'Map-OS' ?></span>
       </div>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
