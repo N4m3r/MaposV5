@@ -1588,6 +1588,69 @@ body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
     color: #ffffff !important;
 }
 
+/* Itens do Autocomplete — Layout estruturado */
+.ui-autocomplete .ui-menu-item-wrapper .ac-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.3;
+}
+.ui-autocomplete .ui-menu-item-wrapper .ac-item .ac-name {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.ui-autocomplete .ui-menu-item-wrapper .ac-item .ac-detail {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    opacity: 0.7;
+    color: inherit;
+}
+.ui-autocomplete .ui-menu-item-wrapper .ac-item .ac-detail .ac-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.73rem;
+    font-weight: 500;
+}
+.ac-badge-price {
+    background: rgba(5, 150, 105, 0.12);
+    color: #059669 !important;
+}
+.ac-badge-stock {
+    background: rgba(2, 132, 199, 0.12);
+    color: #0284c7 !important;
+}
+.ac-badge-phone {
+    background: rgba(107, 114, 128, 0.12);
+    color: #6b7280 !important;
+}
+.ac-badge-doc {
+    background: rgba(124, 58, 237, 0.12);
+    color: #7c3aed !important;
+}
+/* Dark theme badges */
+body[data-theme="puredark"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #34d399 !important; }
+body[data-theme="puredark"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #38bdf8 !important; }
+body[data-theme="puredark"] .ac-badge-phone { background: rgba(148, 163, 184, 0.15); color: #94a3b8 !important; }
+body[data-theme="puredark"] .ac-badge-doc { background: rgba(167, 139, 250, 0.18); color: #a78bfa !important; }
+body[data-theme="darkviolet"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #34d399 !important; }
+body[data-theme="darkviolet"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #38bdf8 !important; }
+body[data-theme="darkviolet"] .ac-badge-phone { background: rgba(195, 178, 233, 0.18); color: #c3b2e9 !important; }
+body[data-theme="darkviolet"] .ac-badge-doc { background: rgba(167, 139, 250, 0.18); color: #a78bfa !important; }
+body[data-theme="darkorange"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #34d399 !important; }
+body[data-theme="darkorange"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #38bdf8 !important; }
+body[data-theme="darkorange"] .ac-badge-phone { background: rgba(117, 126, 137, 0.18); color: #757e89 !important; }
+body[data-theme="darkorange"] .ac-badge-doc { background: rgba(167, 139, 250, 0.18); color: #a78bfa !important; }
+
 /* ========================================================================= */
 /* BOTÃƒO DE MENUS DO TOPBAR (HAMBURGUER MOBILE PARA EXPANÃ‡ÃƒO DE HIDEBAR)     */
 /* ========================================================================= */

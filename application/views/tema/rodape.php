@@ -189,6 +189,50 @@ $(document).ready(function() {
         } );
     }
 });
+
+// =========================================================================
+// AUTOCOMPLETE — Renderizador estruturado global
+// =========================================================================
+(function($) {
+    if (!$.ui || !$.ui.autocomplete) return;
+
+    var _renderItem = $.ui.autocomplete.prototype._renderItem;
+
+    $.ui.autocomplete.prototype._renderItem = function(ul, item) {
+        var label = item.label || '';
+        var parts = label.split(' | ');
+        var name = $('<span>').addClass('ac-name').text(parts[0]);
+        var detail = $('<span>').addClass('ac-detail');
+
+        for (var i = 1; i < parts.length; i++) {
+            var p = parts[i].trim();
+            if (p.match(/^Pre[Ee]o:/i) || p.match(/^Preço:/i)) {
+                detail.append(
+                    $('<span>').addClass('ac-badge ac-badge-price').text(p.replace(/^Pre[Ee]o:\s*/i, 'R$ ').replace(/^Preço:\s*/i, 'R$ '))
+                );
+            } else if (p.match(/^Estoque:/i)) {
+                detail.append(
+                    $('<span>').addClass('ac-badge ac-badge-stock').text(p)
+                );
+            } else if (p.match(/^Telefone:/i) || p.match(/^Celular:/i)) {
+                detail.append(
+                    $('<span>').addClass('ac-badge ac-badge-phone').text(p)
+                );
+            } else if (p.match(/^Documento:/i) || p.match(/^Código/i)) {
+                detail.append(
+                    $('<span>').addClass('ac-badge ac-badge-doc').text(p)
+                );
+            } else {
+                detail.append(
+                    $('<span>').text(p)
+                );
+            }
+        }
+
+        var inner = $('<div>').addClass('ac-item').append(name).append(detail);
+        return $('<li>').append($('<div>').addClass('ui-menu-item-wrapper').append(inner)).appendTo(ul);
+    };
+})(jQuery);
 </script>
 </body>
 </html>
