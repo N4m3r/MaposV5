@@ -1065,8 +1065,8 @@ body[data-theme="puredark"] .widget-box0,
 body[data-theme="puredark"] .widget-box2,
 body[data-theme="puredark"] .widget-box-new,
 body[data-theme="puredark"] .widget-box-statist {
-    background: #1c1d26 !important;
-    border-color: #272835 !important;
+    background: #ffffff !important;
+    border-color: #e0e0e8 !important;
 }
 
 body[data-theme="puredark"] .widget-title {
@@ -1261,8 +1261,8 @@ button[type="submit"].btn-success:not(:has(i))::before {
 
 /* Ajustes de Modo Escuro para PaginaÃ§Ã£o e Quick Cards */
 body[data-theme="puredark"] .quick-card {
-    background: #1c1d26 !important;
-    border-color: #272835 !important;
+    background: #ffffff !important;
+    border-color: #e0e0e8 !important;
 }
 
 body[data-theme="puredark"] .quick-card .title {
@@ -1271,7 +1271,7 @@ body[data-theme="puredark"] .quick-card .title {
 
 body[data-theme="puredark"] .pagination a {
     background-color: #1c1d26 !important;
-    border-color: #272835 !important;
+    border-color: #e0e0e8 !important;
     color: #ffffff !important;
 }
 
@@ -1427,33 +1427,33 @@ body[data-theme="darkorange"] .pagination .page-item.active .page-link {
 
 /* Temas Escuros (Pure Dark, Dark Violet, Dark Orange) */
 
-/* Override de variáveis CSS no tema Pure Dark - todas as views de obras usam var(--title), etc. */
+/* Override de variáveis CSS no tema Pure Dark - fundo claro = letra preta */
 body[data-theme="puredark"] {
-    --title: #ffffff;
-    --subtitle: #ffffff;
-    --branco: #ffffff;
-    --cinza0: #ffffff;
-    --cinza: #ffffff;
-    --black: #ffffff;
-    --widget-box: #1c1d26;
+    --title: #1a1a2e;
+    --subtitle: #555555;
+    --branco: #1a1a2e;
+    --cinza0: #555555;
+    --cinza: #555555;
+    --black: #1a1a2e;
+    --widget-box: #ffffff;
     --body-color: #1c1d26;
-    --border-color: #272835;
-    --card-bg: #1c1d26;
-    --card-bg-rgb: 28, 29, 38;
-    --widget-box-c: #ffffff;
-    --title-w: #ffffff;
-    --subtitle-w: #ffffff;
-    --dark-cinz: #ffffff;
-    --dark-azul: #ffffff;
-    --dark-orange-tit: #ffffff;
-    --dark-orange-tit1: #ffffff;
-    --dark-orange-tit2: #ffffff;
-    --dark-violet-tit: #ffffff;
-    --dark-violet-tit2: #ffffff;
-    --dark-7: #ffffff;
-    --bs-body-color: #ffffff;
-    --white-blak-tit: #ffffff;
-    --white-blak-tit2: #ffffff;
+    --border-color: #e0e0e8;
+    --card-bg: #ffffff;
+    --card-bg-rgb: 255, 255, 255;
+    --widget-box-c: #1a1a2e;
+    --title-w: #1a1a2e;
+    --subtitle-w: #555555;
+    --dark-cinz: #555555;
+    --dark-azul: #667eea;
+    --dark-orange-tit: #1a1a2e;
+    --dark-orange-tit1: #1a1a2e;
+    --dark-orange-tit2: #555555;
+    --dark-violet-tit: #1a1a2e;
+    --dark-violet-tit2: #555555;
+    --dark-7: #555555;
+    --bs-body-color: #1a1a2e;
+    --white-blak-tit: #1a1a2e;
+    --white-blak-tit2: #555555;
 }
 
 body[data-theme="puredark"],
@@ -1575,7 +1575,7 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
     overflow-y: auto !important;
     overflow-x: hidden !important;
     z-index: 999999 !important;
-    margin-top: 4px !important; /* ForÃ§a ficar exatamente abaixo do campo de texto */
+    margin-top: 0 !important; /* Reset — o JS em rodape.php posiciona manualmente abaixo do input */
 }
 
 /* Ajuste nos Temas Escuros */

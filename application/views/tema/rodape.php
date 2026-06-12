@@ -232,6 +232,18 @@ $(document).ready(function() {
         var inner = $('<div>').addClass('ac-item').append(name).append(detail);
         return $('<li>').append($('<div>').addClass('ui-menu-item-wrapper').append(inner)).appendTo(ul);
     };
+
+    // Fix: garante que o dropdown do autocomplete apareça ABAIXO do campo de texto.
+    // O jQuery UI usa $.fn.position() que pode calcular posição incorreta quando
+    // há transform, overflow:hidden ou position:relative nos elementos pais.
+    var _suggest = $.ui.autocomplete.prototype._suggest;
+    $.ui.autocomplete.prototype._suggest = function(items) {
+        _suggest.call(this, items);
+        var pos = this.element.offset();
+        this.menu.element.css({
+            top: pos.top + this.element.outerHeight() + 4 // 4px de gap visual
+        });
+    };
 })(jQuery);
 </script>
 </body>

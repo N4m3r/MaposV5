@@ -95,28 +95,28 @@ body {
   --tran-05: all 0.5s ease;
 }
 
-/* === Override de variáveis CSS para o tema Pure Dark === */
+/* === Override de variáveis CSS para o tema Pure Dark - fundo claro = letra preta === */
 body[data-theme="puredark"] {
-  --title: #ffffff;
-  --subtitle: #ffffff;
-  --branco: #ffffff;
-  --cinza0: #ffffff;
-  --cinza: #ffffff;
-  --black: #ffffff;
-  --dark-cinz: #ffffff;
-  --dark-azul: #ffffff;
-  --dark-orange-tit: #ffffff;
-  --dark-orange-tit1: #ffffff;
-  --dark-orange-tit2: #ffffff;
-  --dark-violet-tit: #ffffff;
-  --dark-violet-tit2: #ffffff;
-  --white-blak-tit: #ffffff;
-  --white-blak-tit2: #ffffff;
-  --widget-box: #1c1d26;
+  --title: #1a1a2e;
+  --subtitle: #555555;
+  --branco: #1a1a2e;
+  --cinza0: #555555;
+  --cinza: #555555;
+  --black: #1a1a2e;
+  --dark-cinz: #555555;
+  --dark-azul: #667eea;
+  --dark-orange-tit: #1a1a2e;
+  --dark-orange-tit1: #1a1a2e;
+  --dark-orange-tit2: #555555;
+  --dark-violet-tit: #1a1a2e;
+  --dark-violet-tit2: #555555;
+  --white-blak-tit: #1a1a2e;
+  --white-blak-tit2: #555555;
+  --widget-box: #ffffff;
   --bodycolor: #14141a;
   --content: #1c1d26;
   --toggle: #ffffff;
-  --sidebar-text-muted: #ffffff;
+  --sidebar-text-muted: #555555;
 }
 
 /*Bootstrap-overlay*/

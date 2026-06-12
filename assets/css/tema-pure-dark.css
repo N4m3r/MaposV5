@@ -18,22 +18,22 @@
   --select-disabled-color: #ffffff;
 }
 
-/* === Override de variáveis CSS para cor #ffffff === */
+/* === Override de variáveis CSS - fundo claro = letra preta === */
 body[data-theme="puredark"] {
-  --title: #ffffff;
-  --subtitle: #ffffff;
-  --branco: #ffffff;
-  --cinza0: #ffffff;
-  --cinza: #ffffff;
-  --black: #ffffff;
-  --dark-cinz: #ffffff;
-  --dark-azul: #ffffff;
-  --white-blak-tit: #ffffff;
-  --white-blak-tit2: #ffffff;
-  --sidebar-text-muted: #ffffff;
-  --select-color: #ffffff;
-  --select-placeholder: #ffffff;
-  --select-disabled-color: #ffffff;
+  --title: #1a1a2e;
+  --subtitle: #555555;
+  --branco: #1a1a2e;
+  --cinza0: #555555;
+  --cinza: #555555;
+  --black: #1a1a2e;
+  --dark-cinz: #555555;
+  --dark-azul: #667eea;
+  --white-blak-tit: #1a1a2e;
+  --white-blak-tit2: #555555;
+  --sidebar-text-muted: #555555;
+  --select-color: #1a1a2e;
+  --select-placeholder: #555555;
+  --select-disabled-color: #555555;
 }
 
 input[type="search"],

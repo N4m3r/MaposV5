@@ -687,19 +687,19 @@
    OVERRIDE DE VARIÁVEIS CSS - TEMA PURE DARK
    ============================================ */
 body[data-theme="puredark"] {
-    --white: #1c1d26;
-    --black: #ffffff;
-    --widget-box: #1c1d26;
+    --white: #ffffff;
+    --black: #1a1a2e;
+    --widget-box: #ffffff;
     --body-color: #1c1d26;
-    --border-color: rgba(255, 255, 255, 0.05);
-    --title: #ffffff;
-    --subtitle: #ffffff;
-    --dark-2: #1c1d26;
-    --dark-3: #272835;
-    --dark-4: #475569;
-    --dark-7: #ffffff;
-    --branco: #ffffff;
-    --cinza0: #ffffff;
+    --border-color: #e0e0e8;
+    --title: #1a1a2e;
+    --subtitle: #555555;
+    --dark-2: #ffffff;
+    --dark-3: #f0f0f5;
+    --dark-4: #e0e0e8;
+    --dark-7: #555555;
+    --branco: #1a1a2e;
+    --cinza0: #555555;
 }
 
 /* ============================================
@@ -920,50 +920,50 @@ body[data-theme="dark"] a:hover {
 
 /* ============================================
    COMPATIBILIDADE COM TEMA PURE DARK
-   Cor de texto: #ffffff
+   Fundo claro = letra preta | Fundo escuro = letra branca
    ============================================ */
 
 /* Container principal */
 body[data-theme="puredark"] .obras-modern-container,
 body[data-theme="puredark"] .obra-view-container,
 body[data-theme="puredark"] .obras-unified-container {
-    color: #ffffff;
+    color: #1a1a2e;
 }
 
-/* Cards modernos */
+/* Cards modernos - fundo claro */
 body[data-theme="puredark"] .obra-card-modern,
 body[data-theme="puredark"] .obra-list-card {
-    background: #1c1d26;
-    border-color: rgba(255,255,255,0.05);
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #e0e0e8;
+    color: #1a1a2e;
 }
 
-/* Stats cards */
+/* Stats cards - fundo claro */
 body[data-theme="puredark"] .obras-stat-card,
 body[data-theme="puredark"] .obra-item-card,
 body[data-theme="puredark"] .obras-filter-bar,
 body[data-theme="puredark"] .obras-empty-state {
-    background: #1c1d26;
-    border-color: #272835;
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #e0e0e8;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .obra-stat-item,
 body[data-theme="puredark"] .etapa-content-moderno,
 body[data-theme="puredark"] .equipe-item-moderno,
 body[data-theme="puredark"] .atividade-item-moderno {
-    background: rgba(255,255,255,0.05);
-    color: #ffffff;
+    background: #f0f0f5;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .obra-stat-item:hover,
 body[data-theme="puredark"] .etapa-content-moderno:hover,
 body[data-theme="puredark"] .equipe-item-moderno:hover,
 body[data-theme="puredark"] .atividade-item-moderno:hover {
-    background: rgba(255,255,255,0.08);
+    background: #e8e8f0;
 }
 
-/* Valores e títulos */
+/* Valores e titulos - texto escuro */
 body[data-theme="puredark"] .obras-stat-value,
 body[data-theme="puredark"] .obra-card-title,
 body[data-theme="puredark"] .obra-card-info-value,
@@ -976,10 +976,10 @@ body[data-theme="puredark"] .etapa-title,
 body[data-theme="puredark"] .atividade-titulo,
 body[data-theme="puredark"] .equipe-nome,
 body[data-theme="puredark"] .progresso-valor {
-    color: #ffffff;
+    color: #1a1a2e;
 }
 
-/* Labels e subtítulos */
+/* Labels e subtitulos - cinza */
 body[data-theme="puredark"] .obras-stat-label,
 body[data-theme="puredark"] .obra-card-cliente,
 body[data-theme="puredark"] .obra-card-info-label,
@@ -989,21 +989,21 @@ body[data-theme="puredark"] .etapa-meta,
 body[data-theme="puredark"] .atividade-meta,
 body[data-theme="puredark"] .equipe-funcao-moderno,
 body[data-theme="puredark"] .progresso-label {
-    color: #ffffff;
+    color: #555555;
 }
 
-/* Cards internos */
+/* Cards internos - fundo claro suave */
 body[data-theme="puredark"] .obra-card-stat,
 body[data-theme="puredark"] .obra-card-actions,
 body[data-theme="puredark"] .obra-info-item,
 body[data-theme="puredark"] .etapa-timeline-content,
 body[data-theme="puredark"] .atividade-item-rapido,
 body[data-theme="puredark"] .equipe-card {
-    background: #272835;
-    color: #ffffff;
+    background: #f0f0f5;
+    color: #1a1a2e;
 }
 
-/* Inputs e selects */
+/* Inputs e selects - fundo claro */
 body[data-theme="puredark"] .obras-filter-input,
 body[data-theme="puredark"] .obras-filter-select,
 body[data-theme="puredark"] .wizard-form-input,
@@ -1012,9 +1012,9 @@ body[data-theme="puredark"] .wizard-form-textarea,
 body[data-theme="puredark"] .form-moderno input,
 body[data-theme="puredark"] .form-moderno select,
 body[data-theme="puredark"] .form-moderno textarea {
-    background: #272835;
-    border-color: #475569;
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #e0e0e8;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .obras-filter-input:focus,
@@ -1027,59 +1027,59 @@ body[data-theme="puredark"] .form-moderno textarea:focus {
 
 /* Progress bars */
 body[data-theme="puredark"] .progresso-barra-container {
-    background: rgba(255,255,255,0.1);
+    background: #e0e0e8;
 }
 
 body[data-theme="puredark"] .obra-card-progress-bar {
     background: #475569;
 }
 
-/* Section cards */
+/* Section cards - fundo claro */
 body[data-theme="puredark"] .obra-section-card {
-    background: #1c1d26;
-    border-color: #272835;
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #e0e0e8;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .obra-section-header {
-    border-color: #272835;
+    border-color: #e0e0e8;
 }
 
 /* Timeline */
 body[data-theme="puredark"] .etapas-timeline::before,
 body[data-theme="puredark"] .etapas-timeline-moderno::before {
-    background: #475569;
+    background: #e0e0e8;
 }
 
 body[data-theme="puredark"] .etapa-timeline-dot,
 body[data-theme="puredark"] .etapa-dot-moderno {
-    background: #475569;
-    border-color: #272835;
-    box-shadow: 0 0 0 3px #475569;
+    background: #667eea;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px #e0e0e8;
 }
 
 /* Modal wizard */
 body[data-theme="puredark"] .wizard-modal .modal-body {
-    background: #1c1d26;
-    color: #ffffff;
+    background: #ffffff;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .wizard-modal .modal-footer {
-    background: #272835;
-    border-color: #475569;
+    background: #f0f0f5;
+    border-color: #e0e0e8;
 }
 
 body[data-theme="puredark"] .wizard-step-label {
-    color: #ffffff;
+    color: #555555;
 }
 
 body[data-theme="puredark"] .wizard-step-line {
-    background: #475569;
+    background: #e0e0e8;
 }
 
 body[data-theme="puredark"] .wizard-step-number {
-    background: #475569;
-    color: #ffffff;
+    background: #e0e0e8;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .wizard-step.active .wizard-step-number {
@@ -1095,60 +1095,60 @@ body[data-theme="puredark"] .wizard-step.completed .wizard-step-number {
 body[data-theme="puredark"] .wizard-atividades-lista,
 body[data-theme="puredark"] .wizard-atividade-item,
 body[data-theme="puredark"] .wizard-resumo {
-    background: #272835;
-    border-color: #475569;
-    color: #ffffff;
+    background: #f0f0f5;
+    border-color: #e0e0e8;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .wizard-atividade-input {
-    background: #1c1d26;
-    border-color: #475569;
-    color: #ffffff;
+    background: #ffffff;
+    border-color: #e0e0e8;
+    color: #1a1a2e;
 }
 
 /* Tabela moderna */
 body[data-theme="puredark"] .tabela-moderna th {
-    background: rgba(255,255,255,0.05);
-    color: #ffffff;
+    background: #f0f0f5;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .tabela-moderna td {
-    border-color: rgba(255,255,255,0.05);
-    color: #ffffff;
+    border-color: #e0e0e8;
+    color: #1a1a2e;
 }
 
 /* Empty state */
 body[data-theme="puredark"] .empty-state-moderno {
-    background: rgba(255,255,255,0.03);
+    background: #f0f0f5;
 }
 
 body[data-theme="puredark"] .empty-state-moderno h3,
 body[data-theme="puredark"] .empty-state-moderno p {
-    color: #ffffff;
+    color: #1a1a2e;
 }
 
-/* Botões secundários */
+/* Botoes secundarios */
 body[data-theme="puredark"] .obras-filter-btn.secondary,
 body[data-theme="puredark"] .wizard-btn-secondary,
 body[data-theme="puredark"] .acao-rapida-btn {
-    background: #475569;
-    color: #ffffff;
+    background: #f0f0f5;
+    color: #1a1a2e;
 }
 
 body[data-theme="puredark"] .acao-rapida-btn:hover {
-    background: rgba(255,255,255,0.1);
+    background: #e0e0e8;
 }
 
 /* Links */
 body[data-theme="puredark"] a {
-    color: #ffffff;
+    color: #667eea;
 }
 
 body[data-theme="puredark"] a:hover {
-    color: #0a1628;
+    color: #764ba2;
 }
 
 /* Form labels */
 body[data-theme="puredark"] .form-moderno label {
-    color: #ffffff;
+    color: #1a1a2e;
 }

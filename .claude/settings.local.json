@@ -688,7 +688,9 @@
       "PowerShell(\\(Get-Content \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\\\\assets\\\\css\\\\custom.css\" -Raw\\).Length)",
       "Bash(git fetch *)",
       "Bash(echo \"\")",
-      "Bash(echo \".claude/worktrees/\")"
+      "Bash(echo \".claude/worktrees/\")",
+      "Bash(sed -i 's/background: #1c1d26 !important;/background: #ffffff !important;/g' assets/css/custom.css)",
+      "Bash(sed -i 's/border-color: #272835 !important;/border-color: #e0e0e8 !important;/g' assets/css/custom.css)"
     ]
   }
 }
