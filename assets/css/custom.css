@@ -2139,3 +2139,177 @@ body[data-theme="puredark"] [style*="border-color: #ddd"],
 body[data-theme="puredark"] [style*="border-color:#ddd"] {
     border-color: #272835 !important;
 }
+
+/* ========================================================================= */
+/* OVERRIDE DE CLASSES CSS DAS VIEWS DE OBRAS - TEMA PURE DARK               */
+/* Sobrescreve todas as classes definidas nos <style> das views PHP           */
+/* ========================================================================= */
+
+/* --- Obras List (obras_list.php) --- */
+body[data-theme="puredark"] .obras-stat-value,
+body[data-theme="puredark"] .obras-stat-label,
+body[data-theme="puredark"] .obras-filter-group label,
+body[data-theme="puredark"] .obras-filter-input,
+body[data-theme="puredark"] .obras-filter-select,
+body[data-theme="puredark"] .obra-card-info-label,
+body[data-theme="puredark"] .obra-card-info-value,
+body[data-theme="puredark"] .obra-card-progress-label,
+body[data-theme="puredark"] .obra-card-progress-value,
+body[data-theme="puredark"] .obra-card-stat-value,
+body[data-theme="puredark"] .obra-card-stat-label,
+body[data-theme="puredark"] .obra-card-header.prospeccao,
+body[data-theme="puredark"] .obra-quick-menu-item,
+body[data-theme="puredark"] .obra-quick-menu-item:hover,
+body[data-theme="puredark"] .obra-toast-icon,
+body[data-theme="puredark"] .obra-toast.success .obra-toast-icon,
+body[data-theme="puredark"] .obra-toast.error .obra-toast-icon,
+body[data-theme="puredark"] .obra-toast-title,
+body[data-theme="puredark"] .obra-toast-message,
+body[data-theme="puredark"] .obras-empty-icon,
+body[data-theme="puredark"] .obras-empty-title,
+body[data-theme="puredark"] .obras-empty-desc,
+body[data-theme="puredark"] .obras-header-title h1,
+body[data-theme="puredark"] .obra-card-title,
+body[data-theme="puredark"] .obra-card-cliente {
+    color: #000308 !important;
+}
+
+/* --- Obra View (obra_view.php) --- */
+body[data-theme="puredark"] .card-title,
+body[data-theme="puredark"] .card-title i,
+body[data-theme="puredark"] .prazo-label,
+body[data-theme="puredark"] .prazo-value,
+body[data-theme="puredark"] .prazo-value i,
+body[data-theme="puredark"] .info-label,
+body[data-theme="puredark"] .info-value,
+body[data-theme="puredark"] .info-value i,
+body[data-theme="puredark"] .etapa-name,
+body[data-theme="puredark"] .etapa-meta-text,
+body[data-theme="puredark"] .etapa-progress-text,
+body[data-theme="puredark"] .etapa-status.concluida,
+body[data-theme="puredark"] .etapa-status.andamento,
+body[data-theme="puredark"] .etapa-status.pendente,
+body[data-theme="puredark"] .etapa-status.atrasada,
+body[data-theme="puredark"] .etapa-toggle i,
+body[data-theme="puredark"] .atividades-header,
+body[data-theme="puredark"] .atividade-status-icon.concluida,
+body[data-theme="puredark"] .atividade-status-icon.andamento,
+body[data-theme="puredark"] .atividade-status-icon.pendente,
+body[data-theme="puredark"] .atividade-status-icon.pausada,
+body[data-theme="puredark"] .atividade-title,
+body[data-theme="puredark"] .atividade-meta,
+body[data-theme="puredark"] .atividade-progress-text,
+body[data-theme="puredark"] .equipe-name,
+body[data-theme="puredark"] .equipe-role,
+body[data-theme="puredark"] .empty-state,
+body[data-theme="puredark"] .empty-state h4,
+body[data-theme="puredark"] .atividade-recente-icon,
+body[data-theme="puredark"] .atividade-recente.concluida .atividade-recente-icon,
+body[data-theme="puredark"] .atividade-recente-title,
+body[data-theme="puredark"] .atividade-recente-meta,
+body[data-theme="puredark"] .obra-title {
+    color: #000308 !important;
+}
+
+/* --- Obra Form (obra_form.php) --- */
+body[data-theme="puredark"] .form-card-title,
+body[data-theme="puredark"] .form-label,
+body[data-theme="puredark"] .form-label .required,
+body[data-theme="puredark"] .form-btn-secondary,
+body[data-theme="puredark"] .form-select option:first-child {
+    color: #000308 !important;
+}
+
+/* --- Tecnicos Admin Obras List --- */
+body[data-theme="puredark"] .status-card .status-label,
+body[data-theme="puredark"] .status-card.total .status-number,
+body[data-theme="puredark"] .status-card.planejada .status-number,
+body[data-theme="puredark"] .status-card.andamento .status-number,
+body[data-theme="puredark"] .status-card.paralisada .status-number,
+body[data-theme="puredark"] .status-card.concluida .status-number,
+body[data-theme="puredark"] .status-card.progresso .status-number,
+body[data-theme="puredark"] .obra-title h6,
+body[data-theme="puredark"] .obra-code,
+body[data-theme="puredark"] .obra-status-badge.planejada,
+body[data-theme="puredark"] .obra-status-badge.andamento,
+body[data-theme="puredark"] .obra-status-badge.paralisada,
+body[data-theme="puredark"] .obra-status-badge.concluida,
+body[data-theme="puredark"] .info-label,
+body[data-theme="puredark"] .info-value,
+body[data-theme="puredark"] .progress-header,
+body[data-theme="puredark"] .progress-percent,
+body[data-theme="puredark"] .metric,
+body[data-theme="puredark"] .metric i,
+body[data-theme="puredark"] .empty-icon,
+body[data-theme="puredark"] .empty-state h3,
+body[data-theme="puredark"] .empty-state p,
+body[data-theme="puredark"] .feature,
+body[data-theme="puredark"] .feature i {
+    color: #000308 !important;
+}
+
+/* --- Tecnico Executar Obra (tecnico_executar_obra.php) --- */
+body[data-theme="puredark"] .exec-card-title,
+body[data-theme="puredark"] .exec-card-title i,
+body[data-theme="puredark"] .etapa-title-modern,
+body[data-theme="puredark"] .etapa-status-badge.pendente,
+body[data-theme="puredark"] .etapa-status-badge.andamento,
+body[data-theme="puredark"] .etapa-status-badge.concluida,
+body[data-theme="puredark"] .os-cliente,
+body[data-theme="puredark"] .os-data,
+body[data-theme="puredark"] .concluido-badge,
+body[data-theme="puredark"] .empty-state-modern,
+body[data-theme="puredark"] .empty-state-modern i,
+body[data-theme="puredark"] .btn-registrar {
+    color: #000308 !important;
+}
+
+/* --- Tecnicos Executar Obra (executar_obra.php) --- */
+body[data-theme="puredark"] .section-title,
+body[data-theme="puredark"] .etapa-descricao,
+body[data-theme="puredark"] .atividades-lista h4,
+body[data-theme="puredark"] .atividade-info h5,
+body[data-theme="puredark"] .atividade-info p,
+body[data-theme="puredark"] .btn-acao.detalhes,
+body[data-theme="puredark"] .wizard-card-titulo,
+body[data-theme="puredark"] .wizard-card-titulo i,
+body[data-theme="puredark"] .etapa-selecao i,
+body[data-theme="puredark"] .opcao-item i,
+body[data-theme="puredark"] .opcao-item.impedimento i,
+body[data-theme="puredark"] .opcao-info h5,
+body[data-theme="puredark"] .opcao-info p,
+body[data-theme="puredark"] .justificativa-box h4,
+body[data-theme="puredark"] .foto-upload h4,
+body[data-theme="puredark"] .foto-upload p,
+body[data-theme="puredark"] .checkout-item-info h5,
+body[data-theme="puredark"] .checkout-item-info p,
+body[data-theme="puredark"] .empty-state h4,
+body[data-theme="puredark"] .empty-state p,
+body[data-theme="puredark"] .confirm-modal-titulo,
+body[data-theme="puredark"] .confirm-modal-subtitulo,
+body[data-theme="puredark"] .confirm-modal-info-item,
+body[data-theme="puredark"] .confirm-modal-info-item.highlight {
+    color: #000308 !important;
+}
+
+/* --- Obra Dashboard (obra_dashboard.php) --- */
+body[data-theme="puredark"] .obra-dash-card-title,
+body[data-theme="puredark"] .obra-dash-card-title i,
+body[data-theme="puredark"] .atividade-title,
+body[data-theme="puredark"] .atividade-meta,
+body[data-theme="puredark"] .atividade-status-badge.agendada,
+body[data-theme="puredark"] .atividade-status-badge.iniciada,
+body[data-theme="puredark"] .atividade-status-badge.pausada,
+body[data-theme="puredark"] .atividade-status-badge.concluida,
+body[data-theme="puredark"] .btn-acao-visualizar,
+body[data-theme="puredark"] .etapa-nome,
+body[data-theme="puredark"] .etapa-meta,
+body[data-theme="puredark"] .etapa-status.NaoIniciada,
+body[data-theme="puredark"] .etapa-status.EmAndamento,
+body[data-theme="puredark"] .etapa-status.Concluida,
+body[data-theme="puredark"] .etapa-status.Atrasada,
+body[data-theme="puredark"] .empty-state-icon,
+body[data-theme="puredark"] .empty-state-text,
+body[data-theme="puredark"] .quick-action-btn {
+    color: #000308 !important;
+}
