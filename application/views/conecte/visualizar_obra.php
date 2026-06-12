@@ -1,5 +1,5 @@
 <!-- Tema Moderno Obras -->
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css?v=<?= filemtime(FCPATH . 'assets/css/obras-modern-theme.css') ?>">
 
 <div class="row obras-modern-container" style="margin-top: 0">
     <div class="col-12">

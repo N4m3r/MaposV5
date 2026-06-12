@@ -9,7 +9,7 @@
   <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
   <link rel="shortcut icon" type="image/png" href="<?= base_url(); ?>assets/img/favicon.png" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/bootstrap5.min.css" />
-  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/matrix-style.css" />
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/matrix-style.css?v=<?= filemtime(FCPATH . 'assets/css/matrix-style.css') ?>" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/matrix-media.css" />
   <link href="<?= base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" />
@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-white.css" />
   <?php } ?>
   <?php if (($configuration['app_theme'] ?? null) == 'puredark') { ?>
-    <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-pure-dark.css" />
+    <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-pure-dark.css?v=<?= filemtime(FCPATH . 'assets/css/tema-pure-dark.css') ?>" />
   <?php } ?>
   <?php if (($configuration['app_theme'] ?? null) == 'darkviolet') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-dark-violet.css" />
@@ -32,7 +32,7 @@
   <?php if (($configuration['app_theme'] ?? null) == 'whiteblack') { ?>
     <link rel="stylesheet" href="<?= base_url(); ?>assets/css/tema-white-black.css" />
   <?php } ?>
-  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/custom.css" />
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/custom.css?v=<?= filemtime(FCPATH . 'assets/css/custom.css') ?>" />
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css' crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
   <link href='https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;700&display=swap' rel='stylesheet' type='text/css' crossorigin="anonymous">

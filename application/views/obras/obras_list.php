@@ -11,7 +11,7 @@ if (empty($obras)) {
 ?>
 
 <!-- Tema Moderno Obras - CSS Unificado -->
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css?v=<?= filemtime(FCPATH . 'assets/css/obras-modern-theme.css') ?>">
 
 <style>
 /* ============================================

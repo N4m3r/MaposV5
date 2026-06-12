@@ -65,3 +65,5 @@ scripts/whatsapp-agent/.env
 *.zip
 *.b64
 recebe_full.json
+
+.claude/worktrees/

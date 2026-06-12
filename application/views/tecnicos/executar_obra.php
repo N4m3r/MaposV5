@@ -1,7 +1,7 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <!-- Tema Moderno Obras - Mesmo padrão de minhas_obras -->
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css?v=<?= filemtime(FCPATH . 'assets/css/obras-modern-theme.css') ?>">
 
 <style>
 /* ===== Container Principal ===== */
