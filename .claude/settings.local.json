@@ -690,7 +690,21 @@
       "Bash(echo \"\")",
       "Bash(echo \".claude/worktrees/\")",
       "Bash(sed -i 's/background: #1c1d26 !important;/background: #ffffff !important;/g' assets/css/custom.css)",
-      "Bash(sed -i 's/border-color: #272835 !important;/border-color: #e0e0e8 !important;/g' assets/css/custom.css)"
+      "Bash(sed -i 's/border-color: #272835 !important;/border-color: #e0e0e8 !important;/g' assets/css/custom.css)",
+      "Bash(sed -i '1268s/#ffffff/#1a1a2e/' assets/css/custom.css)",
+      "Bash(sed -n '1267,1270p' assets/css/custom.css)",
+      "Bash(awk 'NR==1268{sub\\(/#ffffff/, \"#1a1a2e\"\\)}1' assets/css/custom.css)",
+      "Bash(sed -i '1269s/#ffffff/#1a1a2e/' assets/css/custom.css)",
+      "Bash(sed -n '1268,1270p' assets/css/custom.css)",
+      "Skill(run)",
+      "Bash(sed -i 's/border-bottom-color: #272835 !important;/border-bottom-color: #e0e0e8 !important;/g' assets/css/custom.css)",
+      "Bash(sed -i 's/border-bottom-color: #272835;/border-bottom-color: #e0e0e8;/g' assets/css/custom.css)",
+      "Bash(where php *)",
+      "Bash(sed -i '1076s/color: #ffffff/color: #1a1a2e/' assets/css/custom.css)",
+      "Bash(sed -i '1081s/color: #ffffff/color: #1a1a2e/' assets/css/custom.css)",
+      "Bash(sed -i '1086s/color: #ffffff/color: #1a1a2e/' assets/css/custom.css)",
+      "Bash(sed -i '1085s/rgba\\(255, 255, 255, 0.03\\)/#f0f0f5/' assets/css/custom.css)",
+      "Bash(sed -n '1072,1090p' assets/css/custom.css)"
     ]
   }
 }

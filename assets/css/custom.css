@@ -1070,22 +1070,22 @@ body[data-theme="puredark"] .widget-box-statist {
 }
 
 body[data-theme="puredark"] .widget-title {
-    border-bottom-color: #272835 !important;
+    border-bottom-color: #e0e0e8 !important;
 }
 
 body[data-theme="puredark"] .widget-title h5 {
-    color: #ffffff !important;
+    color: #1a1a2e !important;
 }
 
 body[data-theme="puredark"] .table td {
-    border-bottom-color: #272835 !important;
-    color: #ffffff !important;
+    border-bottom-color: #e0e0e8 !important;
+    color: #1a1a2e !important;
 }
 
 body[data-theme="puredark"] .table th {
-    background-color: rgba(255, 255, 255, 0.03) !important;
-    color: #ffffff !important;
-    border-bottom-color: #272835 !important;
+    background-color: #f0f0f5 !important;
+    color: #1a1a2e !important;
+    border-bottom-color: #e0e0e8 !important;
 }
 
 /* ==========================================================================
@@ -1266,7 +1266,7 @@ body[data-theme="puredark"] .quick-card {
 }
 
 body[data-theme="puredark"] .quick-card .title {
-    color: #ffffff !important;
+    color: #1a1a2e !important;
 }
 
 body[data-theme="puredark"] .pagination a {
@@ -1575,7 +1575,8 @@ body:not([data-theme="puredark"]):not([data-theme="darkviolet"]):not([data-theme
     overflow-y: auto !important;
     overflow-x: hidden !important;
     z-index: 999999 !important;
-    margin-top: 0 !important; /* Reset — o JS em rodape.php posiciona manualmente abaixo do input */
+    /* Posicionamento via JS (rodape.php) — position:fixed + getBoundingClientRect() */
+    margin: 0 !important;
 }
 
 /* Ajuste nos Temas Escuros */

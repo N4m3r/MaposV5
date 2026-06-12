@@ -233,17 +233,34 @@ $(document).ready(function() {
         return $('<li>').append($('<div>').addClass('ui-menu-item-wrapper').append(inner)).appendTo(ul);
     };
 
-    // Fix: garante que o dropdown do autocomplete apareça ABAIXO do campo de texto.
-    // O jQuery UI usa $.fn.position() que pode calcular posição incorreta quando
-    // há transform, overflow:hidden ou position:relative nos elementos pais.
+    // =====================================================================
+    // Fix: dropdown do autocomplete ABAIXO do campo de texto.
+    // O $.fn.position() do jQuery UI calcula posição errada quando há
+    // transform, overflow:hidden ou position:relative nos elementos pais.
+    // Usamos position:fixed + getBoundingClientRect() que é imune a isso.
+    // =====================================================================
     var _suggest = $.ui.autocomplete.prototype._suggest;
     $.ui.autocomplete.prototype._suggest = function(items) {
         _suggest.call(this, items);
-        var pos = this.element.offset();
-        this.menu.element.css({
-            top: pos.top + this.element.outerHeight() + 4 // 4px de gap visual
+        var input = this.element[0];
+        var rect = input.getBoundingClientRect();
+        var dropdown = this.menu.element;
+
+        // Força position:fixed — getBoundingClientRect retorna coordenadas
+        // relativas ao viewport, imunes a transform/overflow nos elementos pais.
+        // A largura já foi definida pelo _resizeMenu() do jQuery UI.
+        dropdown.css({
+            position: 'fixed',
+            top: rect.bottom + 4,
+            left: rect.left
         });
     };
+
+    // Ao rolar a página, fecha o dropdown para evitar desalinhamento
+    // (position:fixed não acompanha o scroll do conteúdo).
+    $(document).on('scroll.autocomplete-fix', function() {
+        $('.ui-autocomplete:visible').hide();
+    });
 })(jQuery);
 </script>
 </body>
