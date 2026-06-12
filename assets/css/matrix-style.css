@@ -113,10 +113,17 @@ body[data-theme="puredark"] {
   --white-blak-tit: #1a1a2e;
   --white-blak-tit2: #555555;
   --widget-box: #ffffff;
+  --wid-dark: #ffffff;
+  --dark-0: #f0f0f5;
+  --dark-1: #ffffff;
+  --dark-2: #f0f0f5;
   --bodycolor: #14141a;
   --content: #1c1d26;
   --toggle: #ffffff;
   --sidebar-text-muted: #555555;
+  --select-bg: #ffffff;
+  --select-border: #e0e0e8;
+  --sidebar-hover-bg: rgba(0,0,0,0.04);
 }
 
 /*Bootstrap-overlay*/

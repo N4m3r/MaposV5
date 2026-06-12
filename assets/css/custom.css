@@ -1436,6 +1436,10 @@ body[data-theme="puredark"] {
     --cinza: #555555;
     --black: #1a1a2e;
     --widget-box: #ffffff;
+    --wid-dark: #ffffff;
+    --dark-0: #f0f0f5;
+    --dark-1: #ffffff;
+    --dark-2: #f0f0f5;
     --body-color: #1c1d26;
     --border-color: #e0e0e8;
     --card-bg: #ffffff;
@@ -1454,6 +1458,10 @@ body[data-theme="puredark"] {
     --bs-body-color: #1a1a2e;
     --white-blak-tit: #1a1a2e;
     --white-blak-tit2: #555555;
+    --sidebar-hover-bg: rgba(0,0,0,0.04);
+    --select-bg: #ffffff;
+    --select-color: #1a1a2e;
+    --select-border: #e0e0e8;
 }
 
 body[data-theme="puredark"] {

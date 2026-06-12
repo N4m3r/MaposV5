@@ -34,6 +34,14 @@ body[data-theme="puredark"] {
   --select-color: #1a1a2e;
   --select-placeholder: #555555;
   --select-disabled-color: #555555;
+  --wid-dark: #ffffff;
+  --dark-0: #f0f0f5;
+  --dark-1: #ffffff;
+  --dark-2: #f0f0f5;
+  --dark-lar: #f0a050;
+  --sidebar-hover-bg: rgba(0,0,0,0.04);
+  --select-bg: #ffffff;
+  --select-border: #e0e0e8;
 }
 
 input[type="search"],
