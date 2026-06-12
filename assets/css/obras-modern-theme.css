@@ -892,3 +892,238 @@ body[data-theme="dark"] a {
 body[data-theme="dark"] a:hover {
     color: var(--cor-primaria-hover, #764ba2);
 }
+
+/* ============================================
+   COMPATIBILIDADE COM TEMA PURE DARK
+   Cor de texto: #000308
+   ============================================ */
+
+/* Container principal */
+body[data-theme="puredark"] .obras-modern-container,
+body[data-theme="puredark"] .obra-view-container,
+body[data-theme="puredark"] .obras-unified-container {
+    color: #000308;
+}
+
+/* Cards modernos */
+body[data-theme="puredark"] .obra-card-modern,
+body[data-theme="puredark"] .obra-list-card {
+    background: #1c1d26;
+    border-color: rgba(255,255,255,0.05);
+    color: #000308;
+}
+
+/* Stats cards */
+body[data-theme="puredark"] .obras-stat-card,
+body[data-theme="puredark"] .obra-item-card,
+body[data-theme="puredark"] .obras-filter-bar,
+body[data-theme="puredark"] .obras-empty-state {
+    background: #1c1d26;
+    border-color: #272835;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .obra-stat-item,
+body[data-theme="puredark"] .etapa-content-moderno,
+body[data-theme="puredark"] .equipe-item-moderno,
+body[data-theme="puredark"] .atividade-item-moderno {
+    background: rgba(255,255,255,0.05);
+    color: #000308;
+}
+
+body[data-theme="puredark"] .obra-stat-item:hover,
+body[data-theme="puredark"] .etapa-content-moderno:hover,
+body[data-theme="puredark"] .equipe-item-moderno:hover,
+body[data-theme="puredark"] .atividade-item-moderno:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* Valores e títulos */
+body[data-theme="puredark"] .obras-stat-value,
+body[data-theme="puredark"] .obra-card-title,
+body[data-theme="puredark"] .obra-card-info-value,
+body[data-theme="puredark"] .obras-header-title h1,
+body[data-theme="puredark"] .obras-empty-title,
+body[data-theme="puredark"] .obra-section-title,
+body[data-theme="puredark"] .obra-view-title,
+body[data-theme="puredark"] .obra-info-value,
+body[data-theme="puredark"] .etapa-title,
+body[data-theme="puredark"] .atividade-titulo,
+body[data-theme="puredark"] .equipe-nome,
+body[data-theme="puredark"] .progresso-valor {
+    color: #000308;
+}
+
+/* Labels e subtítulos */
+body[data-theme="puredark"] .obras-stat-label,
+body[data-theme="puredark"] .obra-card-cliente,
+body[data-theme="puredark"] .obra-card-info-label,
+body[data-theme="puredark"] .obras-empty-desc,
+body[data-theme="puredark"] .obra-section-title i,
+body[data-theme="puredark"] .etapa-meta,
+body[data-theme="puredark"] .atividade-meta,
+body[data-theme="puredark"] .equipe-funcao-moderno,
+body[data-theme="puredark"] .progresso-label {
+    color: #000308;
+}
+
+/* Cards internos */
+body[data-theme="puredark"] .obra-card-stat,
+body[data-theme="puredark"] .obra-card-actions,
+body[data-theme="puredark"] .obra-info-item,
+body[data-theme="puredark"] .etapa-timeline-content,
+body[data-theme="puredark"] .atividade-item-rapido,
+body[data-theme="puredark"] .equipe-card {
+    background: #272835;
+    color: #000308;
+}
+
+/* Inputs e selects */
+body[data-theme="puredark"] .obras-filter-input,
+body[data-theme="puredark"] .obras-filter-select,
+body[data-theme="puredark"] .wizard-form-input,
+body[data-theme="puredark"] .wizard-form-select,
+body[data-theme="puredark"] .wizard-form-textarea,
+body[data-theme="puredark"] .form-moderno input,
+body[data-theme="puredark"] .form-moderno select,
+body[data-theme="puredark"] .form-moderno textarea {
+    background: #272835;
+    border-color: #475569;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .obras-filter-input:focus,
+body[data-theme="puredark"] .wizard-form-input:focus,
+body[data-theme="puredark"] .form-moderno input:focus,
+body[data-theme="puredark"] .form-moderno select:focus,
+body[data-theme="puredark"] .form-moderno textarea:focus {
+    border-color: #3b82f6;
+}
+
+/* Progress bars */
+body[data-theme="puredark"] .progresso-barra-container {
+    background: rgba(255,255,255,0.1);
+}
+
+body[data-theme="puredark"] .obra-card-progress-bar {
+    background: #475569;
+}
+
+/* Section cards */
+body[data-theme="puredark"] .obra-section-card {
+    background: #1c1d26;
+    border-color: #272835;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .obra-section-header {
+    border-color: #272835;
+}
+
+/* Timeline */
+body[data-theme="puredark"] .etapas-timeline::before,
+body[data-theme="puredark"] .etapas-timeline-moderno::before {
+    background: #475569;
+}
+
+body[data-theme="puredark"] .etapa-timeline-dot,
+body[data-theme="puredark"] .etapa-dot-moderno {
+    background: #475569;
+    border-color: #272835;
+    box-shadow: 0 0 0 3px #475569;
+}
+
+/* Modal wizard */
+body[data-theme="puredark"] .wizard-modal .modal-body {
+    background: #1c1d26;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .wizard-modal .modal-footer {
+    background: #272835;
+    border-color: #475569;
+}
+
+body[data-theme="puredark"] .wizard-step-label {
+    color: #000308;
+}
+
+body[data-theme="puredark"] .wizard-step-line {
+    background: #475569;
+}
+
+body[data-theme="puredark"] .wizard-step-number {
+    background: #475569;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .wizard-step.active .wizard-step-number {
+    background: #667eea;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .wizard-step.completed .wizard-step-number {
+    background: #27ae60;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .wizard-atividades-lista,
+body[data-theme="puredark"] .wizard-atividade-item,
+body[data-theme="puredark"] .wizard-resumo {
+    background: #272835;
+    border-color: #475569;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .wizard-atividade-input {
+    background: #1c1d26;
+    border-color: #475569;
+    color: #000308;
+}
+
+/* Tabela moderna */
+body[data-theme="puredark"] .tabela-moderna th {
+    background: rgba(255,255,255,0.05);
+    color: #000308;
+}
+
+body[data-theme="puredark"] .tabela-moderna td {
+    border-color: rgba(255,255,255,0.05);
+    color: #000308;
+}
+
+/* Empty state */
+body[data-theme="puredark"] .empty-state-moderno {
+    background: rgba(255,255,255,0.03);
+}
+
+body[data-theme="puredark"] .empty-state-moderno h3,
+body[data-theme="puredark"] .empty-state-moderno p {
+    color: #000308;
+}
+
+/* Botões secundários */
+body[data-theme="puredark"] .obras-filter-btn.secondary,
+body[data-theme="puredark"] .wizard-btn-secondary,
+body[data-theme="puredark"] .acao-rapida-btn {
+    background: #475569;
+    color: #000308;
+}
+
+body[data-theme="puredark"] .acao-rapida-btn:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Links */
+body[data-theme="puredark"] a {
+    color: #000308;
+}
+
+body[data-theme="puredark"] a:hover {
+    color: #0a1628;
+}
+
+/* Form labels */
+body[data-theme="puredark"] .form-moderno label {
+    color: #000308;
+}

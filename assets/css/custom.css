@@ -1074,17 +1074,17 @@ body[data-theme="puredark"] .widget-title {
 }
 
 body[data-theme="puredark"] .widget-title h5 {
-    color: #f8fafc !important;
+    color: #000308 !important;
 }
 
 body[data-theme="puredark"] .table td {
     border-bottom-color: #272835 !important;
-    color: #cbd5e1 !important;
+    color: #000308 !important;
 }
 
 body[data-theme="puredark"] .table th {
     background-color: rgba(255, 255, 255, 0.03) !important;
-    color: #f8fafc !important;
+    color: #000308 !important;
     border-bottom-color: #272835 !important;
 }
 
@@ -1266,13 +1266,13 @@ body[data-theme="puredark"] .quick-card {
 }
 
 body[data-theme="puredark"] .quick-card .title {
-    color: #f8fafc !important;
+    color: #000308 !important;
 }
 
 body[data-theme="puredark"] .pagination a {
     background-color: #1c1d26 !important;
     border-color: #272835 !important;
-    color: #cbd5e1 !important;
+    color: #000308 !important;
 }
 
 body[data-theme="puredark"] .pagination a:hover {
@@ -1358,7 +1358,7 @@ body[data-theme="darkviolet"] .pagination .page-link,
 body[data-theme="darkorange"] .pagination .page-link {
     background-color: var(--wid-dark, #1c1d26) !important;
     border-color: var(--dark-1, #14141a) !important;
-    color: var(--branco, #caced8) !important;
+    color: #000308 !important;
 }
 
 body[data-theme="puredark"] .pagination .page-item.active .page-link,
@@ -1429,8 +1429,8 @@ body[data-theme="darkorange"] .pagination .page-item.active .page-link {
 body[data-theme="puredark"],
 body[data-theme="darkviolet"],
 body[data-theme="darkorange"] {
-    color: #e2e8f0 !important;
-    /* Cor base clara para bom contraste */
+    color: #000308 !important;
+    /* Cor base escura para tema pure dark */
 }
 
 body[data-theme="puredark"] .widget-content,
@@ -1473,7 +1473,7 @@ body[data-theme="darkorange"] h3,
 body[data-theme="darkorange"] h4,
 body[data-theme="darkorange"] h5,
 body[data-theme="darkorange"] .widget-title h5 {
-    color: #ffffff !important;
+    color: #000308 !important;
 }
 
 /* Inputs nos temas escuros */
@@ -1486,7 +1486,7 @@ body[data-theme="darkviolet"] textarea,
 body[data-theme="darkorange"] input:not([type="submit"]):not([type="button"]),
 body[data-theme="darkorange"] select,
 body[data-theme="darkorange"] textarea {
-    color: #f8fafc !important;
+    color: #000308 !important;
     background-color: rgba(30, 41, 59, 0.8) !important;
     border: 1px solid #475569 !important;
 }
@@ -1509,14 +1509,14 @@ body[data-theme="darkorange"] textarea:focus {
 body[data-theme="puredark"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button),
 body[data-theme="darkviolet"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button),
 body[data-theme="darkorange"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button) {
-    color: #60a5fa !important;
-    /* Azul claro e acessÃ­vel */
+    color: #000308 !important;
+    /* Cor escura para tema pure dark */
 }
 
 body[data-theme="puredark"] a:not(.btn):hover,
 body[data-theme="darkviolet"] a:not(.btn):hover,
 body[data-theme="darkorange"] a:not(.btn):hover {
-    color: #93c5fd !important;
+    color: #0a1628 !important;
     text-decoration: underline !important;
 }
 
@@ -1578,7 +1578,7 @@ body[data-theme="darkorange"] .ui-autocomplete {
 body[data-theme="puredark"] .ui-autocomplete .ui-menu-item-wrapper,
 body[data-theme="darkviolet"] .ui-autocomplete .ui-menu-item-wrapper,
 body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
-    color: #e1e3e6 !important;
+    color: #000308 !important;
 }
 
 /* Hover e Item Ativo */
@@ -1638,10 +1638,10 @@ body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
     color: #7c3aed !important;
 }
 /* Dark theme badges */
-body[data-theme="puredark"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #34d399 !important; }
-body[data-theme="puredark"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #38bdf8 !important; }
-body[data-theme="puredark"] .ac-badge-phone { background: rgba(148, 163, 184, 0.15); color: #94a3b8 !important; }
-body[data-theme="puredark"] .ac-badge-doc { background: rgba(167, 139, 250, 0.18); color: #a78bfa !important; }
+body[data-theme="puredark"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #000308 !important; }
+body[data-theme="puredark"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #000308 !important; }
+body[data-theme="puredark"] .ac-badge-phone { background: rgba(148, 163, 184, 0.15); color: #000308 !important; }
+body[data-theme="puredark"] .ac-badge-doc { background: rgba(167, 139, 250, 0.18); color: #000308 !important; }
 body[data-theme="darkviolet"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #34d399 !important; }
 body[data-theme="darkviolet"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #38bdf8 !important; }
 body[data-theme="darkviolet"] .ac-badge-phone { background: rgba(195, 178, 233, 0.18); color: #c3b2e9 !important; }
@@ -1681,7 +1681,7 @@ body[data-theme="darkorange"] .ac-badge-doc { background: rgba(167, 139, 250, 0.
     body[data-theme="darkviolet"] .topbar-toggle-btn,
     body[data-theme="darkorange"] .topbar-toggle-btn {
         background: rgba(255, 255, 255, 0.08);
-        color: #ffffff !important;
+        color: #000308 !important;
     }
 }
 
@@ -1743,7 +1743,7 @@ body[data-theme="puredark"] .topbar-action,
 body[data-theme="darkviolet"] .topbar-action,
 body[data-theme="darkorange"] .topbar-action {
     background: rgba(255, 255, 255, 0.04) !important;
-    color: #f3f4f6 !important;
+    color: #000308 !important;
     border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
@@ -1920,7 +1920,7 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
 body[data-theme="puredark"] .button .button__text2,
 body[data-theme="darkviolet"] .button .button__text2,
 body[data-theme="darkorange"] .button .button__text2 {
-    color: #fff !important;
+    color: #000308 !important;
 }
 
 /* ========================================================================= */
@@ -2059,4 +2059,83 @@ h5 svg.svg-icon {
 
 #btn-toggle-theme:hover #theme-icon.svg-icon {
     transform: rotate(30deg) scale(1.15);
+}
+
+/* ========================================================================= */
+/* OVERRIDE DE ESTILOS INLINE NAS VIEWS DE OBRAS - TEMA PURE DARK            */
+/* Sobrescreve cores hardcoded inline (style="color: #333" etc.)              */
+/* ========================================================================= */
+
+/* Texto e labels forçados inline */
+body[data-theme="puredark"] [style*="color: #333"],
+body[data-theme="puredark"] [style*="color:#333"],
+body[data-theme="puredark"] [style*="color: #666"],
+body[data-theme="puredark"] [style*="color:#666"],
+body[data-theme="puredark"] [style*="color: #888"],
+body[data-theme="puredark"] [style*="color:#888"],
+body[data-theme="puredark"] [style*="color: #999"],
+body[data-theme="puredark"] [style*="color:#999"],
+body[data-theme="puredark"] [style*="color: #ccc"],
+body[data-theme="puredark"] [style*="color:#ccc"],
+body[data-theme="puredark"] [style*="color: #ddd"],
+body[data-theme="puredark"] [style*="color:#ddd"],
+body[data-theme="puredark"] [style*="color: #e0e0e0"],
+body[data-theme="puredark"] [style*="color:#e0e0e0"],
+body[data-theme="puredark"] [style*="color: #856404"],
+body[data-theme="puredark"] [style*="color:#856404"],
+body[data-theme="puredark"] [style*="color: #1976d2"],
+body[data-theme="puredark"] [style*="color:#1976d2"],
+body[data-theme="puredark"] [style*="color: #2e7d32"],
+body[data-theme="puredark"] [style*="color:#2e7d32"],
+body[data-theme="puredark"] [style*="color: #c62828"],
+body[data-theme="puredark"] [style*="color:#c62828"],
+body[data-theme="puredark"] [style*="color: #e65100"],
+body[data-theme="puredark"] [style*="color:#e65100"] {
+    color: #000308 !important;
+}
+
+/* Fundos claros forçados inline - converter para escuro */
+body[data-theme="puredark"] [style*="background: white"],
+body[data-theme="puredark"] [style*="background:white"],
+body[data-theme="puredark"] [style*="background: #fff"],
+body[data-theme="puredark"] [style*="background:#fff"],
+body[data-theme="puredark"] [style*="background: #ffffff"],
+body[data-theme="puredark"] [style*="background:#ffffff"],
+body[data-theme="puredark"] [style*="background: #f8f9fa"],
+body[data-theme="puredark"] [style*="background:#f8f9fa"],
+body[data-theme="puredark"] [style*="background: #f9f9f9"],
+body[data-theme="puredark"] [style*="background:#f9f9f9"],
+body[data-theme="puredark"] [style*="background: #f0f0f0"],
+body[data-theme="puredark"] [style*="background:#f0f0f0"],
+body[data-theme="puredark"] [style*="background: #e3f2fd"],
+body[data-theme="puredark"] [style*="background:#e3f2fd"],
+body[data-theme="puredark"] [style*="background: #fff3cd"],
+body[data-theme="puredark"] [style*="background:#fff3cd"],
+body[data-theme="puredark"] [style*="background: #e8f5e9"],
+body[data-theme="puredark"] [style*="background:#e8f5e9"],
+body[data-theme="puredark"] [style*="background: #ffebee"],
+body[data-theme="puredark"] [style*="background:#ffebee"],
+body[data-theme="puredark"] [style*="background: #fce4ec"],
+body[data-theme="puredark"] [style*="background:#fce4ec"],
+body[data-theme="puredark"] [style*="background: #fff3e0"],
+body[data-theme="puredark"] [style*="background:#fff3e0"],
+body[data-theme="puredark"] [style*="background: #a8edea"],
+body[data-theme="puredark"] [style*="background:#a8edea"],
+body[data-theme="puredark"] [style*="background-color: #f8f9fa"],
+body[data-theme="puredark"] [style*="background-color:#f8f9fa"],
+body[data-theme="puredark"] [style*="background-color: white"],
+body[data-theme="puredark"] [style*="background-color:white"],
+body[data-theme="puredark"] [style*="background-color: #fff"],
+body[data-theme="puredark"] [style*="background-color:#fff"] {
+    background: #1c1d26 !important;
+    background-color: #1c1d26 !important;
+}
+
+/* Bordas claras inline */
+body[data-theme="puredark"] [style*="border: 2px dashed #ddd"],
+body[data-theme="puredark"] [style*="border: 1px solid #ddd"],
+body[data-theme="puredark"] [style*="border: 1px solid #e5e5e5"],
+body[data-theme="puredark"] [style*="border-color: #ddd"],
+body[data-theme="puredark"] [style*="border-color:#ddd"] {
+    border-color: #272835 !important;
 }
