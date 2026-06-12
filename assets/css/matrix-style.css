@@ -97,26 +97,26 @@ body {
 
 /* === Override de variáveis CSS para o tema Pure Dark === */
 body[data-theme="puredark"] {
-  --title: #000308;
-  --subtitle: #000308;
-  --branco: #000308;
-  --cinza0: #000308;
-  --cinza: #000308;
-  --black: #000308;
-  --dark-cinz: #000308;
-  --dark-azul: #000308;
-  --dark-orange-tit: #000308;
-  --dark-orange-tit1: #000308;
-  --dark-orange-tit2: #000308;
-  --dark-violet-tit: #000308;
-  --dark-violet-tit2: #000308;
-  --white-blak-tit: #000308;
-  --white-blak-tit2: #000308;
+  --title: #ffffff;
+  --subtitle: #ffffff;
+  --branco: #ffffff;
+  --cinza0: #ffffff;
+  --cinza: #ffffff;
+  --black: #ffffff;
+  --dark-cinz: #ffffff;
+  --dark-azul: #ffffff;
+  --dark-orange-tit: #ffffff;
+  --dark-orange-tit1: #ffffff;
+  --dark-orange-tit2: #ffffff;
+  --dark-violet-tit: #ffffff;
+  --dark-violet-tit2: #ffffff;
+  --white-blak-tit: #ffffff;
+  --white-blak-tit2: #ffffff;
   --widget-box: #1c1d26;
   --bodycolor: #14141a;
   --content: #1c1d26;
-  --toggle: #000308;
-  --sidebar-text-muted: #000308;
+  --toggle: #ffffff;
+  --sidebar-text-muted: #ffffff;
 }
 
 /*Bootstrap-overlay*/

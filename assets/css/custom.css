@@ -498,7 +498,7 @@ select {
     border-radius: 10px !important;
     font-size: 14px !important;
     background-color: var(--select-bg, #ffffff) !important;
-    color: var(--select-color, #000308) !important;
+    color: var(--select-color, #ffffff) !important;
     line-height: 1.4 !important;
     cursor: pointer !important;
     -webkit-appearance: none !important;
@@ -525,7 +525,7 @@ select:focus {
 
 /* Estilo para as options dentro do select */
 select option {
-    color: var(--select-color, #000308) !important;
+    color: var(--select-color, #ffffff) !important;
     background: var(--select-bg, #ffffff) !important;
     padding: 10px !important;
     font-size: 14px !important;
@@ -550,14 +550,14 @@ select.col-5,
 select.col-4,
 select.col-3 {
     height: 46px !important;
-    color: var(--select-color, #000308) !important;
+    color: var(--select-color, #ffffff) !important;
     padding: 10px 35px 10px 15px !important;
 }
 
 /* Corrige selects dentro de controls (formulÃ¡rios antigos) */
 .controls select {
     height: 46px !important;
-    color: var(--select-color, #000308) !important;
+    color: var(--select-color, #ffffff) !important;
     padding: 10px 35px 10px 15px !important;
 }
 
@@ -1074,17 +1074,17 @@ body[data-theme="puredark"] .widget-title {
 }
 
 body[data-theme="puredark"] .widget-title h5 {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 body[data-theme="puredark"] .table td {
     border-bottom-color: #272835 !important;
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 body[data-theme="puredark"] .table th {
     background-color: rgba(255, 255, 255, 0.03) !important;
-    color: #000308 !important;
+    color: #ffffff !important;
     border-bottom-color: #272835 !important;
 }
 
@@ -1266,13 +1266,13 @@ body[data-theme="puredark"] .quick-card {
 }
 
 body[data-theme="puredark"] .quick-card .title {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 body[data-theme="puredark"] .pagination a {
     background-color: #1c1d26 !important;
     border-color: #272835 !important;
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 body[data-theme="puredark"] .pagination a:hover {
@@ -1358,7 +1358,7 @@ body[data-theme="darkviolet"] .pagination .page-link,
 body[data-theme="darkorange"] .pagination .page-link {
     background-color: var(--wid-dark, #1c1d26) !important;
     border-color: var(--dark-1, #14141a) !important;
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 body[data-theme="puredark"] .pagination .page-item.active .page-link,
@@ -1429,37 +1429,37 @@ body[data-theme="darkorange"] .pagination .page-item.active .page-link {
 
 /* Override de variáveis CSS no tema Pure Dark - todas as views de obras usam var(--title), etc. */
 body[data-theme="puredark"] {
-    --title: #000308;
-    --subtitle: #000308;
-    --branco: #000308;
-    --cinza0: #000308;
-    --cinza: #000308;
-    --black: #000308;
+    --title: #ffffff;
+    --subtitle: #ffffff;
+    --branco: #ffffff;
+    --cinza0: #ffffff;
+    --cinza: #ffffff;
+    --black: #ffffff;
     --widget-box: #1c1d26;
     --body-color: #1c1d26;
     --border-color: #272835;
     --card-bg: #1c1d26;
     --card-bg-rgb: 28, 29, 38;
-    --widget-box-c: #000308;
-    --title-w: #000308;
-    --subtitle-w: #000308;
-    --dark-cinz: #000308;
-    --dark-azul: #000308;
-    --dark-orange-tit: #000308;
-    --dark-orange-tit1: #000308;
-    --dark-orange-tit2: #000308;
-    --dark-violet-tit: #000308;
-    --dark-violet-tit2: #000308;
-    --dark-7: #000308;
-    --bs-body-color: #000308;
-    --white-blak-tit: #000308;
-    --white-blak-tit2: #000308;
+    --widget-box-c: #ffffff;
+    --title-w: #ffffff;
+    --subtitle-w: #ffffff;
+    --dark-cinz: #ffffff;
+    --dark-azul: #ffffff;
+    --dark-orange-tit: #ffffff;
+    --dark-orange-tit1: #ffffff;
+    --dark-orange-tit2: #ffffff;
+    --dark-violet-tit: #ffffff;
+    --dark-violet-tit2: #ffffff;
+    --dark-7: #ffffff;
+    --bs-body-color: #ffffff;
+    --white-blak-tit: #ffffff;
+    --white-blak-tit2: #ffffff;
 }
 
 body[data-theme="puredark"],
 body[data-theme="darkviolet"],
 body[data-theme="darkorange"] {
-    color: #000308 !important;
+    color: #ffffff !important;
     /* Cor base escura para tema pure dark */
 }
 
@@ -1481,7 +1481,7 @@ body[data-theme="darkorange"] table th,
 body[data-theme="darkorange"] label,
 body[data-theme="darkorange"] p,
 body[data-theme="darkorange"] span:not(.badge):not(.button__text2) {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* TÃ­tulos mais brilhantes nos temas escuros */
@@ -1503,7 +1503,7 @@ body[data-theme="darkorange"] h3,
 body[data-theme="darkorange"] h4,
 body[data-theme="darkorange"] h5,
 body[data-theme="darkorange"] .widget-title h5 {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* Inputs nos temas escuros */
@@ -1516,7 +1516,7 @@ body[data-theme="darkviolet"] textarea,
 body[data-theme="darkorange"] input:not([type="submit"]):not([type="button"]),
 body[data-theme="darkorange"] select,
 body[data-theme="darkorange"] textarea {
-    color: #000308 !important;
+    color: #ffffff !important;
     background-color: rgba(30, 41, 59, 0.8) !important;
     border: 1px solid #475569 !important;
 }
@@ -1539,7 +1539,7 @@ body[data-theme="darkorange"] textarea:focus {
 body[data-theme="puredark"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button),
 body[data-theme="darkviolet"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button),
 body[data-theme="darkorange"] a:not(.btn-nwe):not(.btn-nwe2):not(.btn-nwe3):not(.btn-nwe4):not(.btn-nwe5):not(.btn-nwe6):not(.btn-action):not(.page-link):not(.button) {
-    color: #000308 !important;
+    color: #ffffff !important;
     /* Cor escura para tema pure dark */
 }
 
@@ -1608,7 +1608,7 @@ body[data-theme="darkorange"] .ui-autocomplete {
 body[data-theme="puredark"] .ui-autocomplete .ui-menu-item-wrapper,
 body[data-theme="darkviolet"] .ui-autocomplete .ui-menu-item-wrapper,
 body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* Hover e Item Ativo */
@@ -1668,10 +1668,10 @@ body[data-theme="darkorange"] .ui-autocomplete .ui-menu-item-wrapper {
     color: #7c3aed !important;
 }
 /* Dark theme badges */
-body[data-theme="puredark"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #000308 !important; }
-body[data-theme="puredark"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #000308 !important; }
-body[data-theme="puredark"] .ac-badge-phone { background: rgba(148, 163, 184, 0.15); color: #000308 !important; }
-body[data-theme="puredark"] .ac-badge-doc { background: rgba(167, 139, 250, 0.18); color: #000308 !important; }
+body[data-theme="puredark"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #ffffff !important; }
+body[data-theme="puredark"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #ffffff !important; }
+body[data-theme="puredark"] .ac-badge-phone { background: rgba(148, 163, 184, 0.15); color: #ffffff !important; }
+body[data-theme="puredark"] .ac-badge-doc { background: rgba(167, 139, 250, 0.18); color: #ffffff !important; }
 body[data-theme="darkviolet"] .ac-badge-price { background: rgba(16, 185, 129, 0.18); color: #34d399 !important; }
 body[data-theme="darkviolet"] .ac-badge-stock { background: rgba(56, 189, 248, 0.18); color: #38bdf8 !important; }
 body[data-theme="darkviolet"] .ac-badge-phone { background: rgba(195, 178, 233, 0.18); color: #c3b2e9 !important; }
@@ -1711,7 +1711,7 @@ body[data-theme="darkorange"] .ac-badge-doc { background: rgba(167, 139, 250, 0.
     body[data-theme="darkviolet"] .topbar-toggle-btn,
     body[data-theme="darkorange"] .topbar-toggle-btn {
         background: rgba(255, 255, 255, 0.08);
-        color: #000308 !important;
+        color: #ffffff !important;
     }
 }
 
@@ -1773,7 +1773,7 @@ body[data-theme="puredark"] .topbar-action,
 body[data-theme="darkviolet"] .topbar-action,
 body[data-theme="darkorange"] .topbar-action {
     background: rgba(255, 255, 255, 0.04) !important;
-    color: #000308 !important;
+    color: #ffffff !important;
     border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
@@ -1950,7 +1950,7 @@ body[data-theme="darkorange"] .quick-card, body[data-theme="darkorange"] .widget
 body[data-theme="puredark"] .button .button__text2,
 body[data-theme="darkviolet"] .button .button__text2,
 body[data-theme="darkorange"] .button .button__text2 {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* ========================================================================= */
@@ -2121,7 +2121,7 @@ body[data-theme="puredark"] [style*="color: #c62828"],
 body[data-theme="puredark"] [style*="color:#c62828"],
 body[data-theme="puredark"] [style*="color: #e65100"],
 body[data-theme="puredark"] [style*="color:#e65100"] {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* Fundos claros forçados inline - converter para escuro */
@@ -2201,7 +2201,7 @@ body[data-theme="puredark"] .obras-empty-desc,
 body[data-theme="puredark"] .obras-header-title h1,
 body[data-theme="puredark"] .obra-card-title,
 body[data-theme="puredark"] .obra-card-cliente {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* --- Obra View (obra_view.php) --- */
@@ -2238,7 +2238,7 @@ body[data-theme="puredark"] .atividade-recente.concluida .atividade-recente-icon
 body[data-theme="puredark"] .atividade-recente-title,
 body[data-theme="puredark"] .atividade-recente-meta,
 body[data-theme="puredark"] .obra-title {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* --- Obra Form (obra_form.php) --- */
@@ -2247,7 +2247,7 @@ body[data-theme="puredark"] .form-label,
 body[data-theme="puredark"] .form-label .required,
 body[data-theme="puredark"] .form-btn-secondary,
 body[data-theme="puredark"] .form-select option:first-child {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* --- Tecnicos Admin Obras List --- */
@@ -2275,7 +2275,7 @@ body[data-theme="puredark"] .empty-state h3,
 body[data-theme="puredark"] .empty-state p,
 body[data-theme="puredark"] .feature,
 body[data-theme="puredark"] .feature i {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* --- Tecnico Executar Obra (tecnico_executar_obra.php) --- */
@@ -2291,7 +2291,7 @@ body[data-theme="puredark"] .concluido-badge,
 body[data-theme="puredark"] .empty-state-modern,
 body[data-theme="puredark"] .empty-state-modern i,
 body[data-theme="puredark"] .btn-registrar {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* --- Tecnicos Executar Obra (executar_obra.php) --- */
@@ -2319,7 +2319,7 @@ body[data-theme="puredark"] .confirm-modal-titulo,
 body[data-theme="puredark"] .confirm-modal-subtitulo,
 body[data-theme="puredark"] .confirm-modal-info-item,
 body[data-theme="puredark"] .confirm-modal-info-item.highlight {
-    color: #000308 !important;
+    color: #ffffff !important;
 }
 
 /* --- Obra Dashboard (obra_dashboard.php) --- */
@@ -2341,5 +2341,5 @@ body[data-theme="puredark"] .etapa-status.Atrasada,
 body[data-theme="puredark"] .empty-state-icon,
 body[data-theme="puredark"] .empty-state-text,
 body[data-theme="puredark"] .quick-action-btn {
-    color: #000308 !important;
+    color: #ffffff !important;
 }

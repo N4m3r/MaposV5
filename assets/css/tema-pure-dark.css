@@ -7,33 +7,33 @@
   --sidebar-accent: #1086dd;
   --sidebar-accent-rgb: 16, 134, 221;
   --sidebar-hover-bg: rgba(255,255,255,0.04);
-  --sidebar-text-muted: #000308;
+  --sidebar-text-muted: #ffffff;
   --select-bg: #1c1d26;
-  --select-color: #000308;
+  --select-color: #ffffff;
   --select-border: #272835;
   --select-focus-border: #1086dd;
   --select-focus-shadow: rgba(16, 134, 221, 0.15);
-  --select-placeholder: #000308;
+  --select-placeholder: #ffffff;
   --select-disabled-bg: #14141a;
-  --select-disabled-color: #000308;
+  --select-disabled-color: #ffffff;
 }
 
-/* === Override de variáveis CSS para cor #000308 === */
+/* === Override de variáveis CSS para cor #ffffff === */
 body[data-theme="puredark"] {
-  --title: #000308;
-  --subtitle: #000308;
-  --branco: #000308;
-  --cinza0: #000308;
-  --cinza: #000308;
-  --black: #000308;
-  --dark-cinz: #000308;
-  --dark-azul: #000308;
-  --white-blak-tit: #000308;
-  --white-blak-tit2: #000308;
-  --sidebar-text-muted: #000308;
-  --select-color: #000308;
-  --select-placeholder: #000308;
-  --select-disabled-color: #000308;
+  --title: #ffffff;
+  --subtitle: #ffffff;
+  --branco: #ffffff;
+  --cinza0: #ffffff;
+  --cinza: #ffffff;
+  --black: #ffffff;
+  --dark-cinz: #ffffff;
+  --dark-azul: #ffffff;
+  --white-blak-tit: #ffffff;
+  --white-blak-tit2: #ffffff;
+  --sidebar-text-muted: #ffffff;
+  --select-color: #ffffff;
+  --select-placeholder: #ffffff;
+  --select-disabled-color: #ffffff;
 }
 
 input[type="search"],
