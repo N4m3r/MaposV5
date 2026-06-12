@@ -95,6 +95,30 @@ body {
   --tran-05: all 0.5s ease;
 }
 
+/* === Override de variáveis CSS para o tema Pure Dark === */
+body[data-theme="puredark"] {
+  --title: #000308;
+  --subtitle: #000308;
+  --branco: #000308;
+  --cinza0: #000308;
+  --cinza: #000308;
+  --black: #000308;
+  --dark-cinz: #000308;
+  --dark-azul: #000308;
+  --dark-orange-tit: #000308;
+  --dark-orange-tit1: #000308;
+  --dark-orange-tit2: #000308;
+  --dark-violet-tit: #000308;
+  --dark-violet-tit2: #000308;
+  --white-blak-tit: #000308;
+  --white-blak-tit2: #000308;
+  --widget-box: #1c1d26;
+  --bodycolor: #14141a;
+  --content: #1c1d26;
+  --toggle: #000308;
+  --sidebar-text-muted: #000308;
+}
+
 /*Bootstrap-overlay*/
 body {
   font-family: "Roboto", sans-serif;

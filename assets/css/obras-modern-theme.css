@@ -25,6 +25,12 @@
     --dark-4: #4a5568;
     --dark-7: #a0aec0;
 
+    /* Dark mode colors (fallback) */
+    --dark-2: #2d3748;
+    --dark-3: #3d4852;
+    --dark-4: #4a5568;
+    --dark-7: #a0aec0;
+
     /* Cores de status das obras */
     --obra-status-prospeccao: #95a5a6;
     --obra-status-contratada: #f39c12;
@@ -676,6 +682,25 @@
 .obra-list-card:nth-child(3) { animation-delay: 0.15s; }
 .obra-list-card:nth-child(4) { animation-delay: 0.2s; }
 .obra-list-card:nth-child(5) { animation-delay: 0.25s; }
+
+/* ============================================
+   OVERRIDE DE VARIÁVEIS CSS - TEMA PURE DARK
+   ============================================ */
+body[data-theme="puredark"] {
+    --white: #1c1d26;
+    --black: #000308;
+    --widget-box: #1c1d26;
+    --body-color: #1c1d26;
+    --border-color: rgba(255, 255, 255, 0.05);
+    --title: #000308;
+    --subtitle: #000308;
+    --dark-2: #1c1d26;
+    --dark-3: #272835;
+    --dark-4: #475569;
+    --dark-7: #000308;
+    --branco: #000308;
+    --cinza0: #000308;
+}
 
 /* ============================================
    COMPATIBILIDADE COM TEMAS DARK

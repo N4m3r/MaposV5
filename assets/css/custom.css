@@ -498,7 +498,7 @@ select {
     border-radius: 10px !important;
     font-size: 14px !important;
     background-color: var(--select-bg, #ffffff) !important;
-    color: var(--select-color, #000000) !important;
+    color: var(--select-color, #000308) !important;
     line-height: 1.4 !important;
     cursor: pointer !important;
     -webkit-appearance: none !important;
@@ -525,7 +525,7 @@ select:focus {
 
 /* Estilo para as options dentro do select */
 select option {
-    color: var(--select-color, #000000) !important;
+    color: var(--select-color, #000308) !important;
     background: var(--select-bg, #ffffff) !important;
     padding: 10px !important;
     font-size: 14px !important;
@@ -550,14 +550,14 @@ select.col-5,
 select.col-4,
 select.col-3 {
     height: 46px !important;
-    color: var(--select-color, #000000) !important;
+    color: var(--select-color, #000308) !important;
     padding: 10px 35px 10px 15px !important;
 }
 
 /* Corrige selects dentro de controls (formulÃ¡rios antigos) */
 .controls select {
     height: 46px !important;
-    color: var(--select-color, #000000) !important;
+    color: var(--select-color, #000308) !important;
     padding: 10px 35px 10px 15px !important;
 }
 
@@ -1426,6 +1426,36 @@ body[data-theme="darkorange"] .pagination .page-item.active .page-link {
 /* ========================================================================= */
 
 /* Temas Escuros (Pure Dark, Dark Violet, Dark Orange) */
+
+/* Override de variáveis CSS no tema Pure Dark - todas as views de obras usam var(--title), etc. */
+body[data-theme="puredark"] {
+    --title: #000308;
+    --subtitle: #000308;
+    --branco: #000308;
+    --cinza0: #000308;
+    --cinza: #000308;
+    --black: #000308;
+    --widget-box: #1c1d26;
+    --body-color: #1c1d26;
+    --border-color: #272835;
+    --card-bg: #1c1d26;
+    --card-bg-rgb: 28, 29, 38;
+    --widget-box-c: #000308;
+    --title-w: #000308;
+    --subtitle-w: #000308;
+    --dark-cinz: #000308;
+    --dark-azul: #000308;
+    --dark-orange-tit: #000308;
+    --dark-orange-tit1: #000308;
+    --dark-orange-tit2: #000308;
+    --dark-violet-tit: #000308;
+    --dark-violet-tit2: #000308;
+    --dark-7: #000308;
+    --bs-body-color: #000308;
+    --white-blak-tit: #000308;
+    --white-blak-tit2: #000308;
+}
+
 body[data-theme="puredark"],
 body[data-theme="darkviolet"],
 body[data-theme="darkorange"] {
@@ -1451,7 +1481,7 @@ body[data-theme="darkorange"] table th,
 body[data-theme="darkorange"] label,
 body[data-theme="darkorange"] p,
 body[data-theme="darkorange"] span:not(.badge):not(.button__text2) {
-    color: #000000 !important;
+    color: #000308 !important;
 }
 
 /* TÃ­tulos mais brilhantes nos temas escuros */
