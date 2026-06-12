@@ -159,6 +159,76 @@
     border: 2px solid #e8e8e8;
 }
 
+/* ============================================
+   PUREDARK THEME (light bg + dark text)
+   ============================================ */
+
+[data-theme="puredark"] .form-card {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .form-card-title {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .form-label {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .form-input {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .form-input:focus {
+    border-color: #667eea;
+}
+
+[data-theme="puredark"] .form-select {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .form-select:focus {
+    border-color: #667eea;
+}
+
+[data-theme="puredark"] .form-select option {
+    color: #1a1a2e;
+    background: #ffffff;
+}
+
+[data-theme="puredark"] .form-textarea {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .form-textarea:focus {
+    border-color: #667eea;
+}
+
+[data-theme="puredark"] .form-btn-secondary {
+    background: #f0f0f5;
+    color: #555555;
+    border-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .form-card-header {
+    border-bottom-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .checkbox-container {
+    background: #f0f0f5;
+}
+
+[data-theme="puredark"] .checkbox-container label {
+    color: #1a1a2e;
+}
+
 @media (max-width: 768px) {
     .form-grid { grid-template-columns: 1fr; }
     .form-group.full-width { grid-column: span 1; }

@@ -840,6 +840,104 @@ if (empty($obras)) {
     border-color: var(--dark-4, #4a5568);
 }
 
+/* ============================================
+   PUREDARK THEME (light bg + dark text)
+   ============================================ */
+
+[data-theme="puredark"] .obras-stat-card,
+[data-theme="puredark"] .obra-item-card,
+[data-theme="puredark"] .obras-empty-state {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .obras-filter-bar {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .obras-stat-value,
+[data-theme="puredark"] .obra-card-title,
+[data-theme="puredark"] .obra-card-info-value,
+[data-theme="puredark"] .obras-header-title h1,
+[data-theme="puredark"] .obras-empty-title {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .obras-stat-label,
+[data-theme="puredark"] .obra-card-cliente,
+[data-theme="puredark"] .obra-card-info-label,
+[data-theme="puredark"] .obras-empty-desc,
+[data-theme="puredark"] .obra-card-progress-label {
+    color: #555555;
+}
+
+[data-theme="puredark"] .obra-card-progress-value {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .obras-filter-input,
+[data-theme="puredark"] .obras-filter-select {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .obras-filter-input:focus,
+[data-theme="puredark"] .obras-filter-select:focus {
+    border-color: #667eea;
+}
+
+[data-theme="puredark"] .obra-card-stat,
+[data-theme="puredark"] .obra-card-actions {
+    background: #f0f0f5;
+}
+
+[data-theme="puredark"] .obra-card-progress-bar {
+    background: #f0f0f5;
+}
+
+[data-theme="puredark"] .obra-quick-menu {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .obra-quick-menu-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+}
+
+[data-theme="puredark"] .obra-quick-menu-item {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .obra-quick-menu-item:hover {
+    background: #f0f0f5;
+    color: #667eea;
+}
+
+[data-theme="puredark"] .obra-quick-menu-divider {
+    background: #e0e0e0;
+}
+
+[data-theme="puredark"] .obra-toast {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .obra-toast-title {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .obra-toast-message {
+    color: #555555;
+}
+
+[data-theme="puredark"] .obra-card-footer {
+    background: #f0f0f5;
+    border-color: #e0e0e0;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
     .obras-unified-container { padding: 16px; }

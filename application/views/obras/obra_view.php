@@ -813,6 +813,150 @@
     background: #2d3748;
     border-color: #4a5568;
 }
+
+/* ============================================
+   PURE DARK - Fundo claro = letra preta
+   Fundo escuro = letra branca
+   ============================================ */
+
+/* Elementos com fundo BRANCO/CINZA - texto PRETO */
+[data-theme="puredark"] .card {
+    background: #ffffff;
+    border-color: rgba(0,0,0,0.08);
+}
+
+[data-theme="puredark"] .card-title,
+[data-theme="puredark"] .prazo-value,
+[data-theme="puredark"] .info-value,
+[data-theme="puredark"] .etapa-name,
+[data-theme="puredark"] .atividade-title,
+[data-theme="puredark"] .equipe-name,
+[data-theme="puredark"] .atividade-recente-title {
+    color: #1a1a2e !important;
+}
+
+[data-theme="puredark"] .card-title i {
+    color: #667eea;
+}
+
+[data-theme="puredark"] .info-label,
+[data-theme="puredark"] .prazo-label,
+[data-theme="puredark"] .etapa-meta-text,
+[data-theme="puredark"] .atividade-meta,
+[data-theme="puredark"] .equipe-role,
+[data-theme="puredark"] .atividade-recente-meta,
+[data-theme="puredark"] .atividades-header {
+    color: #555555 !important;
+}
+
+[data-theme="puredark"] .info-value i {
+    color: #667eea;
+}
+
+[data-theme="puredark"] .info-item,
+[data-theme="puredark"] .etapa-card,
+[data-theme="puredark"] .atividade-item,
+[data-theme="puredark"] .equipe-item,
+[data-theme="puredark"] .atividade-recente {
+    background: #f0f0f5;
+}
+
+[data-theme="puredark"] .prazo-item {
+    background: #ffffff;
+}
+
+[data-theme="puredark"] .prazo-card {
+    background: linear-gradient(135deg, #f0f0f5 0%, #e4e4ec 100%);
+}
+
+[data-theme="puredark"] .etapa-atividades {
+    background: #ffffff;
+    border-color: #e0e0e8;
+}
+
+[data-theme="puredark"] .etapa-header-card:hover {
+    background: #e8e8f0;
+}
+
+[data-theme="puredark"] .empty-state {
+    color: #555555;
+}
+
+[data-theme="puredark"] .empty-state h4 {
+    color: #1a1a2e !important;
+}
+
+[data-theme="puredark"] .etapa-progress-text {
+    color: #667eea;
+}
+
+/* Status badges - mantêm cores originais no fundo claro */
+[data-theme="puredark"] .etapa-status.concluida { background: rgba(17, 153, 142, 0.1); color: #11998e; }
+[data-theme="puredark"] .etapa-status.andamento { background: rgba(79, 172, 254, 0.1); color: #4facfe; }
+[data-theme="puredark"] .etapa-status.pendente { background: rgba(149, 165, 166, 0.1); color: #95a5a6; }
+[data-theme="puredark"] .etapa-status.atrasada { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
+
+[data-theme="puredark"] .atividade-status-icon.concluida { background: rgba(17, 153, 142, 0.1); color: #11998e; }
+[data-theme="puredark"] .atividade-status-icon.andamento { background: rgba(79, 172, 254, 0.1); color: #4facfe; }
+[data-theme="puredark"] .atividade-status-icon.pendente { background: rgba(149, 165, 166, 0.1); color: #95a5a6; }
+[data-theme="puredark"] .atividade-status-icon.pausada { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
+
+[data-theme="puredark"] .etapa-toggle {
+    background: #ffffff;
+}
+[data-theme="puredark"] .etapa-toggle i {
+    color: #667eea;
+}
+
+[data-theme="puredark"] .etapa-progress-bar {
+    background: #e0e0e8;
+}
+
+[data-theme="puredark"] .atividade-progress-bar {
+    background: #e0e0e8;
+}
+
+[data-theme="puredark"] .atividade-recente-icon {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+[data-theme="puredark"] .atividade-recente.concluida .atividade-recente-icon {
+    background: rgba(17, 153, 142, 0.1);
+    color: #11998e;
+}
+
+[data-theme="puredark"] .equipe-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+[data-theme="puredark"] .obra-cliente {
+    background: rgba(255,255,255,0.25);
+}
+
+/* Header com gradiente - mantém texto branco */
+[data-theme="puredark"] .obra-header {
+    color: white;
+}
+
+[data-theme="puredark"] .progress-title {
+    color: rgba(255,255,255,0.9);
+}
+
+[data-theme="puredark"] .progress-percentage {
+    color: white;
+}
+
+[data-theme="puredark"] .status-badge {
+    color: white;
+}
+
+[data-theme="puredark"] .prazo-dias {
+    color: white;
+}
+[data-theme="puredark"] .prazo-dias .prazo-label { color: rgba(255,255,255,0.8); }
+[data-theme="puredark"] .prazo-dias .prazo-value { color: white; }
 </style>
 
 <div class="obra-container">

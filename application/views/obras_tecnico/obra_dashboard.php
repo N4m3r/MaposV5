@@ -275,6 +275,74 @@
     font-weight: 600;
 }
 
+/* ============================================
+   PUREDARK THEME (light bg + dark text)
+   ============================================ */
+
+[data-theme="puredark"] .obra-dash-card {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .obra-dash-card-title {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .obra-dash-card-title i {
+    color: #667eea;
+}
+
+[data-theme="puredark"] .obra-dash-card-header {
+    border-bottom-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .atividade-card {
+    background: #f0f0f5;
+    border-left-color: #667eea;
+}
+
+[data-theme="puredark"] .atividade-card:hover {
+    background: #e8e8ef;
+}
+
+[data-theme="puredark"] .atividade-title {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .atividade-meta {
+    color: #555555;
+}
+
+[data-theme="puredark"] .etapa-item {
+    background: #f0f0f5;
+}
+
+[data-theme="puredark"] .etapa-nome {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .etapa-meta {
+    color: #555555;
+}
+
+[data-theme="puredark"] .empty-state-icon {
+    color: #cccccc;
+}
+
+[data-theme="puredark"] .empty-state-text {
+    color: #555555;
+}
+
+[data-theme="puredark"] .quick-action-btn {
+    background: #f0f0f5;
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .quick-action-btn:hover {
+    background: #667eea;
+    color: #ffffff;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .obra-dash-grid { grid-template-columns: 1fr; }

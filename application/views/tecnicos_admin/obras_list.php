@@ -658,6 +658,103 @@
 .col-4:nth-child(1) .obra-card { animation-delay: 0s; }
 .col-4:nth-child(2) .obra-card { animation-delay: 0.1s; }
 .col-4:nth-child(3) .obra-card { animation-delay: 0.2s; }
+
+/* ============================================
+   PUREDARK THEME (light bg + dark text)
+   ============================================ */
+
+[data-theme="puredark"] .status-card {
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
+[data-theme="puredark"] .status-card .status-label {
+    color: #555555;
+}
+
+[data-theme="puredark"] .obra-card {
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+[data-theme="puredark"] .obra-header {
+    background: #f0f0f5;
+    border-bottom-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .obra-title h6 {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .obra-code {
+    color: #555555;
+}
+
+[data-theme="puredark"] .obra-body {
+    background: #ffffff;
+}
+
+[data-theme="puredark"] .info-label {
+    color: #555555;
+}
+
+[data-theme="puredark"] .info-value {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .progress-header {
+    color: #555555;
+}
+
+[data-theme="puredark"] .progress-percent {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .progress-bar-container {
+    background: #f0f0f5;
+}
+
+[data-theme="puredark"] .metric {
+    color: #555555;
+}
+
+[data-theme="puredark"] .metric i {
+    color: #667eea;
+}
+
+[data-theme="puredark"] .obra-footer {
+    background: #f0f0f5;
+    border-top-color: #e0e0e0;
+}
+
+[data-theme="puredark"] .obra-type {
+    color: #667eea;
+}
+
+[data-theme="puredark"] .empty-icon {
+    color: #cccccc;
+}
+
+[data-theme="puredark"] .empty-state h3 {
+    color: #1a1a2e;
+}
+
+[data-theme="puredark"] .empty-state p {
+    color: #555555;
+}
+
+[data-theme="puredark"] .feature {
+    color: #555555;
+}
+
+[data-theme="puredark"] .feature i {
+    color: #667eea;
+}
+
+[data-theme="puredark"] .info-row {
+    border-bottom-color: #f0f0f5;
+}
+
 </style>
 
 <script>
