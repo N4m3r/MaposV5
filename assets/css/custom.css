@@ -1451,7 +1451,7 @@ body[data-theme="darkorange"] table th,
 body[data-theme="darkorange"] label,
 body[data-theme="darkorange"] p,
 body[data-theme="darkorange"] span:not(.badge):not(.button__text2) {
-    color: #e2e8f0 !important;
+    color: #000308 !important;
 }
 
 /* TÃ­tulos mais brilhantes nos temas escuros */

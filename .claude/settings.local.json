@@ -683,7 +683,8 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\thail\\\\Desktop\\\\IVMS-CRUD\\\\MaposV5\" -Recurse -Directory -Depth 2)",
       "Bash(del *)",
       "Bash(grep -c \"class='bx bx-\" application/views/tema/menu.php)",
-      "Bash(grep -c \"class='bx bx-\" application/views/tema/topo.php)"
+      "Bash(grep -c \"class='bx bx-\" application/views/tema/topo.php)",
+      "WebFetch(domain:ltx.io)"
     ]
   }
 }
