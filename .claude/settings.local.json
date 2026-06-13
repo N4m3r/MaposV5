@@ -704,7 +704,8 @@
       "Bash(sed -i '1081s/color: #ffffff/color: #1a1a2e/' assets/css/custom.css)",
       "Bash(sed -i '1086s/color: #ffffff/color: #1a1a2e/' assets/css/custom.css)",
       "Bash(sed -i '1085s/rgba\\(255, 255, 255, 0.03\\)/#f0f0f5/' assets/css/custom.css)",
-      "Bash(sed -n '1072,1090p' assets/css/custom.css)"
+      "Bash(sed -n '1072,1090p' assets/css/custom.css)",
+      "Bash(node -e ' *)"
     ]
   }
 }

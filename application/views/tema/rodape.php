@@ -196,6 +196,10 @@ $(document).ready(function() {
 (function($) {
     if (!$.ui || !$.ui.autocomplete) return;
 
+    // -----------------------------------------------------------------
+    // _renderItem: preserva .data("item.autocomplete", item) no <li>
+    // para que o menufocus encontre item.value corretamente.
+    // -----------------------------------------------------------------
     var _renderItem = $.ui.autocomplete.prototype._renderItem;
 
     $.ui.autocomplete.prototype._renderItem = function(ul, item) {
@@ -230,30 +234,44 @@ $(document).ready(function() {
         }
 
         var inner = $('<div>').addClass('ac-item').append(name).append(detail);
-        return $('<li>').append($('<div>').addClass('ui-menu-item-wrapper').append(inner)).appendTo(ul);
+        return $('<li>')
+            .data('ui-autocomplete-item', item)  // Chave usada pelo jQuery UI 1.9.2 (fallback para item.autocomplete existe)
+            .append($('<div>').addClass('ui-menu-item-wrapper').append(inner))
+            .appendTo(ul);
     };
 
     // =====================================================================
     // Fix: dropdown do autocomplete ABAIXO do campo de texto.
-    // O $.fn.position() do jQuery UI calcula posição errada quando há
-    // transform, overflow:hidden ou position:relative nos elementos pais.
-    // Usamos position:fixed + getBoundingClientRect() que é imune a isso.
+    // O $.fn.position() do jQuery UI 1.9.2 falha com jQuery 3.x
+    // (r.getClientRects is not a function) e também calcula posição
+    // errada com transform/overflow nos elementos pais.
+    // Solução: substituir o _suggest inteiro, usando getBoundingClientRect()
+    // + position:fixed que é imune a ambos os problemas.
     // =====================================================================
-    var _suggest = $.ui.autocomplete.prototype._suggest;
     $.ui.autocomplete.prototype._suggest = function(items) {
-        _suggest.call(this, items);
+        var ul = this.menu.element.empty();
+        this._renderMenu(ul, items);
+        this.menu.deactivate();
+        this.menu.refresh();
+
+        // Mostra e redimensiona o menu
+        ul.show();
+        this._resizeMenu();
+
+        // Posiciona usando getBoundingClientRect (imune a transform/overflow)
+        // em vez de ul.position() que falha com jQuery 3.x
         var input = this.element[0];
         var rect = input.getBoundingClientRect();
-        var dropdown = this.menu.element;
-
-        // Força position:fixed — getBoundingClientRect retorna coordenadas
-        // relativas ao viewport, imunes a transform/overflow nos elementos pais.
-        // A largura já foi definida pelo _resizeMenu() do jQuery UI.
-        dropdown.css({
+        ul.css({
             position: 'fixed',
             top: rect.bottom + 4,
-            left: rect.left
+            left: rect.left,
+            width: Math.max(ul.width() || 0, this.element.outerWidth())
         });
+
+        if (this.options.autoFocus) {
+            this.menu.next(new $.Event('mouseover'));
+        }
     };
 
     // Ao rolar a página, fecha o dropdown para evitar desalinhamento
