@@ -514,6 +514,9 @@
         <input type="date" id="data-fim" style="display:none;">
     </div>
 
+    <!-- Fase 2.2: Checklist "Primeiros Passos" -->
+    <?php $this->load->view('tema/_primeiros_passos'); ?>
+
     <!-- KPIs -->
     <div class="kpi-cards" id="tour-kpis">
         <div class="kpi-card">

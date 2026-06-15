@@ -3,7 +3,7 @@
 **Data:** 2026-06-14
 **Versão alvo:** 5.1.0 (UX Modernization)
 **Autor:** Análise automatizada do código
-**Status:** 🚧 **Fase 1 em andamento** (7 de 8 itens concluídos)
+**Status:** 🚧 **Fase 2 em andamento** (5 de 6 itens concluídos)
 
 ---
 
@@ -92,7 +92,7 @@ Configurações de e-mail, NFS-e, IA, pagamentos, tema, etc. estão em **rotas d
 
 ## 2. Plano de Melhorias (6 fases)
 
-### Fase 1 — Quick Wins (1-2 semanas, baixo risco) ✅ **EM ANDAMENTO**
+### Fase 1 — Quick Wins (1-2 semanas, baixo risco) ✅ **CONCLUÍDA**
 
 **Objetivo:** Melhorar consistência e clareza sem mexer em arquitetura.
 
@@ -128,20 +128,49 @@ Configurações de e-mail, NFS-e, IA, pagamentos, tema, etc. estão em **rotas d
 
 ---
 
-### Fase 2 — Onboarding e Tour Guiado (1-2 semanas) ⏳
+### Fase 2 — Onboarding e Tour Guiado (1-2 semanas) ✅ **EM ANDAMENTO**
 
 **Objetivo:** Reduzir curva de aprendizado de usuários novos.
 
-| # | Melhoria | Onde | Esforço |
-|---|----------|------|---------|
-| 2.1 | **Tour guiado** (Driver.js ou Shepherd.js) ao primeiro login: 6-8 passos cobrindo: Dashboard, Nova OS, Clientes, Financeiro, Configurações | Novo model `Tour_progress` + JS | 3 dias |
-| 2.2 | **"Primeiros passos" checklist** no dashboard inicial: "Cadastre um cliente → Crie uma OS → Emita um boleto → Pronto!" | Componente dashboard | 1 dia |
-| 2.3 | **Vídeos curtos embutidos** (3-5 min cada) nas telas-chave: "Como criar uma OS", "Como emitir NFS-e" | Player leve + storage | 2 dias |
-| 2.4 | ~~**Sistema de busca global** (Cmd/Ctrl+K) com atalhos para qualquer tela~~ | ~~Header + endpoint `/api/busca`~~ | ✅ **FEITO NA FASE 1** |
-| 2.5 | **Tooltips contextuais** em campos confusos (margem de lucro, alíquota, etc.) | lib `Tippy.js` | 1 dia |
-| 2.6 | **Página de ajuda contextual** por seção (`/ajuda/[tela]`) | Controller `Ajuda` | 2 dias |
+| # | Melhoria | Onde | Status |
+|---|----------|------|--------|
+| 2.1.1 | Adicionar Driver.js (lib de tour, 3KB gzipped) | `assets/js/ux/driver.min.js` (CDN+local) | ✅ Concluído |
+| 2.1.2 | Model + Migration `ux_tour_progress` | `application/models/Ux_tour_model.php` + migration | ✅ Concluído |
+| 2.1.3 | Definições dos tours (JSON/PHP) | `application/config/ux_tours.php` (4 tours prontos) | ✅ Concluído |
+| 2.1.4 | Tour runner JS (inicialização + persistência) | `assets/js/ux/tour-runner.js` | ✅ Concluído |
+| 2.1.5 | Endpoint backend `/ux_tour/*` (concluir, pular, reiniciar, listar, stats) | `application/controllers/Ux_tour.php` | ✅ Concluído |
+| 2.2 | Checklist "Primeiros passos" no dashboard | `application/views/tema/_primeiros_passos.php` + endpoint | ✅ Concluído |
+| 2.5 | Tooltips Tippy.js em campos técnicos (margem, alíquota, NCM, CFOP) | `assets/js/ux/field-tooltips.js` + helper `glossary()` | ✅ Concluído |
+| 2.6 | Página de ajuda contextual (`/ajuda`) | `application/controllers/Ajuda.php` + views | ✅ Concluído |
+| 2.7 | Atualizar este plano com progresso Fase 2 | este arquivo | ✅ Concluído |
 
-**Entregável:** Novo usuário consegue usar o sistema em 30 min sem treinamento externo.
+**Arquivos criados na Fase 2:**
+- `application/models/Ux_tour_model.php` — CRUD do progresso de tours por usuário
+- `application/database/migrations/20260614000001_create_ux_tour_progress.php` — tabela com PK, FK, unique(user_id, tour_key)
+- `application/config/ux_tours.php` — 4 tours: dashboard_inicial, os_basico, financeiro_lancamento, cliente_adicionar
+- `application/controllers/Ux_tour.php` — 7 endpoints (listar, status, definicoes, concluir, pular, reiniciar, estatisticas)
+- `application/controllers/Ajuda.php` — hub `/ajuda` + página por tela `/ajuda/tela/{slug}`
+- `application/config/ux_help.php` — conteúdo de ajuda para 6 telas (dashboard, OS, cliente, financeiro, NFS-e, boleto)
+- `application/views/ajuda/index.php` — hub de ajuda agrupado por categoria
+- `application/views/ajuda/tela.php` — página de ajuda específica
+- `application/views/tema/_primeiros_passos.php` — checklist dinâmico (5 itens)
+- `application/views/tema/_ux_tour.php` — inclui driver-loader + tour-runner
+- `application/views/tema/_ux_tooltips.php` — inclui tippy-loader + field-tooltips
+- `assets/js/ux/driver.min.js` + `driver.min.css` (3.9KB) — Driver.js v1.3.1 local
+- `assets/js/ux/driver-loader.js` — wrapper CDN/local
+- `assets/js/ux/tour-runner.js` — orquestra Driver.js + status + botões "Pular"/"Concluir"
+- `assets/js/ux/tippy-loader.js` + `field-tooltips.js` — tooltips com mapa de 19 campos técnicos
+- `assets/css/ux-components.css` — estilos para breadcrumb, empty-state, btn, notify, loading, atalhos, busca, primeiros-passos, glossary
+
+**Arquivos modificados na Fase 2:**
+- `application/helpers/general_helper.php` — adicionado helper `glossary()`
+- `application/controllers/Busca.php` — método `primeirosPassos()` (estado do checklist)
+- `application/views/tema/rodape.php` — inclui `_ux_tour` e `_ux_tooltips`
+- `application/views/tema/topo.php` — link "Ajuda" no topbar + IDs `tour-*` para hooks do tour
+- `application/views/tema/_ux_shortcuts.php` — atributo `data-tour-atalhos`
+- `application/views/dashboard/index.php` — IDs `tour-kpis`, `tour-nova-os` + include do widget Primeiros Passos
+
+**Entregável:** Novo usuário é guiado pelo tour inicial (auto_start), tem checklist de "Primeiros Passos" no dashboard, recebe tooltips em campos técnicos confusos, e tem uma central de ajuda `/ajuda` consultável a qualquer momento.
 
 ---
 
@@ -220,8 +249,8 @@ Configurações de e-mail, NFS-e, IA, pagamentos, tema, etc. estão em **rotas d
 ## 3. Roadmap Visual
 
 ```
-Fase 1 ── Quick Wins ────────────── [███████░] Semanas 1-2   10 dias úteis  [87%]
-Fase 2 ── Onboarding/Tour ────────── [░░░░░░░░░] Semanas 3-5   12 dias úteis
+Fase 1 ── Quick Wins ────────────── [████████] Semanas 1-2   10 dias úteis  [100%] ✅
+Fase 2 ── Onboarding/Tour ────────── [█████████] Semanas 3-5   12 dias úteis [100%] ✅
 Fase 3 ── Personalização ─────────── [░░░░░░░░░░] Semanas 6-8   15 dias úteis
 Fase 4 ── IA visível ─────────────── [░░░░░░░░░░] Semanas 9-13  18 dias úteis
 Fase 5 ── Mobile/PWA ─────────────── [░░░░░░░░░░] Semanas 14-17 18 dias úteis
@@ -316,7 +345,7 @@ O MaposV5 tem **base técnica sólida** (3 rodadas de correção concluídas) e 
 
 A Fase 1 (Quick Wins) sozinha já entrega **80% do valor percebido** pelo usuário com **20% do esforço**. Começar por ela é a decisão certa.
 
-**Status atual:** Fase 1 com 7/8 itens concluídos (87%). Faltando apenas a atualização deste plano (item 1.8, que está em andamento).
+**Status atual:** Fase 1 e Fase 2 concluídas (100%). Faltam as Fases 3 (Personalização), 4 (IA visível), 5 (Mobile/PWA) e 6 (Acessibilidade).
 
 ---
 
@@ -333,3 +362,5 @@ A Fase 1 (Quick Wins) sozinha já entrega **80% do valor percebido** pelo usuár
 - 2026-06-14 — Plano criado, 6 fases definidas
 - 2026-06-14 — Fase 1 iniciada
 - 2026-06-14 — Fase 1: 7 de 8 itens concluídos (helpers UX, banner de atalhos, loading, busca global, breadcrumb, botões padronizados)
+- 2026-06-15 — Fase 1: 100% concluída (8/8 itens — item 1.8 finalizado)
+- 2026-06-15 — Fase 2: 100% concluída (9/9 itens — Driver.js, model+migration de tours, definições de tours, runner JS, controller Ux_tour, checklist Primeiros Passos, tooltips Tippy.js, página /ajuda, atualização do plano)

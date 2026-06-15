@@ -267,6 +267,10 @@ if (!isset($hideChrome) || !$hideChrome) {
     $this->load->view('tema/_ux_loading');
     // Fase 1.7 - Busca global Cmd/Ctrl+K
     $this->load->view('tema/_ux_search');
+    // Fase 2.1 - Tours guiados (Driver.js)
+    $this->load->view('tema/_ux_tour');
+    // Fase 2.5 - Tooltips em campos tecnicos (Tippy.js)
+    $this->load->view('tema/_ux_tooltips');
 }
 ?>
 </body>

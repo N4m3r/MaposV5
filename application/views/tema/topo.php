@@ -10,6 +10,7 @@
   <link rel="shortcut icon" type="image/png" href="<?= base_url(); ?>assets/img/favicon.png" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/bootstrap5.min.css" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/mapos.css?v=<?= filemtime(FCPATH . 'assets/css/mapos.css') ?>" />
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/ux-components.css?v=<?= @filemtime(FCPATH . 'assets/css/ux-components.css') ?>" />
   <link href="<?= base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/fullcalendar.css" />
@@ -163,7 +164,7 @@
     </div>
 
     <!-- Navigation Dropdowns -->
-    <div class="topbar-nav">
+    <div class="topbar-nav" id="tour-menu-lateral">
       <!-- Inicio -->
       <a href="<?= base_url() ?>" class="topbar-nav-link <?php if (isset($menuPainel)) { echo 'active'; }; ?>">
         <?= svg_icon('home', 16, 16) ?> Inicio
@@ -420,7 +421,7 @@
     <!-- Right Section -->
     <div class="topbar-right">
       <!-- Search -->
-      <form class="topbar-search" action="<?= site_url('mapos/pesquisar') ?>" method="get">
+      <form id="tour-busca-global" class="topbar-search" action="<?= site_url('mapos/pesquisar') ?>" method="get">
         <input type="search" name="termo" class="topbar-search-input" placeholder="Pesquisar...">
         <button type="submit" class="topbar-action" title="Pesquisar" style="border:none;cursor:pointer;">
           <?= svg_icon('search', 18, 18) ?>
@@ -431,6 +432,13 @@
       <div class="topbar-action" id="theme-toggle-btn">
         <a href="#" title="Alternar Tema" id="btn-toggle-theme" style="color:inherit;text-decoration:none;">
           <span id="theme-icon" class="svg-icon-wrap"><?= svg_icon('sun', 18, 18) ?></span>
+        </a>
+      </div>
+
+      <!-- Help (Fase 2.6) -->
+      <div class="topbar-action">
+        <a href="<?= site_url('ajuda') ?>" title="Central de Ajuda" style="color:inherit;text-decoration:none;">
+          <i class="bx bx-help-circle" style="font-size:20px;"></i>
         </a>
       </div>
 

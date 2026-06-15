@@ -7,7 +7,7 @@
  * Recolhivel (toggle persistido em localStorage).
  */
 ?>
-<div class="ux-shortcut-banner" id="ux-shortcut-banner">
+<div class="ux-shortcut-banner" id="ux-shortcut-banner" data-tour-atalhos>
   <span class="ux-shortcut-banner-label">
     <i class='bx bx-keyboard'></i> Atalhos:
   </span>

@@ -53,13 +53,13 @@ $config['ux_tours'] = [
                 'posicao'   => 'bottom',
             ],
             [
-                'seletor'   => '#tour-atalhos',
+                'seletor'   => '[data-tour-atalhos]',
                 'titulo'    => '⌨️ Atalhos de teclado',
                 'descricao' => 'F1 abre Clientes, F2 abre OS, F3 abre Produtos... Use o banner de atalhos para descobrir todos.',
                 'posicao'   => 'bottom',
             ],
             [
-                'seletor'   => '#tour-primeiros-passos',
+                'seletor'   => '[data-tour-primeiros-passos]',
                 'titulo'    => '✅ Primeiros passos',
                 'descricao' => 'Se você está começando agora, siga o checklist "Primeiros Passos" à direita. Em 5 minutos você já vai ter criado um cliente e uma OS.',
                 'posicao'   => 'left',

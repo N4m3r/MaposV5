@@ -158,4 +158,25 @@ class Busca extends MY_Controller
             ];
         }, $rows);
     }
+
+    /**
+     * GET /busca/primeirosPassos
+     * Retorna o estado de conclusao do checklist "Primeiros Passos".
+     * Cada item e true se ja foi atendido (ex: tem cliente cadastrado).
+     * Resposta: { success, checklist: { tem_cliente, tem_produto, tem_os, tem_lancamento, tem_emitente } }
+     */
+    public function primeirosPassos()
+    {
+        $this->load->database();
+        $checklist = [
+            'tem_cliente'     => $this->db->count_all_results('clientes') > 0,
+            'tem_produto'     => $this->db->count_all_results('produtos') > 0,
+            'tem_os'          => $this->db->count_all_results('os') > 0,
+            'tem_lancamento'  => $this->db->count_all_results('lancamentos') > 0,
+            'tem_emitente'    => $this->db->count_all_results('emitente') > 0,
+        ];
+        $checklist['todos_ok'] = !in_array(false, $checklist, true);
+
+        json_success('', ['checklist' => $checklist]);
+    }
 }

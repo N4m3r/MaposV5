@@ -327,3 +327,23 @@ if (!function_exists('notify')) {
              . '</div>';
     }
 }
+
+if (!function_exists('glossary')) {
+    /**
+     * Helper de glossario (Fase 2.5 do Plano UX).
+     * Renderiza um icone de "?" que, ao passar o mouse, mostra a definicao
+     * do termo tecnico. Usa Tippy.js no frontend.
+     *
+     * @param string $termo   O termo tecnico (chave do mapa em field-tooltips.js)
+     *                        OU uma definicao customizada
+     * @param string $custom  (Opcional) Forca uma definicao custom (substitui o mapa)
+     * @return string HTML do icone
+     */
+    function glossary(string $termo, string $custom = ''): string
+    {
+        $conteudo = $custom !== '' ? $custom : $termo;
+        return '<span class="ux-glossary" data-tippy-content="' . e($conteudo) . '" tabindex="0" role="button" aria-label="O que e ' . e($termo) . '?">'
+             . '<i class="bx bx-help-circle"></i>'
+             . '</span>';
+    }
+}
