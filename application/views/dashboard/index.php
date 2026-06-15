@@ -492,7 +492,7 @@
             <button class="btn-action btn-primary" onclick="carregarDados()">
                 <i class="bx bx-refresh"></i> Atualizar
             </button>
-            <a href="<?= site_url('os/adicionar') ?>" class="btn-action btn-success">
+            <a href="<?= site_url('os/adicionar') ?>" id="tour-nova-os" class="btn-action btn-success">
                 <i class="bx bx-plus-circle"></i> Nova OS
             </a>
             <button class="btn-action btn-info" onclick="exportarDados()">
@@ -515,7 +515,7 @@
     </div>
 
     <!-- KPIs -->
-    <div class="kpi-cards">
+    <div class="kpi-cards" id="tour-kpis">
         <div class="kpi-card">
             <div class="kpi-header">
                 <div class="kpi-icon"><i class="bx bx-file"></i></div>
