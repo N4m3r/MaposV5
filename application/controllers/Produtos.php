@@ -5,11 +5,19 @@ if (! defined('BASEPATH')) {
 }
 
 require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+require_once APPPATH . 'traits/ApiCrudTrait.php';
 
 use Libraries\Webhooks\WebhookManager;
 
 class Produtos extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'produtos';
+    protected $api_search_fields = ['descricao', 'codDeBarra', 'unidade'];
+    protected $api_default_order = ['idProdutos', 'desc'];
+    protected $api_required_permission = 'vProduto';
+
     private WebhookManager $webhookManager;
 
     public function __construct()

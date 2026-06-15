@@ -28,19 +28,22 @@ export interface Cliente {
     celular?: string;
     dataCadastro?: string;
     ativo?: number;
+    [key: string]: unknown;
 }
 
 export interface Os {
     id?: number;
-    cliente_id: number;
+    idOs?: number;
+    cliente_id?: number;
     cliente_nome?: string;
     status: OsStatus;
-    descricao: string;
+    descricao?: string;
     valor?: number;
     data_inicio?: string;
     data_fim?: string;
     tecnico_id?: number;
     tecnico_nome?: string;
+    [key: string]: unknown;
 }
 
 export type OsStatus =
@@ -82,4 +85,33 @@ export interface ApiResponse<T = unknown> {
     data?: T;
     message?: string;
     error?: string;
+    total?: number;
+    page?: number;
+    limit?: number;
+}
+
+/**
+ * Linhas dinamicas: cada pagina define a forma de seu registro.
+ * Permite que DataTable aceite qualquer estrutura.
+ */
+export type Row = Record<string, unknown> & { id?: number };
+
+/**
+ * Coluna de uma DataTable.
+ */
+export interface ColumnDef<R extends Row = Row> {
+    key: string;
+    label: string;
+    /** Valor customizado (badge, format, etc). Se omitido, mostra row[key] */
+    render?: (row: R) => React.ReactNode;
+    sortable?: boolean;
+    width?: string;
+    className?: string;
+}
+
+export interface ListResult<R extends Row = Row> {
+    data: R[];
+    total: number;
+    page: number;
+    limit: number;
 }

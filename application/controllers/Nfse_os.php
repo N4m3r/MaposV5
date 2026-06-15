@@ -6,8 +6,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Gerencia emissão e controle de notas fiscais de serviço vinculadas a ordens de serviço
  */
 
+require_once APPPATH . 'traits/ApiCrudTrait.php';
+
 class Nfse_os extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'nfse_emitida';
+    protected $api_search_fields = ['numero', 'chave_acesso'];
+    protected $api_default_order = ['id', 'desc'];
+    protected $api_required_permission = 'vNfse';
     public function __construct()
     {
         parent::__construct();

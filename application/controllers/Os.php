@@ -11,6 +11,7 @@ require_once APPPATH . 'traits/Os/OsAttachmentTrait.php';
 require_once APPPATH . 'traits/Os/OsItemTrait.php';
 require_once APPPATH . 'traits/Os/OsValidationTrait.php';
 require_once APPPATH . 'traits/LegacyJsonResponseTrait.php';
+require_once APPPATH . 'traits/ApiCrudTrait.php';
 
 use Libraries\Webhooks\WebhookManager;
 use Application\Traits\LegacyJsonResponseTrait;
@@ -22,6 +23,13 @@ use Application\Traits\Os\OsValidationTrait;
 
 class Os extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'os';
+    protected $api_search_fields = ['idOs'];
+    protected $api_default_order = ['idOs', 'desc'];
+    protected $api_required_permission = 'vOs';
+
     private WebhookManager $webhookManager;
 
     use OsEmailTrait;

@@ -4,8 +4,16 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'traits/ApiCrudTrait.php';
+
 class Financeiro extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'lancamentos';
+    protected $api_search_fields = ['descricao', 'observacao'];
+    protected $api_default_order = ['data_vencimento', 'desc'];
+    protected $api_required_permission = 'vFinanceiro';
     public function __construct()
     {
         parent::__construct();

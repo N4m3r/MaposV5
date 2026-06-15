@@ -16,6 +16,7 @@ interface AppSidebarNavProps {
  */
 export function AppSidebarNav({ currentPath, permissions, compact }: AppSidebarNavProps) {
     const visibleItems = NAV_ITEMS.filter((item) => {
+        if (item.adminOnly && !permissions.includes('cPermissao')) return false;
         if (!item.permission) return true;
         return permissions.includes(item.permission);
     });
@@ -56,9 +57,10 @@ const NAV_ITEMS: NavItem[] = [
     { to: '/produtos',  label: 'Produtos',     icon: 'cilBox',          permission: 'vProduto' },
     { to: '/vendas',    label: 'Vendas',       icon: 'cilCart',         permission: 'vVenda' },
     { to: '/financeiro',label: 'Financeiro',   icon: 'cilWallet',       permission: 'vFinanceiro' },
-    { to: '/obras',     label: 'Obras',        icon: 'cilBuilding',     permission: 'vObra' },
-    { to: '/nfse',      label: 'NFS-e',        icon: 'cilReceipt',      permission: 'vNfse' },
+    { to: '/cobrancas', label: 'Cobrancas',    icon: 'cilCreditCard',   permission: 'vCobranca' },
     { to: '/garantias', label: 'Garantias',    icon: 'cilShieldAlt',    permission: 'vGarantia' },
+    { to: '/nfse',      label: 'NFS-e',        icon: 'cilReceipt',      permission: 'vNfse' },
+    { to: '/obras',     label: 'Obras',        icon: 'cilBuilding',     permission: 'vObra' },
     { to: '/arquivos',  label: 'Arquivos',     icon: 'cilFolderOpen',   permission: 'vArquivo' },
     { to: '/relatorios',label: 'Relatorios',   icon: 'cilChartPie',     permission: 'vRelatorio' },
     { to: '/usuarios',  label: 'Usuarios',     icon: 'cilUser',         permission: 'vUsuario', adminOnly: true },

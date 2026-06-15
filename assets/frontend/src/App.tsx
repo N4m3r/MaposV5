@@ -4,6 +4,13 @@ import { AppShell } from './components/layout/AppShell';
 import Dashboard from './pages/Dashboard';
 import Clientes from './pages/Clientes';
 import Kanban from './pages/Kanban';
+import OsPage from './pages/Os';
+import VendasPage from './pages/Vendas';
+import FinanceiroPage from './pages/Financeiro';
+import ProdutosPage from './pages/Produtos';
+import CobrancasPage from './pages/Cobrancas';
+import GarantiasPage from './pages/Garantias';
+import NfsePage from './pages/Nfse';
 import NotFound from './pages/NotFound';
 import { getConfig } from './config';
 
@@ -18,9 +25,16 @@ function App() {
         >
             <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/clientes" element={<Clientes />} />
-                <Route path="/kanban" element={<Kanban />} />
+                <Route path="/dashboard"   element={<Dashboard />} />
+                <Route path="/os"          element={<OsPage />} />
+                <Route path="/kanban"      element={<Kanban />} />
+                <Route path="/clientes"    element={<Clientes />} />
+                <Route path="/produtos"    element={<ProdutosPage />} />
+                <Route path="/vendas"      element={<VendasPage />} />
+                <Route path="/financeiro"  element={<FinanceiroPage />} />
+                <Route path="/cobrancas"   element={<CobrancasPage />} />
+                <Route path="/garantias"   element={<GarantiasPage />} />
+                <Route path="/nfse"        element={<NfsePage />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </AppShell>
