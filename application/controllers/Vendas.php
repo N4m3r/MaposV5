@@ -825,12 +825,97 @@ class Vendas extends MY_Controller
         $venda = $this->Vendas_model->getById($id);
         $produtos = $this->Vendas_model->getProdutos($id);
         $total = $this->Vendas_model->getTotalVendas($id);
-        
+
         $data['venda'] = $venda;
         $data['produtos'] = $produtos;
         $data['total'] = $total;
 
         $this->load->view('vendas/vendas', $data);
     }
-    
+
+    /**
+     * Detalhe completo de uma Venda para o React.
+     * GET /vendas/api_detail/<id>
+     *
+     * Retorna:
+     *   - venda: dados da venda + cliente + usuario
+     *   - produtos: itens da venda
+     *   - cobrancas: cobranças vinculadas
+     *   - lancamento: lançamento financeiro (se houver)
+     */
+    public function api_detail($venda_id = null)
+    {
+        if (!$venda_id || !is_numeric($venda_id)) {
+            $this->output
+                ->set_status_header(400)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'Venda inválida']));
+            return;
+        }
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
+            $this->output
+                ->set_status_header(403)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'Sem permissão']));
+            return;
+        }
+
+        $this->load->model('vendas_model');
+        $this->load->model('clientes_model');
+
+        $venda = $this->vendas_model->getById((int) $venda_id);
+        if (!$venda) {
+            $this->output
+                ->set_status_header(404)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'Venda não encontrada']));
+            return;
+        }
+
+        // Produtos
+        $produtos = $this->vendas_model->getProdutos((int) $venda_id);
+
+        // Cobranças
+        $cobrancas = $this->vendas_model->getCobrancas((int) $venda_id);
+
+        // Lançamento financeiro (vinculado via vendas_id)
+        $lancamento = null;
+        try {
+            $this->db->where('vendas_id', (int) $venda_id);
+            $lancamento = $this->db->get('lancamentos')->row_array();
+        } catch (\Throwable $e) {
+            $lancamento = null;
+        }
+
+        // Anexos (mesmo padrao da OS)
+        $anexos = [];
+        $anexosDir = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'vendas' . DIRECTORY_SEPARATOR . $venda_id;
+        if (is_dir($anexosDir)) {
+            foreach (scandir($anexosDir) as $f) {
+                if ($f === '.' || $f === '..') continue;
+                $abs = $anexosDir . DIRECTORY_SEPARATOR . $f;
+                if (!is_file($abs)) continue;
+                $anexos[] = [
+                    'name' => $f,
+                    'originalName' => $f,
+                    'size' => (int) @filesize($abs),
+                    'type' => @mime_content_type($abs) ?: 'application/octet-stream',
+                    'url' => base_url('assets/uploads/vendas/' . $venda_id . '/' . $f),
+                ];
+            }
+        }
+
+        $this->output
+            ->set_status_header(200)
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'success' => true,
+                'venda' => $venda,
+                'produtos' => $produtos,
+                'cobrancas' => $cobrancas,
+                'lancamento' => $lancamento,
+                'anexos' => $anexos,
+            ], JSON_UNESCAPED_UNICODE));
+    }
+
 }

@@ -1,6 +1,7 @@
 /**
  * Pagina Vendas com CRUD completo (lista + cria + edita + exclui).
  */
+import { Link } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import { CrudTable } from '../components/ui/CrudTable';
 import type { FieldDef } from '../components/ui/FormModal';
@@ -74,6 +75,16 @@ export default function VendasPage() {
                 defaultValue={{ dataVenda: new Date().toISOString().slice(0, 10), tipo: 'Venda', status: 'Aprovado', valorTotal: 0, cliente_id: 0 }}
                 idKey="idVendas"
                 entityName="Venda"
+                renderRowActions={(r) => (
+                    <Link
+                        to={`/vendas/${r.idVendas}`}
+                        className="btn btn-sm btn-link p-0 me-2"
+                        title="Visualizar detalhes"
+                        aria-label="Visualizar detalhes"
+                    >
+                        <CIcon icon="cilEye" />
+                    </Link>
+                )}
             />
         </>
     );

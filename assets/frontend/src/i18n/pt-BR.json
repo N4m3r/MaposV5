@@ -1,0 +1,136 @@
+{
+  "_meta": {
+    "name": "Português (Brasil)",
+    "code": "pt-BR",
+    "rtl": false
+  },
+  "app": {
+    "name": "Mapos OS",
+    "version": "Versão 5.0"
+  },
+  "nav": {
+    "dashboard": "Painel",
+    "os": "Ordens de Serviço",
+    "kanban": "Kanban",
+    "clientes": "Clientes",
+    "produtos": "Produtos",
+    "vendas": "Vendas",
+    "financeiro": "Financeiro",
+    "cobrancas": "Cobranças",
+    "garantias": "Garantias",
+    "nfse": "NFS-e",
+    "obras": "Obras",
+    "arquivos": "Arquivos",
+    "relatorios": "Relatórios",
+    "usuarios": "Usuários",
+    "config": "Configurações",
+    "logout": "Sair"
+  },
+  "actions": {
+    "new": "Novo",
+    "add": "Adicionar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar",
+    "reload": "Recarregar",
+    "submit": "Enviar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "view": "Visualizar",
+    "print": "Imprimir",
+    "download": "Baixar",
+    "upload": "Enviar"
+  },
+  "crud": {
+    "created": "{entity} criado com sucesso",
+    "updated": "{entity} atualizado com sucesso",
+    "deleted": "{entity} excluído com sucesso",
+    "create_error": "Erro ao criar {entity}",
+    "update_error": "Erro ao atualizar {entity}",
+    "delete_error": "Erro ao excluir {entity}",
+    "confirm_delete": "Tem certeza que deseja excluir este {entity}?",
+    "load_error": "Erro ao carregar dados",
+    "save_error": "Erro ao salvar",
+    "validation_error": "Verifique os campos obrigatórios"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "pending": "Pendente",
+    "completed": "Concluído",
+    "cancelled": "Cancelado",
+    "in_progress": "Em andamento",
+    "paused": "Pausado"
+  },
+  "fields": {
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefone",
+    "cellphone": "Celular",
+    "document": "CPF/CNPJ",
+    "address": "Endereço",
+    "city": "Cidade",
+    "state": "UF",
+    "zipcode": "CEP",
+    "date": "Data",
+    "value": "Valor",
+    "status": "Status",
+    "description": "Descrição",
+    "client": "Cliente",
+    "product": "Produto",
+    "service": "Serviço",
+    "user": "Usuário",
+    "password": "Senha",
+    "confirm_password": "Confirmar senha",
+    "required": "Campo obrigatório",
+    "invalid_email": "Email inválido",
+    "min_length": "Mínimo de {n} caracteres",
+    "max_length": "Máximo de {n} caracteres"
+  },
+  "login": {
+    "title": "Acesso do Cliente",
+    "email_placeholder": "seu@email.com",
+    "password_placeholder": "••••••••",
+    "submit": "Acessar",
+    "submitting": "Entrando...",
+    "forgot_password": "Esqueceu a senha?",
+    "register": "Cadastre-se",
+    "success": "Login realizado com sucesso",
+    "error_invalid": "Dados de acesso incorretos",
+    "error_empty": "Preencha email e senha",
+    "hero_title": "Área do Cliente",
+    "hero_subtitle": "Acompanhe suas Ordens de Serviço, Vendas, Financeiro, Cobranças e Documentos Fiscais em um só lugar.",
+    "feature_1": "Ordens de serviço em tempo real",
+    "feature_2": "Download de NFS-e e Boletos",
+    "feature_3": "Histórico financeiro completo",
+    "feature_4": "Suporte via WhatsApp integrado"
+  },
+  "table": {
+    "no_data": "Nenhum registro encontrado",
+    "loading": "Carregando...",
+    "showing": "Mostrando {from} a {to} de {total}",
+    "per_page": "Por página",
+    "of_total": "de {total}"
+  },
+  "months": [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ],
+  "months_short": [
+    "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+    "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+  ],
+  "weekdays": [
+    "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira",
+    "Quinta-feira", "Sexta-feira", "Sábado"
+  ],
+  "weekdays_short": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
+}

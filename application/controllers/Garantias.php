@@ -12,9 +12,16 @@ class Garantias extends MY_Controller
 
     protected $api_table = 'garantias';
     protected $api_pk = 'idGarantias';
-    protected $api_search_fields = ['descricao'];
+    protected $api_search_fields = ['refGarantia', 'descricao'];
     protected $api_default_order = ['idGarantias', 'desc'];
     protected $api_required_permission = 'vGarantia';
+    protected $api_rules = [
+        'refGarantia'   => ['required', 'min:3', 'max:50'],
+        'dataGarantia'  => ['required', 'date'],
+        'dataExpiracao' => ['date'],
+        'descricao'     => ['max:500'],
+        'situacao'      => ['in:Ativa,Expirada,Cancelada,Utilizada'],
+    ];
     public function __construct()
     {
         parent::__construct();

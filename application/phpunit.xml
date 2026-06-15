@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PHPUnit config para MaposV5.
+  Rodar: cd application && ../vendor/bin/phpunit
+  Ou:    cd application && ../vendor/bin/phpunit --testdox
+  Requer PHP 8.3+ (composer.json).
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         failOnWarning="false"
+         failOnNotice="false">
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests/traits</directory>
+            <directory>tests/models</directory>
+            <directory>tests/helpers</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>traits</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+    </php>
+</phpunit>

@@ -6,6 +6,7 @@
  * - Configura window.MAPOS_CONFIG mockado
  */
 import '@testing-library/jest-dom';
+import { afterEach } from 'vitest';
 
 // jsdom nao tem matchMedia — algumas libs quebram
 Object.defineProperty(window, 'matchMedia', {
@@ -41,3 +42,14 @@ window.MAPOS_CONFIG = {
     csrfHash: 'abc123',
     baseUrl: 'http://localhost/',
 };
+
+// Forca o locale do jsdom para pt-BR (i18n le de navigator.language)
+Object.defineProperty(window.navigator, 'language', {
+    get: () => 'pt-BR',
+    configurable: true,
+});
+
+// Limpa localStorage entre testes (i18n usa)
+afterEach(() => {
+    try { localStorage.clear(); } catch {}
+});

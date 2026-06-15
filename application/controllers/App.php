@@ -31,9 +31,22 @@ class App extends CI_Controller
             redirect('login');
         }
 
-        // Carrega configuracoes do sistema (tema, nome, etc)
-        $this->load->model('mapos_model');
-        $configuration = $this->mapos_model->get_config();
+        // Carrega configuracoes do sistema (tema, nome, etc) direto da tabela
+        // 'configuracoes' (mesmo padrao de MY_Controller::load_configuration).
+        // Nao usa Mapos_model::get_config() porque esse metodo nao existe —
+        // o model mantem apenas metodos de OS/cliente; configs sao responsabilidade
+        // do core controller. Cache ja eh feito por MY_Controller quando herdar dela.
+        $this->load->database();
+        $configuration = [];
+        $configuracoes = $this->db->get('configuracoes')->result();
+        foreach ($configuracoes as $c) {
+            $configuration[$c->config] = $c->valor;
+        }
+        // Defaults minimos caso a tabela esteja vazia
+        $configuration += [
+            'app_theme' => 'white',
+            'app_name'  => 'Mapos',
+        ];
 
         // Carrega permissoes do usuario logado (padrao Mapos: array associativo)
         $permissoes_raw = $this->session->userdata('permissoes');

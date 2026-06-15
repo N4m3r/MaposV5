@@ -10,6 +10,8 @@ require_once APPPATH . 'traits/Os/OsAutocompleteTrait.php';
 require_once APPPATH . 'traits/Os/OsAttachmentTrait.php';
 require_once APPPATH . 'traits/Os/OsItemTrait.php';
 require_once APPPATH . 'traits/Os/OsValidationTrait.php';
+require_once APPPATH . 'traits/Os/OsEstoqueTrait.php';
+require_once APPPATH . 'traits/Os/OsAnotacaoTrait.php';
 require_once APPPATH . 'traits/LegacyJsonResponseTrait.php';
 require_once APPPATH . 'traits/ApiCrudTrait.php';
 
@@ -20,6 +22,8 @@ use Application\Traits\Os\OsAutocompleteTrait;
 use Application\Traits\Os\OsAttachmentTrait;
 use Application\Traits\Os\OsItemTrait;
 use Application\Traits\Os\OsValidationTrait;
+use Application\Traits\Os\OsEstoqueTrait;
+use Application\Traits\Os\OsAnotacaoTrait;
 
 class Os extends MY_Controller
 {
@@ -38,6 +42,8 @@ class Os extends MY_Controller
     use OsAttachmentTrait;
     use OsItemTrait;
     use OsValidationTrait;
+    use OsEstoqueTrait;
+    use OsAnotacaoTrait;
     use LegacyJsonResponseTrait;
 
     public function __construct()
@@ -720,32 +726,6 @@ class Os extends MY_Controller
         redirect(site_url('os'));
     }
 
-    private function devolucaoEstoque($id)
-    {
-        if ($produtos = $this->os_model->getProdutos($id)) {
-            $this->load->model('produtos_model');
-            if ($this->data['configuration']['control_estoque']) {
-                foreach ($produtos as $p) {
-                    $this->produtos_model->updateEstoque($p->produtos_id, $p->quantidade, '+');
-                    log_info('ESTOQUE: Produto id ' . $p->produtos_id . ' voltou ao estoque. Quantidade: ' . $p->quantidade . '. Motivo: Cancelamento/Exclusão');
-                }
-            }
-        }
-    }
-
-    private function debitarEstoque($id)
-    {
-        if ($produtos = $this->os_model->getProdutos($id)) {
-            $this->load->model('produtos_model');
-            if ($this->data['configuration']['control_estoque']) {
-                foreach ($produtos as $p) {
-                    $this->produtos_model->updateEstoque($p->produtos_id, $p->quantidade, '-');
-                    log_info('ESTOQUE: Produto id ' . $p->produtos_id . ' baixa do estoque. Quantidade: ' . $p->quantidade . '. Motivo: Mudou status que já estava Cancelado para outro');
-                }
-            }
-        }
-    }
-
     public function excluir()
     {
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'dOs')) {
@@ -942,40 +922,6 @@ class Os extends MY_Controller
         $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar OS.');
         $json = ['result' => false];
         $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode($json));
-    }
-
-    public function adicionarAnotacao()
-    {
-        $this->load->library('form_validation');
-        if ($this->form_validation->run('anotacoes_os') == false) {
-            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(validation_errors()));
-        } else {
-            $data = [
-                'anotacao' => '[' . $this->session->userdata('nome_admin') . '] ' . $this->input->post('anotacao'),
-                'data_hora' => date('Y-m-d H:i:s'),
-                'os_id' => $this->input->post('os_id'),
-            ];
-
-            if ($this->os_model->add('anotacoes_os', $data) == true) {
-                log_info('Adicionou anotação a uma OS. ID (OS): ' . $this->input->post('os_id'));
-                $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
-            } else {
-                $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
-            }
-        }
-    }
-
-    public function excluirAnotacao()
-    {
-        $id = $this->input->post('idAnotacao');
-        $idOs = $this->input->post('idOs');
-
-        if ($this->os_model->delete('anotacoes_os', 'idAnotacoes', $id) == true) {
-            log_info('Removeu anotação de uma OS. ID (OS): ' . $idOs);
-            $this->output->set_content_type('application/json')->set_output(json_encode(['result' => true]));
-        } else {
-            $this->output->set_content_type('application/json')->set_status_header(400)->set_output(json_encode(['result' => false]));
-        }
     }
 
     /**

@@ -14,9 +14,19 @@ class Cobrancas extends MY_Controller
     use ApiCrudTrait;
 
     protected $api_table = 'cobrancas';
+    protected $api_pk = 'idCobranca';
     protected $api_search_fields = ['descricao'];
-    protected $api_default_order = ['id', 'desc'];
+    protected $api_default_order = ['idCobranca', 'desc'];
     protected $api_required_permission = 'vCobranca';
+    protected $api_rules = [
+        'clientes_id'      => ['required', 'integer'],
+        'payment_gateway'  => ['required', 'in:Asaas,MercadoPago,GerencianetSdk,Cora'],
+        'status'           => ['required', 'in:PENDING,RECEIVED,CONFIRMED,OVERDUE,REFUNDED,RECEIVED_IN_CASH,REMOVED'],
+        'valor'            => ['required', 'numeric', 'min:0'],
+        'expire_at'        => ['date'],
+        'payment_method'   => ['in:BOLETO,CREDIT_CARD,PIX,UNDEFINED'],
+    ];
+    protected $api_hidden = ['charge_id', 'link', 'pdf_link', 'barcode', 'linha_digitavel'];
 
     private WebhookManager $webhookManager;
 

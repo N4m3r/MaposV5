@@ -16,7 +16,7 @@
  *     defaultValue={{ nomeCliente: '', email: '' }}
  *   />
  */
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import CIcon from '@coreui/icons-react';
 import { DataTable } from './DataTable';
 import { FormModal, type FieldDef } from './FormModal';
@@ -46,6 +46,8 @@ interface CrudTableProps<R extends Row> {
     initialPageSize?: number;
     /** Tag do controller pro FormModal (ex: 'Cliente') */
     entityName?: string;
+    /** Botoes extras por linha (ex: link para drill-down) */
+    renderRowActions?: (row: R) => ReactNode;
 }
 
 export function CrudTable<R extends Row>({
@@ -63,6 +65,7 @@ export function CrudTable<R extends Row>({
     getRowId,
     initialPageSize,
     entityName,
+    renderRowActions,
 }: CrudTableProps<R>) {
     // O reload eh disparado via key remount do DataTable
     const [reloadKey, setReloadKey] = useState('');
@@ -100,6 +103,7 @@ export function CrudTable<R extends Row>({
                     const id = (getRowId ? getRowId(r) : (r[idKey || 'id'] as number | string));
                     return (
                         <>
+                            {renderRowActions?.(r)}
                             <button
                                 className="btn btn-sm btn-link p-0 me-2"
                                 title={`Editar ${label}`}

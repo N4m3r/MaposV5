@@ -14,6 +14,16 @@ class Arquivos extends MY_Controller
     protected $api_search_fields = ['nome', 'descricao'];
     protected $api_default_order = ['id', 'desc'];
     protected $api_required_permission = 'vArquivo';
+    protected $api_rules = [
+        'nome'         => ['required', 'min:3', 'max:200'],
+        'descricao'    => ['max:500'],
+        'tipo'         => ['max:50'],
+        'tamanho'      => ['integer', 'min:0'],
+        'url'          => ['max:500'],
+        'categoria'    => ['max:50'],
+        'os_id'        => ['integer'],
+        'clientes_id'  => ['integer'],
+    ];
 
     public function __construct()
     {

@@ -17,6 +17,19 @@ class Obras extends MY_Controller
     protected $api_search_fields = ['descricao', 'endereco'];
     protected $api_default_order = ['idObras', 'desc'];
     protected $api_required_permission = 'vObra';
+    protected $api_rules = [
+        'descricao'   => ['required', 'min:3', 'max:200'],
+        'endereco'    => ['max:300'],
+        'cep'         => ['max:10'],
+        'cidade'      => ['max:100'],
+        'uf'          => ['max:2', 'min:2'],
+        'clientes_id' => ['integer'],
+        'dataInicio'  => ['date'],
+        'dataPrevista'=> ['date'],
+        'dataFim'     => ['date'],
+        'valor'       => ['numeric', 'min:0'],
+        'status'      => ['in:Em Andamento,Concluida,Paralisada,Cancelada,Planejamento'],
+    ];
 
     public function __construct()
     {
