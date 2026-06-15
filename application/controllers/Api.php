@@ -49,10 +49,11 @@ class Api extends MY_Controller
         $email = $this->session->userdata('email');
 
         // Gera token usando Firebase JWT
-        $key = getenv('JWT_SECRET');
+        $this->load->config('jwt');
+        $key = $this->config->item('jwt_key');
         if (empty($key)) {
-            log_message('error', 'Api::token() - JWT_SECRET nao configurado no .env. Autenticacao recusada.');
-            show_error('JWT_SECRET nao configurado. Configure no .env.', 500);
+            log_message('error', 'Api::token() - API_JWT_KEY nao configurado no .env. Autenticacao recusada.');
+            show_error('API_JWT_KEY nao configurado. Configure no .env.', 500);
             return;
         }
         $payload = [

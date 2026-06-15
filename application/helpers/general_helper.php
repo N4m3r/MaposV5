@@ -135,3 +135,55 @@ if (!function_exists('resolveEmailRecipients')) {
         return array_filter($recipients);
     }
 }
+
+/**
+ * Helpers de resposta JSON padronizados.
+ * Substituem `echo json_encode(...)` por helpers que ja setam
+ * Content-Type e (opcionalmente) codigo HTTP. Ajudam a evitar
+ * saida duplicada (echo + set_output) e a manter contratos consistentes.
+ *
+ * Como sao `exit`-antes (padrao usado pelos controllers legados),
+ * use apenas em endpoints AJAX. Em API v2 prefira ApiResponseTrait.
+ */
+if (!function_exists('json_response')) {
+    /**
+     * Imprime uma resposta JSON e encerra o script.
+     *
+     * @param array $data           Payload (sera convertido via json_encode)
+     * @param int   $httpCode       Codigo HTTP (default 200)
+     * @param bool  $exit           Se true (default), chama exit apos imprimir
+     */
+    function json_response(array $data, int $httpCode = 200, bool $exit = true)
+    {
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code($httpCode);
+        }
+        echo json_encode($data);
+        if ($exit) {
+            exit;
+        }
+    }
+}
+
+if (!function_exists('json_success')) {
+    /**
+     * Atalho para resposta de sucesso: {success: true, message: ..., ...}
+     */
+    function json_success(string $message = '', array $extra = [], int $httpCode = 200, bool $exit = true)
+    {
+        $payload = array_merge(['success' => true, 'message' => $message], $extra);
+        json_response($payload, $httpCode, $exit);
+    }
+}
+
+if (!function_exists('json_error')) {
+    /**
+     * Atalho para resposta de erro: {success: false, message: ..., ...}
+     */
+    function json_error(string $message = '', array $extra = [], int $httpCode = 400, bool $exit = true)
+    {
+        $payload = array_merge(['success' => false, 'message' => $message], $extra);
+        json_response($payload, $httpCode, $exit);
+    }
+}

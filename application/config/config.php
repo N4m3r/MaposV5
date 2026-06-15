@@ -4,8 +4,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * App current version
+ * Atualizado para refletir migration_version (20260525000005)
  */
-$config['app_version'] = '5.0.0';
+$config['app_version'] = '5.0.0-mig05';
 
 /**
  * Nome do sistema

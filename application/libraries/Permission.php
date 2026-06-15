@@ -41,10 +41,9 @@ class Permission
             return false;
         }
 
-        // Admin (idPermissao=1) sempre tem acesso total
-        if ($idPermissao == 1) {
-            return true;
-        }
+        // Bypass hardcoded para idPermissao==1 REMOVIDO em 2026-06-14.
+        // Migration 20260525000004 garante que o admin tem todas as permissoes
+        // explicitamente em sua role. Confiar apenas na checagem abaixo.
 
         // Se as permissões não estiverem carregadas, requisita o carregamento
         if ($this->permissions == null) {

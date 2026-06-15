@@ -58,8 +58,12 @@ class MY_Controller extends CI_Controller
         // Se for controller da API (por URI, classe ou diretório), não redirecionar
         $directory = $router->fetch_directory();
         $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $controllerLower = strtolower($controller);
         $isApiV2 = (strpos($requestUri, '/api/v2') !== false);
-        $isApiController = strtolower($controller) === 'api' || strpos(strtolower($controller), 'api') === 0 || ($directory && strpos(strtolower($directory), 'api') === 0);
+        // Lista explicita de controllers de API (mais seguro que strpos === 0 no nome)
+        $apiControllers = ['api', 'api_docs', 'api_tools', 'webhook', 'webhooks'];
+        $isApiController = in_array($controllerLower, $apiControllers, true)
+            || ($directory && strpos(strtolower($directory), 'api') === 0);
 
         if ($isApiV2 || $isApiController) {
             // Não redirecionar - controllers da API têm autenticação própria
@@ -94,14 +98,50 @@ class MY_Controller extends CI_Controller
         $this->load->library('permission');
     }
 
+    /**
+     * Carrega configuracoes do banco com cache de arquivo (TTL 5 minutos).
+     * Metodo protegido - use clearConfigCache() apos atualizar configuracoes.
+     */
     private function load_configuration()
     {
-        $this->CI = &get_instance();
-        $this->CI->load->database();
-        $configuracoes = $this->CI->db->get('configuracoes')->result();
+        $cacheFile = APPPATH . 'cache/configuracoes_cache.json';
+        $ttl = 300; // 5 minutos
+
+        // Tenta usar cache se disponivel
+        if (is_readable($cacheFile) && (time() - filemtime($cacheFile)) < $ttl) {
+            $cached = @file_get_contents($cacheFile);
+            $decoded = $cached !== false ? json_decode($cached, true) : null;
+            if (is_array($decoded)) {
+                foreach ($decoded as $config => $valor) {
+                    $this->data['configuration'][$config] = $valor;
+                }
+                return;
+            }
+        }
+
+        // Cache miss ou invalido - consulta banco
+        $this->load->database();
+        $configuracoes = $this->db->get('configuracoes')->result();
+        $serialized = [];
 
         foreach ($configuracoes as $c) {
             $this->data['configuration'][$c->config] = $c->valor;
+            $serialized[$c->config] = $c->valor;
+        }
+
+        // Persiste cache (silencioso se nao tiver permissao de escrita)
+        @file_put_contents($cacheFile, json_encode($serialized));
+    }
+
+    /**
+     * Invalida o cache de configuracoes.
+     * Chame apos salvar configuracoes em Mapos_model::updateConfiguracao().
+     */
+    protected function clearConfigCache()
+    {
+        $cacheFile = APPPATH . 'cache/configuracoes_cache.json';
+        if (is_file($cacheFile)) {
+            @unlink($cacheFile);
         }
     }
 
@@ -114,7 +154,8 @@ class MY_Controller extends CI_Controller
         $permissao_id = $this->session->userdata('permissao');
 
         // Admin (cPermissao) nunca eh considerado tecnico
-        $this->load->library('permission');
+        // Library 'permission' ja foi carregada no __construct (linha 98)
+        // Nao recarregar para evitar overhead desnecessario
         if ($this->permission->checkPermission($permissao_id, 'cPermissao')) {
             return false;
         }

@@ -82,7 +82,7 @@ class Mine extends CI_Controller
             echo json_encode(['result' => false, 'message' => 'Por favor digite uma senha']);
         } else {
             $token = $this->check_token($this->input->post('token'));
-            $cliente = $this->check_credentials($token->email);
+            $cliente = $this->getClienteByEmail($token->email);
 
             if ($token == null && $cliente == null) {
                 $session_mine_data = $cliente->nomeCliente ? ['nome' => $cliente->nomeCliente] : ['nome' => 'Inexistente'];
@@ -139,7 +139,7 @@ class Mine extends CI_Controller
                 return redirect(base_url() . 'index.php/mine');
             } else {
                 if ($token) {
-                    if (($cliente = $this->check_credentials($token->email)) == null) {
+                    if (($cliente = $this->getClienteByEmail($token->email)) == null) {
                         $this->session->set_flashdata(['error' => 'Os dados de acesso estão incorretos.']);
                         $session_mine_data = $cliente->nomeCliente ? ['nome' => $cliente->nomeCliente] : ['nome' => 'Inexistente'];
                         $this->session->set_userdata($session_mine_data);
@@ -193,7 +193,7 @@ class Mine extends CI_Controller
                 return redirect(base_url() . 'index.php/mine');
             } else {
                 if ($token) {
-                    if (($cliente = $this->check_credentials($token->email)) == null) {
+                    if (($cliente = $this->getClienteByEmail($token->email)) == null) {
                         $this->session->set_flashdata(['error' => 'Os dados de acesso estão incorretos.']);
                         $session_mine_data = $cliente->nomeCliente ? ['nome' => $cliente->nomeCliente] : ['nome' => 'Inexistente'];
                         $this->session->set_userdata($session_mine_data);
@@ -228,7 +228,7 @@ class Mine extends CI_Controller
 
     public function gerarTokenResetarSenha()
     {
-        if (! $cliente = $this->check_credentials($this->input->post('email'))) {
+        if (! $cliente = $this->getClienteByEmail($this->input->post('email'))) {
             $this->session->set_flashdata(['error' => 'Os dados de acesso estão incorretos.']);
             $session_mine_data = $cliente ? ['nome' => $cliente->nomeCliente] : ['nome' => 'Inexistente'];
             $this->session->set_userdata($session_mine_data);
@@ -472,7 +472,7 @@ class Mine extends CI_Controller
         } else {
             $email = $this->input->post('email');
             $password = $this->input->post('senha');
-            $cliente = $this->check_credentials($email);
+            $cliente = $this->getClienteByEmail($email);
 
             if ($cliente) {
                 // Verificar se o cliente tem senha definida
@@ -1823,7 +1823,12 @@ class Mine extends CI_Controller
         }
     }
 
-    private function check_credentials($email)
+    /**
+     * Busca cliente por email (portal do cliente / Mine).
+     * Renomeado de check_credentials para evitar conflito com
+     * Mapos_model::check_credentials (que valida usuarios admin/tecnico).
+     */
+    private function getClienteByEmail($email)
     {
         $this->db->where('email', $email);
         $this->db->limit(1);

@@ -49,7 +49,8 @@
             "Libraries\\Notifications\\": "application/libraries/Notifications",
             "Libraries\\Webhooks\\": "application/libraries/Webhooks",
             "Interfaces\\": "application/Interfaces",
-            "Repositories\\": "application/Repositories"
+            "Repositories\\": "application/Repositories",
+            "Application\\Traits\\": "application/traits/"
         }
     },
     "repositories": [

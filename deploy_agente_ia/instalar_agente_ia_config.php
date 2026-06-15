@@ -22,8 +22,7 @@ function runSql($CI, $sql) {
         return false;
     }
 }
-
-?'>
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -104,7 +103,8 @@ function runSql($CI, $sql) {
         echo "<p><a href='" . site_url('agente_ia/configuracoes') . "' class='btn'>Ir para Configuracoes</a></p>";
         echo "<p style='color:#e74c3c'><b>IMPORTANTE: Delete o arquivo <code>instalar_agente_ia_config.php</code> do servidor agora!</b></p>";
     }
-    ?'>
+    ?>
+
 
 </body>
 </html>

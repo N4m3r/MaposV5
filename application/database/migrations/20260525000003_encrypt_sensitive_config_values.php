@@ -14,7 +14,9 @@ class Migration_Encrypt_sensitive_config_values extends CI_Migration
             return;
         }
 
-        $encryptionKey = getenv('APP_ENCRYPTION_KEY') ?: $this->config->item('encryption_key');
+        // Dotenv\Dotenv::createImmutable popula $_ENV e $_SERVER mas NAO getenv().
+        // Tentar $_ENV primeiro, depois getenv() como fallback, e por fim o config do CI.
+        $encryptionKey = $_ENV['APP_ENCRYPTION_KEY'] ?? getenv('APP_ENCRYPTION_KEY') ?: $this->config->item('encryption_key');
         if (empty($encryptionKey)) {
             log_message('error', 'Migration: APP_ENCRYPTION_KEY nao configurada. Pulando criptografia de config sensiveis.');
             return;

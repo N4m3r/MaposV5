@@ -1535,6 +1535,11 @@ class Obras_model extends CI_Model
                     ]);
                 }
             }
+            // Invalidar cache de configuracoes (TTL de 5min em MY_Controller::load_configuration)
+            $cacheFile = APPPATH . 'cache/configuracoes_cache.json';
+            if (is_file($cacheFile)) {
+                @unlink($cacheFile);
+            }
             return true;
         } catch (Exception $e) {
             log_message('error', 'Erro ao salvar configurações: ' . $e->getMessage());
@@ -1564,6 +1569,11 @@ class Obras_model extends CI_Model
                         'valor' => $config_value,
                     ]);
                 }
+            }
+            // Invalidar cache de configuracoes (TTL de 5min em MY_Controller::load_configuration)
+            $cacheFile = APPPATH . 'cache/configuracoes_cache.json';
+            if (is_file($cacheFile)) {
+                @unlink($cacheFile);
             }
             return true;
         } catch (Exception $e) {

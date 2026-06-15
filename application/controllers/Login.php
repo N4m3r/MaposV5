@@ -22,7 +22,7 @@ class Login extends CI_Controller
     {
         $this->session->sess_destroy();
 
-        return redirect('login');
+        redirect('login');
     }
 
     public function verificarLogin()
@@ -40,56 +40,81 @@ class Login extends CI_Controller
         $ip = $this->input->ip_address();
         $lockoutInfo = $this->isLockedOut($ip);
         if ($lockoutInfo['locked']) {
-            $json = ['result' => false, 'message' => 'Conta temporariamente bloqueada. Tente novamente em ' . $lockoutInfo['minutes'] . ' minutos.', 'MAPOS_TOKEN' => $this->security->get_csrf_hash()];
-            echo json_encode($json);
-            $this->output->set_content_type('application/json')->set_output(json_encode($json));
-            return;
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result' => false,
+                    'message' => 'Conta temporariamente bloqueada. Tente novamente em ' . $lockoutInfo['minutes'] . ' minutos.',
+                    'MAPOS_TOKEN' => $this->security->get_csrf_hash(),
+                ]));
         }
 
         $this->load->library('form_validation');
         $this->form_validation->set_rules('email', 'E-mail', 'valid_email|required|trim');
         $this->form_validation->set_rules('senha', 'Senha', 'required|trim');
         if ($this->form_validation->run() == false) {
-            $json = ['result' => false, 'message' => validation_errors()];
-            $this->output->set_content_type('application/json')->set_output(json_encode($json));
-        } else {
-            $email = $this->input->post('email');
-            $password = $this->input->post('senha');
-            $this->load->model('Mapos_model');
-            $user = $this->Mapos_model->check_credentials($email);
-
-            if ($user) {
-                // Verificar se acesso esta expirado
-                if ($this->chk_date($user->dataExpiracao)) {
-                    $json = ['result' => false, 'message' => 'A conta do usuario esta expirada, por favor entre em contato com o administrador do sistema.'];
-                    $this->output->set_content_type('application/json')->set_output(json_encode($json));
-                    return;
-                }
-
-                // Verificar credenciais do usuario
-                if (password_verify($password, $user->senha)) {
-                    // Login bem-sucedido: regenerar sessao para prevenir fixacao
-                    $this->session->sess_regenerate();
-                    // Limpar tentativas
-                    $this->clearAttempts($ip);
-                    $session_admin_data = ['nome_admin' => $user->nome, 'email_admin' => $user->email, 'url_image_user_admin' => $user->url_image_user, 'id_admin' => $user->idUsuarios, 'permissao' => $user->permissoes_id, 'logado' => true];
-                    $this->session->set_userdata($session_admin_data);
-                    log_info('Efetuou login no sistema');
-                    $json = ['result' => true];
-                    $this->output->set_content_type('application/json')->set_output(json_encode($json));
-                } else {
-                    $this->recordFailedAttempt($ip);
-                    $remaining = self::$MAX_ATTEMPTS - $this->getAttemptCount($ip);
-                    $json = ['result' => false, 'message' => 'Os dados de acesso estao incorretos.' . ($remaining > 0 ? ' Tentativas restantes: ' . $remaining : ''), 'MAPOS_TOKEN' => $this->security->get_csrf_hash()];
-                    $this->output->set_content_type('application/json')->set_output(json_encode($json));
-                }
-            } else {
-                $this->recordFailedAttempt($ip);
-                $remaining = self::$MAX_ATTEMPTS - $this->getAttemptCount($ip);
-                $json = ['result' => false, 'message' => 'Usuario nao encontrado, verifique se suas credenciais estao corretas.' . ($remaining > 0 ? ' Tentativas restantes: ' . $remaining : ''), 'MAPOS_TOKEN' => $this->security->get_csrf_hash()];
-                $this->output->set_content_type('application/json')->set_output(json_encode($json));
-            }
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['result' => false, 'message' => validation_errors()]));
         }
+
+        $email = $this->input->post('email');
+        $password = $this->input->post('senha');
+        $this->load->model('Mapos_model');
+        $user = $this->Mapos_model->check_credentials($email);
+
+        if (!$user) {
+            $this->recordFailedAttempt($ip);
+            $remaining = self::$MAX_ATTEMPTS - $this->getAttemptCount($ip);
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result' => false,
+                    'message' => 'Usuario nao encontrado, verifique se suas credenciais estao corretas.' . ($remaining > 0 ? ' Tentativas restantes: ' . $remaining : ''),
+                    'MAPOS_TOKEN' => $this->security->get_csrf_hash(),
+                ]));
+        }
+
+        // Verificar se acesso esta expirado
+        if ($this->chk_date($user->dataExpiracao)) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result' => false,
+                    'message' => 'A conta do usuario esta expirada, por favor entre em contato com o administrador do sistema.',
+                ]));
+        }
+
+        // Verificar credenciais do usuario
+        if (!password_verify($password, $user->senha)) {
+            $this->recordFailedAttempt($ip);
+            $remaining = self::$MAX_ATTEMPTS - $this->getAttemptCount($ip);
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result' => false,
+                    'message' => 'Os dados de acesso estao incorretos.' . ($remaining > 0 ? ' Tentativas restantes: ' . $remaining : ''),
+                    'MAPOS_TOKEN' => $this->security->get_csrf_hash(),
+                ]));
+        }
+
+        // Login bem-sucedido: regenerar sessao para prevenir fixacao
+        $this->session->sess_regenerate();
+        $this->clearAttempts($ip);
+        $session_admin_data = [
+            'nome_admin' => $user->nome,
+            'email_admin' => $user->email,
+            'url_image_user_admin' => $user->url_image_user,
+            'id_admin' => $user->idUsuarios,
+            'permissao' => $user->permissoes_id,
+            'logado' => true,
+        ];
+        $this->session->set_userdata($session_admin_data);
+        log_info('Efetuou login no sistema');
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['result' => true]));
     }
 
     /**
@@ -170,7 +195,18 @@ class Login extends CI_Controller
 
     private function chk_date($data_banco)
     {
-        $data_banco = new DateTime($data_banco);
+        // Sem data de expiracao = nunca expira
+        if (empty($data_banco) || $data_banco === '0000-00-00 00:00:00' || $data_banco === '0000-00-00') {
+            return false;
+        }
+
+        try {
+            $data_banco = new DateTime($data_banco);
+        } catch (Exception $e) {
+            // Data invalida = tratar como expirada por seguranca
+            log_message('warning', 'chk_date: data invalida recebida: ' . var_export($data_banco, true));
+            return true;
+        }
         $data_hoje = new DateTime('now');
 
         return $data_banco < $data_hoje;

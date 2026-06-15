@@ -113,6 +113,12 @@ class Notificacoes extends MY_Controller
         $this->db->where('config', 'app_theme');
         $this->db->update('configuracoes', ['valor' => $tema]);
 
+        // Invalidar cache de configuracoes (TTL de 5min em MY_Controller::load_configuration)
+        $cacheFile = APPPATH . 'cache/configuracoes_cache.json';
+        if (is_file($cacheFile)) {
+            @unlink($cacheFile);
+        }
+
         echo json_encode(['success' => true, 'tema' => $tema]);
     }
 }

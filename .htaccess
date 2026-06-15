@@ -3,6 +3,25 @@
     Deny from all
 </FilesMatch>
 
+# Bloqueia scripts de diagnostico, fix e deploy (defesa em profundidade)
+# Mantem install/ acessivel (instalador oficial)
+<FilesMatch "^(diag|fix_|deploy_).*\.php$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Bloqueia acesso direto a arquivos de instalacao apos setup concluido
+# (descomente a regra abaixo se a instalacao ja foi finalizada)
+# RewriteRule ^install/ - [F,L]
+<IfModule mod_alias.c>
+    RedirectMatch 403 ^/install/(do_install|view_logs|InstallLogger)\.php$
+</IfModule>
+
 # Headers para permitir geolocalizacao em iframes cross-origin
 # https://www.chromium.org/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes/
 <IfModule mod_headers.c>

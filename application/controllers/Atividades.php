@@ -28,8 +28,7 @@ class Atividades extends MY_Controller
         if (!$is_admin && !$is_tecnico) {
             // Se for requisição AJAX, retorna JSON em vez de redirecionar
             if ($this->input->is_ajax_request()) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => 'Sessão expirada. Faça login novamente.']);
+                json_error('Sessão expirada. Faça login novamente.', [], 400, false);
                 exit;
             }
             redirect('login');
@@ -309,7 +308,7 @@ class Atividades extends MY_Controller
         $this->form_validation->set_rules('tipo_id', 'Tipo de Atividade', 'required|integer');
 
         if ($this->form_validation->run() == false) {
-            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            json_error(validation_errors(), [], 400, false);
             return;
         }
 
@@ -321,7 +320,7 @@ class Atividades extends MY_Controller
 
         // Verifica se já tem atividade em andamento
         if ($this->atividades->hasAtividadeEmAndamento($tecnico_id)) {
-            echo json_encode(['success' => false, 'message' => 'Já existe uma atividade em andamento.']);
+            json_error('Já existe uma atividade em andamento.', [], 400, false);
             return;
         }
 
@@ -357,13 +356,13 @@ class Atividades extends MY_Controller
         $atividade_id = $this->atividades->iniciar($dados);
 
         if ($atividade_id) {
-            echo json_encode([
+            json_response([
                 'success' => true,
                 'atividade_id' => $atividade_id,
                 'message' => 'Check-in realizado com sucesso!'
-            ]);
+            ], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao realizar check-in.']);
+            json_error('Erro ao realizar check-in.', [], 400, false);
         }
     }
 
@@ -382,7 +381,7 @@ class Atividades extends MY_Controller
         $this->form_validation->set_rules('tipo_id', 'Tipo de Atividade', 'required|integer');
 
         if ($this->form_validation->run() == false) {
-            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            json_error(validation_errors(), [], 400, false);
             return;
         }
 
@@ -390,7 +389,7 @@ class Atividades extends MY_Controller
 
         // Verifica se já tem atividade em andamento
         if ($this->atividades->hasAtividadeEmAndamento($tecnico_id)) {
-            echo json_encode(['success' => false, 'message' => 'Finalize a atividade atual antes de iniciar uma nova.']);
+            json_error('Finalize a atividade atual antes de iniciar uma nova.', [], 400, false);
             return;
         }
 
@@ -413,13 +412,13 @@ class Atividades extends MY_Controller
         $atividade_id = $this->atividades->iniciar($dados);
 
         if ($atividade_id) {
-            echo json_encode([
+            json_response([
                 'success' => true,
                 'atividade_id' => $atividade_id,
                 'message' => 'Atividade iniciada com sucesso!'
-            ]);
+            ], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao iniciar atividade.']);
+            json_error('Erro ao iniciar atividade.', [], 400, false);
         }
     }
 
@@ -440,7 +439,7 @@ class Atividades extends MY_Controller
                 : $this->session->userdata('idAdmin');
 
             if (!$tecnico_id) {
-                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                json_error('Sessão inválida. Faça login novamente.', [], 400, false);
                 return;
             }
 
@@ -458,7 +457,7 @@ class Atividades extends MY_Controller
             }
 
             if (!$atividade_id) {
-                echo json_encode(['success' => false, 'message' => 'ID da atividade não informado.']);
+                json_error('ID da atividade não informado.', [], 400, false);
                 return;
             }
 
@@ -478,7 +477,7 @@ class Atividades extends MY_Controller
             }
 
             if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
-                echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
+                json_error('Atividade não encontrada ou não pertence a você.', [], 400, false);
                 return;
             }
 
@@ -515,14 +514,13 @@ class Atividades extends MY_Controller
                 }
             }
 
-            echo json_encode([
+            json_response([
                 'success' => (bool) $result,
                 'message' => $result ? 'Atividade pausada.' : 'Erro ao pausar atividade.'
-            ]);
+            ], 200, false);
         } catch (Exception $e) {
             log_message('error', 'Erro em pausar: ' . $e->getMessage());
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+            json_error('Erro interno: ' . $e->getMessage(), [], 400, false);
         }
     }
 
@@ -542,7 +540,7 @@ class Atividades extends MY_Controller
         $atividade_id = $this->input->post('atividade_id');
 
         if (!$atividade_id) {
-            echo json_encode(['success' => false, 'message' => 'ID da atividade não informado.']);
+            json_error('ID da atividade não informado.', [], 400, false);
             return;
         }
 
@@ -557,7 +555,7 @@ class Atividades extends MY_Controller
             if ($atividade) {
                 // Verificar se há impedimento
                 if (!empty($atividade->impedimento) && $atividade->impedimento == 1) {
-                    echo json_encode(['success' => false, 'message' => 'Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.']);
+                    json_error('Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.', [], 400, false);
                     return;
                 }
                 // Converter para formato compatível
@@ -567,13 +565,13 @@ class Atividades extends MY_Controller
         }
 
         if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
-            echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
+            json_error('Atividade não encontrada ou não pertence a você.', [], 400, false);
             return;
         }
 
         // Verificar impedimento em os_atividades também
         if (!empty($atividade->impedimento) && $atividade->impedimento == 1) {
-            echo json_encode(['success' => false, 'message' => 'Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.']);
+            json_error('Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.', [], 400, false);
             return;
         }
 
@@ -582,17 +580,17 @@ class Atividades extends MY_Controller
             $this->db->where('id', $atividade->obra_atividade_id);
             $obra_ativ = $this->db->get('obra_atividades')->row();
             if ($obra_ativ && !empty($obra_ativ->impedimento) && $obra_ativ->impedimento == 1) {
-                echo json_encode(['success' => false, 'message' => 'Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.']);
+                json_error('Esta atividade está com impedimento registrado. Aguarde a reabertura pelo administrador.', [], 400, false);
                 return;
             }
         }
 
         $result = $this->atividades->retomar($atividade_id);
 
-        echo json_encode([
+        json_response([
             'success' => $result,
             'message' => $result ? 'Atividade retomada.' : 'Erro ao retomar atividade.'
-        ]);
+        ], 200, false);
     }
 
     /**
@@ -610,7 +608,7 @@ class Atividades extends MY_Controller
         $this->form_validation->set_rules('concluida', 'Status', 'required|in_list[1,0]');
 
         if ($this->form_validation->run() == false) {
-            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            json_error(validation_errors(), [], 400, false);
             return;
         }
 
@@ -633,12 +631,9 @@ class Atividades extends MY_Controller
         $result = $this->atividades->finalizar($atividade_id, $dados);
 
         if ($result) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Atividade finalizada com sucesso!'
-            ]);
+            json_success('Atividade finalizada com sucesso!', [], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao finalizar atividade.']);
+            json_error('Erro ao finalizar atividade.', [], 400, false);
         }
     }
 
@@ -662,7 +657,7 @@ class Atividades extends MY_Controller
         $atividade = $this->atividades->getAtividadeEmAndamento($tecnico_id);
 
         if (!$atividade) {
-            echo json_encode(['success' => false, 'message' => 'Nenhuma atividade em andamento.']);
+            json_error('Nenhuma atividade em andamento.', [], 400, false);
             return;
         }
 
@@ -684,12 +679,9 @@ class Atividades extends MY_Controller
             $this->load->model('Os_model');
             $this->Os_model->edit('os', ['status' => 'Finalizado'], 'idOs', $os_id);
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Atendimento finalizado com sucesso!'
-            ]);
+            json_success('Atendimento finalizado com sucesso!', [], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao finalizar atendimento.']);
+            json_error('Erro ao finalizar atendimento.', [], 400, false);
         }
     }
 
@@ -698,14 +690,13 @@ class Atividades extends MY_Controller
      */
     public function teste_ajax()
     {
-        header('Content-Type: application/json');
-        echo json_encode([
+        json_response([
             'success' => true,
             'message' => 'Controller respondendo',
             'session_tec_id' => $this->session->userdata('tec_id'),
             'is_portal_tecnico' => $this->is_portal_tecnico,
             'post_received' => $this->input->post()
-        ]);
+        ], 200, false);
         exit;
     }
 
@@ -728,7 +719,7 @@ class Atividades extends MY_Controller
                 : $this->session->userdata('idAdmin');
 
             if (!$tecnico_id) {
-                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                json_error('Sessão inválida. Faça login novamente.', [], 400, false);
                 return;
             }
 
@@ -738,7 +729,7 @@ class Atividades extends MY_Controller
 
             // Validação básica - etapa pode ser 0 ou 'sem_etapa' para atividades sem etapa definida
             if (!$obra_id) {
-                echo json_encode(['success' => false, 'message' => 'Obra é obrigatória.', 'post' => $this->input->post()]);
+                json_error('Obra é obrigatória.', ['post' => $this->input->post()], 400, false);
                 return;
             }
 
@@ -749,14 +740,14 @@ class Atividades extends MY_Controller
 
             // Verifica se já tem atividade em andamento
             if ($this->atividades->hasAtividadeEmAndamento($tecnico_id)) {
-                echo json_encode(['success' => false, 'message' => 'Já existe uma atividade em andamento.']);
+                json_error('Já existe uma atividade em andamento.', [], 400, false);
                 return;
             }
 
             // Verifica se técnico tem acesso à obra
             $this->load->model('obras_model');
             if (!$this->obras_model->tecnicoEstaNaEquipe($obra_id, $tecnico_id)) {
-                echo json_encode(['success' => false, 'message' => 'Você não tem acesso a esta obra.']);
+                json_error('Você não tem acesso a esta obra.', [], 400, false);
                 return;
             }
 
@@ -846,25 +837,24 @@ class Atividades extends MY_Controller
                     }
                 }
 
-                echo json_encode([
+                json_response([
                     'success' => true,
                     'atividade_id' => $atividade_realizada_id,
                     'message' => $is_impedimento ? 'Impedimento registrado com sucesso!' : 'Check-in realizado com sucesso!'
-                ]);
+                ], 200, false);
             } else {
                 $db_error = $this->db->error();
                 log_message('error', 'checkin_obra - Erro ao iniciar atividade. DB Error: ' . print_r($db_error, true));
-                echo json_encode([
+                json_response([
                     'success' => false,
                     'message' => 'Erro ao realizar check-in: ' . ($db_error['message'] ?? 'Erro desconhecido'),
                     'debug' => $db_error,
                     'dados_enviados' => $dados
-                ]);
+                ], 200, false);
             }
         } catch (Exception $e) {
             log_message('error', 'Erro em checkin_obra: ' . $e->getMessage());
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+            json_error('Erro interno: ' . $e->getMessage(), [], 400, false);
         }
     }
 
@@ -885,7 +875,7 @@ class Atividades extends MY_Controller
                 : $this->session->userdata('idAdmin');
 
             if (!$tecnico_id) {
-                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                json_error('Sessão inválida. Faça login novamente.', [], 400, false);
                 return;
             }
 
@@ -894,7 +884,7 @@ class Atividades extends MY_Controller
             $observacao = $this->input->post('observacao');
 
             if (!$observacao) {
-                echo json_encode(['success' => false, 'message' => 'Observação não informada.']);
+                json_error('Observação não informada.', [], 400, false);
                 return;
             }
 
@@ -905,7 +895,7 @@ class Atividades extends MY_Controller
                 // Tenta buscar pela ID específica
                 $atividade = $this->atividades->getById($atividade_id);
                 if (!$atividade || $atividade->tecnico_id != $tecnico_id) {
-                    echo json_encode(['success' => false, 'message' => 'Atividade não encontrada ou não pertence a você.']);
+                    json_error('Atividade não encontrada ou não pertence a você.', [], 400, false);
                     return;
                 }
             }
@@ -919,14 +909,13 @@ class Atividades extends MY_Controller
             ]);
 
             if ($result) {
-                echo json_encode(['success' => true, 'message' => 'Observação registrada com sucesso!']);
+                json_success('Observação registrada com sucesso!', [], 200, false);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Erro ao registrar observação.']);
+                json_error('Erro ao registrar observação.', [], 400, false);
             }
         } catch (Exception $e) {
             log_message('error', 'Erro em registrar_observacao: ' . $e->getMessage());
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+            json_error('Erro interno: ' . $e->getMessage(), [], 400, false);
         }
     }
 
@@ -975,7 +964,7 @@ class Atividades extends MY_Controller
         $this->form_validation->set_rules('concluida', 'Status', 'required|in_list[1,0]');
 
         if ($this->form_validation->run() == false) {
-            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            json_error(validation_errors(), [], 400, false);
             return;
         }
 
@@ -1004,12 +993,9 @@ class Atividades extends MY_Controller
                 $this->atualizarProgressoEtapa($atividade->etapa_id, $atividade->obra_id);
             }
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Atividade finalizada com sucesso!'
-            ]);
+            json_success('Atividade finalizada com sucesso!', [], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao finalizar atividade.']);
+            json_error('Erro ao finalizar atividade.', [], 400, false);
         }
     }
 
@@ -1052,7 +1038,7 @@ class Atividades extends MY_Controller
                 : $this->session->userdata('idAdmin');
 
             if (!$tecnico_id) {
-                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                json_error('Sessão inválida. Faça login novamente.', [], 400, false);
                 return;
             }
 
@@ -1071,7 +1057,7 @@ class Atividades extends MY_Controller
         }
 
         if (!$atividade) {
-            echo json_encode(['success' => false, 'message' => 'Nenhuma atividade em andamento nesta obra.']);
+            json_error('Nenhuma atividade em andamento nesta obra.', [], 400, false);
             return;
         }
 
@@ -1141,17 +1127,13 @@ class Atividades extends MY_Controller
                 $this->atualizarProgressoEtapa($atividade->etapa_id, $obra_id);
             }
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Trabalho finalizado com sucesso!'
-            ]);
+            json_success('Trabalho finalizado com sucesso!', [], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao finalizar trabalho.']);
+            json_error('Erro ao finalizar trabalho.', [], 400, false);
         }
         } catch (Exception $e) {
             log_message('error', 'Erro em checkout_obra: ' . $e->getMessage());
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+            json_error('Erro interno: ' . $e->getMessage(), [], 400, false);
         }
     }
 
@@ -1172,7 +1154,7 @@ class Atividades extends MY_Controller
         $this->form_validation->set_rules('obra_id', 'Obra', 'required|integer');
 
         if ($this->form_validation->run() == false) {
-            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            json_error(validation_errors(), [], 400, false);
             return;
         }
 
@@ -1187,12 +1169,9 @@ class Atividades extends MY_Controller
         );
 
         if ($result) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Atividade vinculada com sucesso!'
-            ]);
+            json_success('Atividade vinculada com sucesso!', [], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao vincular atividade.']);
+            json_error('Erro ao vincular atividade.', [], 400, false);
         }
     }
 
@@ -1212,7 +1191,7 @@ class Atividades extends MY_Controller
         $this->form_validation->set_rules('quantidade', 'Quantidade', 'required|numeric');
 
         if ($this->form_validation->run() == false) {
-            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            json_error(validation_errors(), [], 400, false);
             return;
         }
 
@@ -1226,10 +1205,10 @@ class Atividades extends MY_Controller
 
         $result = $this->atividades->adicionarMaterial($this->input->post('atividade_id'), $dados);
 
-        echo json_encode([
+        json_response([
             'success' => (bool) $result,
             'message' => $result ? 'Material adicionado.' : 'Erro ao adicionar material.'
-        ]);
+        ], 200, false);
     }
 
     /**
@@ -1246,7 +1225,7 @@ class Atividades extends MY_Controller
         $this->form_validation->set_rules('atividade_id', 'Atividade', 'required|integer');
 
         if ($this->form_validation->run() == false) {
-            echo json_encode(['success' => false, 'message' => validation_errors()]);
+            json_error(validation_errors(), [], 400, false);
             return;
         }
 
@@ -1283,10 +1262,10 @@ class Atividades extends MY_Controller
 
         $result = $this->atividades->adicionarFoto($this->input->post('atividade_id'), $dados);
 
-        echo json_encode([
+        json_response([
             'success' => (bool) $result,
             'message' => $result ? 'Foto adicionada.' : 'Erro ao adicionar foto.'
-        ]);
+        ], 200, false);
     }
 
     /**
@@ -1307,7 +1286,7 @@ class Atividades extends MY_Controller
         $descricao = $this->input->post('descricao');
 
         if (!$obra_id || !$tipo_id) {
-            echo json_encode(['success' => false, 'message' => 'Dados incompletos.']);
+            json_error('Dados incompletos.', [], 400, false);
             return;
         }
 
@@ -1326,11 +1305,11 @@ class Atividades extends MY_Controller
 
         $result = $this->atividades->iniciarNaObra($obra_id, $this->input->post('etapa_id'), $dados);
 
-        echo json_encode([
+        json_response([
             'success' => (bool) $result,
             'message' => $result ? 'Atividade adicionada.' : 'Erro ao adicionar atividade.',
             'atividade_id' => $result
-        ]);
+        ], 200, false);
     }
 
     /**
@@ -1346,7 +1325,7 @@ class Atividades extends MY_Controller
             header('Content-Type: application/json');
 
             if (!$this->input->is_ajax_request()) {
-                echo json_encode(['success' => false, 'message' => 'Requisição inválida.']);
+                json_error('Requisição inválida.', [], 400, false);
                 return;
             }
 
@@ -1355,7 +1334,7 @@ class Atividades extends MY_Controller
                 : $this->session->userdata('idAdmin');
 
             if (!$tecnico_id) {
-                echo json_encode(['success' => false, 'message' => 'Sessão inválida. Faça login novamente.']);
+                json_error('Sessão inválida. Faça login novamente.', [], 400, false);
                 return;
             }
 
@@ -1363,7 +1342,7 @@ class Atividades extends MY_Controller
             $descricao = $this->input->post('descricao');
 
             if (!$obra_id) {
-                echo json_encode(['success' => false, 'message' => 'Obra não informada.']);
+                json_error('Obra não informada.', [], 400, false);
                 return;
             }
 
@@ -1371,7 +1350,7 @@ class Atividades extends MY_Controller
             $atividade = $this->atividades->getAtividadeEmAndamentoNaObra($tecnico_id, $obra_id);
 
             if (!$atividade) {
-                echo json_encode(['success' => false, 'message' => 'Nenhuma atividade em andamento.']);
+                json_error('Nenhuma atividade em andamento.', [], 400, false);
                 return;
             }
 
@@ -1400,14 +1379,13 @@ class Atividades extends MY_Controller
 
             $result = $this->atividades->adicionarFoto($atividade->idAtividade, $dados);
 
-            echo json_encode([
+            json_response([
                 'success' => (bool) $result,
                 'message' => $result ? 'Foto adicionada.' : 'Erro ao adicionar foto.'
-            ]);
+            ], 200, false);
         } catch (Exception $e) {
             log_message('error', 'Erro em adicionar_foto_obra: ' . $e->getMessage());
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Erro interno: ' . $e->getMessage()]);
+            json_error('Erro interno: ' . $e->getMessage(), [], 400, false);
         }
     }
 
@@ -1422,10 +1400,10 @@ class Atividades extends MY_Controller
 
         $atividades = $this->atividades->listarPorOS($os_id);
 
-        echo json_encode([
+        json_response([
             'success' => true,
             'atividades' => $atividades
-        ]);
+        ], 200, false);
     }
 
     /**
@@ -1440,12 +1418,12 @@ class Atividades extends MY_Controller
         $atividade = $this->atividades->getByIdCompleto($atividade_id);
 
         if ($atividade) {
-            echo json_encode([
+            json_response([
                 'success' => true,
                 'atividade' => $atividade
-            ]);
+            ], 200, false);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Atividade não encontrada.']);
+            json_error('Atividade não encontrada.', [], 400, false);
         }
     }
 
@@ -1517,10 +1495,10 @@ class Atividades extends MY_Controller
 
         $tipos = $this->atividades_tipos->listar(['categoria' => $categoria]);
 
-        echo json_encode([
+        json_response([
             'success' => true,
             'tipos' => $tipos
-        ]);
+        ], 200, false);
     }
 
     /**

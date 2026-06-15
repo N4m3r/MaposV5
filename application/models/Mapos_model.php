@@ -534,6 +534,10 @@ class Mapos_model extends MY_Model
     {
         $this->db->where('email', $email);
         $this->db->where('situacao', 1);
+        // Respeitar soft delete (migration 20260524000002 adiciona deleted_at em usuarios)
+        if ($this->db->field_exists('deleted_at', 'usuarios')) {
+            $this->db->where('usuarios.deleted_at IS NULL', null, false);
+        }
         $this->db->limit(1);
 
         return $this->db->get('usuarios')->row();
@@ -559,6 +563,12 @@ class Mapos_model extends MY_Model
 
         if ($this->db->trans_status() === false) {
             return false;
+        }
+
+        // Invalidar cache de configuracoes (TTL de 5min em MY_Controller::load_configuration)
+        $cacheFile = APPPATH . 'cache/configuracoes_cache.json';
+        if (is_file($cacheFile)) {
+            @unlink($cacheFile);
         }
 
         return true;
