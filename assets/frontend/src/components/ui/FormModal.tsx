@@ -21,6 +21,7 @@
  */
 import { useEffect, useState, type ReactNode } from 'react';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton, CFormInput, CFormSelect, CFormTextarea, CFormLabel, CFormCheck } from '@coreui/react';
+import { useEscKey, useFocusTrap } from '../../hooks/useA11y';
 
 export type FieldType = 'text' | 'password' | 'number' | 'email' | 'date' | 'datetime-local' | 'select' | 'textarea' | 'checkbox';
 
@@ -72,9 +73,15 @@ export function FormModal({
     validate,
 }: FormModalProps) {
     const [validationErr, setValidationErr] = useState<string | null>(null);
+    const trapRef = useFocusTrap<HTMLDivElement>(visible);
 
     // Limpa erro de validacao sempre que mudar valor
     useEffect(() => { setValidationErr(null); }, [value]);
+
+    // ESC fecha o modal
+    useEscKey(() => {
+        if (visible && !loading) onClose();
+    }, visible);
 
     function setField(key: string, v: unknown) {
         onChange({ ...value, [key]: v });
@@ -89,11 +96,11 @@ export function FormModal({
     }
 
     return (
-        <CModal visible={visible} onClose={onClose} size={size} backdrop="static">
-            <CModalHeader>
-                <CModalTitle>{title}</CModalTitle>
+        <CModal visible={visible} onClose={onClose} size={size} backdrop="static" aria-labelledby="form-modal-title">
+            <CModalHeader closeButton>
+                <CModalTitle id="form-modal-title">{title}</CModalTitle>
             </CModalHeader>
-            <CModalBody>
+            <CModalBody ref={trapRef}>
                 {(error || validationErr) && (
                     <div className="alert alert-danger" role="alert">
                         {error || validationErr}
@@ -108,6 +115,9 @@ export function FormModal({
                             required: f.required,
                             disabled: loading,
                             placeholder: f.placeholder,
+                            'aria-required': f.required ? true : undefined,
+                            'aria-invalid': validationErr && f.required && !v ? true : undefined,
+                            'aria-describedby': f.help ? `f-${f.key}-help` : undefined,
                         };
                         let control: ReactNode = null;
                         switch (f.type) {
@@ -179,7 +189,7 @@ export function FormModal({
                                     {f.label}{f.required ? ' *' : ''}
                                 </CFormLabel>
                                 {control}
-                                {f.help && <small className="text-muted d-block mt-1">{f.help}</small>}
+                                {f.help && <small id={`f-${f.key}-help`} className="text-muted d-block mt-1">{f.help}</small>}
                             </div>
                         );
                     })}

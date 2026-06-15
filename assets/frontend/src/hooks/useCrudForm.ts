@@ -11,31 +11,47 @@
  *     onSuccess: () => dataTableRef.current?.reload(),
  *   });
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { save as crudSave, remove as crudRemove, getOne } from '../api/crud';
+import { toast } from '../components/ui/Toast';
 import type { Row } from '../types';
 
 interface UseCrudFormOptions<R extends Row> {
     controller: string;
     defaultValue: Omit<R, 'id'>;
+    /** Nome amigavel da entidade ("Cliente", "OS", "Lancamento") — usado nos toasts */
+    entityName?: string;
     onSuccess?: (action: 'create' | 'update' | 'delete', row: R | null) => void;
     onError?: (err: Error) => void;
+    /** Mostra toast automaticamente apos salvar/excluir (default: true) */
+    showToasts?: boolean;
 }
 
 export function useCrudForm<R extends Row>({
     controller,
     defaultValue,
+    entityName,
     onSuccess,
     onError,
+    showToasts = true,
 }: UseCrudFormOptions<R>) {
     const [form, setFormInternal] = useState<R>({ ...(defaultValue as R) });
+    // Ref espelha o form para que submit() leia o valor mais recente
+    // (state eh batched, ref nao — isso evita o form "velho" no submit)
+    const formRef = useRef<R>(form);
     function setForm(v: Record<string, unknown>) {
-        setFormInternal((prev) => ({ ...prev, ...v }) as R);
+        setFormInternal((prev) => {
+            const next = { ...prev, ...v } as R;
+            formRef.current = next;
+            return next;
+        });
     }
     const [editing, setEditing] = useState(false);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const label = entityName || controller.replace(/s$/, '');
 
     function close() {
         setOpen(false);
@@ -58,7 +74,8 @@ export function useCrudForm<R extends Row>({
         try {
             const row = await getOne<R>(controller, Number(id));
             if (row) {
-                setForm(row);
+                setFormInternal(row);
+                formRef.current = row;
                 setOpen(true);
             } else {
                 setError('Registro nao encontrado');
@@ -75,13 +92,20 @@ export function useCrudForm<R extends Row>({
         setLoading(true);
         setError(null);
         try {
-            await crudSave<R>(controller, form);
-            onSuccess?.(form.id ? 'update' : 'create', form);
+            const data = formRef.current;
+            const isUpdate = !!(data as { id?: unknown }).id;
+            await crudSave<R>(controller, data);
+            onSuccess?.(isUpdate ? 'update' : 'create', data);
+            if (showToasts) {
+                toast.success(`${label} ${isUpdate ? 'atualizado' : 'criado'} com sucesso`);
+            }
             close();
             return true;
         } catch (e) {
-            setError(e instanceof Error ? e.message : 'Erro ao salvar');
+            const msg = e instanceof Error ? e.message : 'Erro ao salvar';
+            setError(msg);
             onError?.(e instanceof Error ? e : new Error(String(e)));
+            if (showToasts) toast.error(msg);
             return false;
         } finally {
             setLoading(false);
@@ -89,15 +113,18 @@ export function useCrudForm<R extends Row>({
     }
 
     async function remove(id: number | string): Promise<boolean> {
-        if (!window.confirm('Tem certeza que deseja excluir este registro?')) return false;
+        if (!window.confirm(`Tem certeza que deseja excluir este ${label}?`)) return false;
         setLoading(true);
         try {
             await crudRemove(controller, Number(id));
             onSuccess?.('delete', null);
+            if (showToasts) toast.success(`${label} excluido com sucesso`);
             return true;
         } catch (e) {
-            setError(e instanceof Error ? e.message : 'Erro ao excluir');
+            const msg = e instanceof Error ? e.message : 'Erro ao excluir';
+            setError(msg);
             onError?.(e instanceof Error ? e : new Error(String(e)));
+            if (showToasts) toast.error(msg);
             return false;
         } finally {
             setLoading(false);

@@ -1,0 +1,320 @@
+/* ============================================================
+   Login React Standalone - Estilos
+   Carregado em /index.php/mine/loginReact
+   ============================================================ */
+
+.login-react-body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-page, #0f172a);
+    overflow-x: hidden;
+}
+
+.login-react-noscript {
+    padding: 2rem;
+    text-align: center;
+    background: #fee;
+    color: #c00;
+}
+
+.login-react-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ----- Background com blobs animados ----- */
+.login-react-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+.login-react-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: login-react-float 20s ease-in-out infinite;
+}
+
+.login-react-blob-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+}
+
+.login-react-blob-2 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+    bottom: -150px;
+    right: -150px;
+    animation-delay: -7s;
+}
+
+.login-react-blob-3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -14s;
+}
+
+@keyframes login-react-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%      { transform: translate(40px, -30px) scale(1.1); }
+    66%      { transform: translate(-30px, 40px) scale(0.95); }
+}
+
+/* ----- Grid: hero + card ----- */
+.login-react-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    max-width: 1200px;
+    width: 100%;
+    padding: 2rem;
+    align-items: center;
+}
+
+@media (max-width: 991.98px) {
+    .login-react-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+/* ----- Hero (coluna esquerda) ----- */
+.login-react-hero {
+    color: #f1f5f9;
+    padding: 2rem;
+}
+
+.login-react-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+}
+
+.login-react-subtitle {
+    font-size: 1.125rem;
+    color: #cbd5e1;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.login-react-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.login-react-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    color: #cbd5e1;
+    font-size: 1rem;
+}
+
+.login-react-features li .icon {
+    color: #34d399;
+    flex-shrink: 0;
+}
+
+/* ----- Card de login (coluna direita) ----- */
+.login-react-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.5) !important;
+    color: #f1f5f9;
+}
+
+.login-react-card-body {
+    padding: 3rem 2.5rem !important;
+}
+
+.login-react-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-react-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.5);
+}
+
+.login-react-brand-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+}
+
+.login-react-brand-sub {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin: 0.25rem 0 0;
+}
+
+/* ----- Form ----- */
+.login-react-form .form-label,
+.login-react-form label {
+    color: #cbd5e1 !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.login-react-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.login-react-input input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f1f5f9 !important;
+    padding: 0.75rem 1rem 0.75rem 2.75rem !important;
+    border-radius: 12px !important;
+    height: auto !important;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.login-react-input input::placeholder {
+    color: #64748b !important;
+}
+
+.login-react-input input:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    outline: none;
+}
+
+.login-react-input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #64748b;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.login-react-pwd-toggle {
+    position: absolute;
+    right: 0.5rem;
+    background: transparent;
+    border: 0;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.login-react-pwd-toggle:hover {
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.login-react-submit {
+    width: 100%;
+    padding: 0.875rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+    border: 0 !important;
+    color: #fff !important;
+    box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.5) !important;
+    transition: all 0.2s ease !important;
+}
+
+.login-react-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px -4px rgba(99, 102, 241, 0.6) !important;
+}
+
+.login-react-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.login-react-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.login-react-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s;
+}
+
+.login-react-link:hover {
+    color: #c084fc;
+    text-decoration: none;
+}
+
+.login-react-footer {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.8rem;
+    margin: 1.5rem 0 0;
+}
+
+/* ----- Temas claros (compatibilidade com mapos.css [data-theme]) ----- */
+body[data-theme="white"] .login-react-bg,
+body[data-theme="whitegreen"] .login-react-bg,
+body[data-theme="whiteblack"] .login-react-bg,
+body[data-theme="puredark"] .login-react-bg {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+}
+
+body[data-theme="darkviolet"] .login-react-bg,
+body[data-theme="darkorange"] .login-react-bg {
+    background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #0f0f1e 100%);
+}

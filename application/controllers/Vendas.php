@@ -18,6 +18,10 @@ class Vendas extends MY_Controller
     protected $api_search_fields = ['idVendas'];
     protected $api_default_order = ['idVendas', 'desc'];
     protected $api_required_permission = 'vVenda';
+    protected $api_rules = [
+        'dataVenda'  => ['date'],
+        'valorTotal' => ['numeric', 'min:0'],
+    ];
 
     private WebhookManager $webhookManager;
 

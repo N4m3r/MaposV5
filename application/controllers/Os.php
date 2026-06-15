@@ -1203,4 +1203,121 @@ class Os extends MY_Controller
         $this->output->set_content_type('application/json')->set_output(json_encode($historico));
     }
 
+    /**
+     * Detalhe completo de uma OS para o React.
+     * GET /os/api_detail/<id>
+     *
+     * Retorna:
+     *   - os: dados da OS
+     *   - cliente: dados do cliente
+     *   - servicos: array de servicos
+     *   - produtos: array de produtos
+     *   - anotacoes: array de anotacoes
+     *   - historico: log de mudancas de status
+     *   - anexos: arquivos
+     */
+    public function api_detail($os_id = null)
+    {
+        if (!$os_id || !is_numeric($os_id)) {
+            $this->output
+                ->set_status_header(400)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'OS inválida']));
+            return;
+        }
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+            $this->output
+                ->set_status_header(403)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'Sem permissão']));
+            return;
+        }
+
+        $this->load->model('os_model');
+        $this->load->model('clientes_model');
+        $this->load->model('anotacoes_model');
+
+        $os = $this->os_model->getById((int) $os_id);
+        if (!$os) {
+            $this->output
+                ->set_status_header(404)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'OS não encontrada']));
+            return;
+        }
+
+        // Cliente
+        $cliente = null;
+        if (!empty($os->cliente_id)) {
+            $cliente = $this->clientes_model->getById((int) $os->cliente_id);
+        }
+
+        // Servicos e produtos (formato usado no legado: tabela `itens_os`)
+        $this->db->select('i.*, s.nome as servico_nome');
+        $this->db->from('itens_os i');
+        $this->db->join('servicos s', 's.idServicos = i.servico_id', 'left');
+        $this->db->where('i.os_id', (int) $os_id);
+        $this->db->where('i.tipo', 'servico');
+        $servicos = $this->db->get()->result_array();
+
+        $this->db->select('i.*, p.descricao as produto_nome');
+        $this->db->from('itens_os i');
+        $this->db->join('produtos p', 'p.idProdutos = i.produto_id', 'left');
+        $this->db->where('i.os_id', (int) $os_id);
+        $this->db->where('i.tipo', 'produto');
+        $produtos = $this->db->get()->result_array();
+
+        // Anotacoes
+        $anotacoes = [];
+        if (method_exists($this->anotacoes_model, 'getByOs')) {
+            $anotacoes = $this->anotacoes_model->getByOs((int) $os_id);
+        }
+
+        // Historico (auditoria de mudanca de status)
+        $historico = [];
+        try {
+            $this->db->select('h.*, u.nome as usuario_nome');
+            $this->db->from('os_historico h');
+            $this->db->join('usuarios u', 'u.idUsuarios = h.usuario_id', 'left');
+            $this->db->where('h.os_id', (int) $os_id);
+            $this->db->order_by('h.data', 'desc');
+            $historico = $this->db->get()->result_array();
+        } catch (\Throwable $e) {
+            // tabela pode nao existir — ignora
+            $historico = [];
+        }
+
+        // Anexos (arquivos no diretorio uploads/os/<id>/)
+        $anexos = [];
+        $anexosDir = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'os' . DIRECTORY_SEPARATOR . $os_id;
+        if (is_dir($anexosDir)) {
+            foreach (scandir($anexosDir) as $f) {
+                if ($f === '.' || $f === '..') continue;
+                $abs = $anexosDir . DIRECTORY_SEPARATOR . $f;
+                if (!is_file($abs)) continue;
+                $anexos[] = [
+                    'name' => $f,
+                    'originalName' => $f,
+                    'size' => (int) @filesize($abs),
+                    'type' => @mime_content_type($abs) ?: 'application/octet-stream',
+                    'url' => base_url('assets/uploads/os/' . $os_id . '/' . $f),
+                ];
+            }
+        }
+
+        $this->output
+            ->set_status_header(200)
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'success' => true,
+                'os' => $os,
+                'cliente' => $cliente,
+                'servicos' => $servicos,
+                'produtos' => $produtos,
+                'anotacoes' => $anotacoes,
+                'historico' => $historico,
+                'anexos' => $anexos,
+            ], JSON_UNESCAPED_UNICODE));
+    }
+
 }

@@ -18,6 +18,12 @@ class Produtos extends MY_Controller
     protected $api_search_fields = ['descricao', 'codDeBarra', 'unidade'];
     protected $api_default_order = ['idProdutos', 'desc'];
     protected $api_required_permission = 'vProduto';
+    protected $api_rules = [
+        'descricao' => ['required', 'min:2', 'max:100'],
+        'precoVenda'=> ['numeric', 'min:0'],
+        'precoCusto'=> ['numeric', 'min:0'],
+        'estoque'   => ['integer', 'min:0'],
+    ];
 
     private WebhookManager $webhookManager;
 

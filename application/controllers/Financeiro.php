@@ -14,6 +14,12 @@ class Financeiro extends MY_Controller
     protected $api_search_fields = ['descricao', 'observacao'];
     protected $api_default_order = ['data_vencimento', 'desc'];
     protected $api_required_permission = 'vFinanceiro';
+    protected $api_rules = [
+        'descricao'       => ['required', 'min:2', 'max:200'],
+        'valor'           => ['required', 'numeric'],
+        'tipo'            => ['required', 'in:receita,despesa'],
+        'data_vencimento' => ['date'],
+    ];
     public function __construct()
     {
         parent::__construct();

@@ -6,6 +6,7 @@
  * Aqui: edicao simples de status/descricao/valor + exclusao.
  */
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import { DataTable } from '../components/ui/DataTable';
 import { StatusBadge } from '../components/ui/DataTable';
@@ -114,14 +115,14 @@ export default function OsPage() {
                 initialPageSize={50}
                 renderActions={(r) => (
                     <>
-                        <a
+                        <Link
+                            to={`/os/${r.idOs}`}
                             className="btn btn-sm btn-link p-0 me-2"
-                            title="Visualizar (sistema legado)"
-                            aria-label="Visualizar"
-                            href={`/index.php/os/visualizar/${r.idOs}`}
+                            title="Visualizar detalhes"
+                            aria-label="Visualizar detalhes"
                         >
                             <CIcon icon="cilEye" />
-                        </a>
+                        </Link>
                         <button
                             className="btn btn-sm btn-link p-0 me-2"
                             title="Edicao rapida"

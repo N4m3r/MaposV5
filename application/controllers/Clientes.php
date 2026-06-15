@@ -18,6 +18,13 @@ class Clientes extends MY_Controller
     protected $api_search_fields = ['nomeCliente', 'documento', 'email', 'celular', 'telefone'];
     protected $api_default_order = ['idClientes', 'desc'];
     protected $api_required_permission = 'vCliente';
+    protected $api_rules = [
+        'nomeCliente' => ['required', 'min:3', 'max:100'],
+        'email'       => ['email', 'max:100'],
+        'documento'   => ['max:20'],
+        'celular'     => ['max:20'],
+        'telefone'    => ['max:20'],
+    ];
 
     private WebhookManager $webhookManager;
 

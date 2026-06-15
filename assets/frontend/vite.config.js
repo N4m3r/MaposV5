@@ -1,14 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
-
 // Vite config para MaposV5
 // - Build: gera bundle minificado em assets/frontend/dist/
 // - Dev server: porta 5173, com HMR
 // - Code-splitting: separa React, CoreUI, Charts em chunks
 export default defineConfig({
     plugins: [react()],
-
     // Servidor dev (rodar `npm run dev` no PC local)
     server: {
         port: 5173,
@@ -25,7 +23,6 @@ export default defineConfig({
             },
         },
     },
-
     // Build de produção
     build: {
         outDir: 'dist',
@@ -52,7 +49,6 @@ export default defineConfig({
             },
         },
     },
-
     // Resolve paths
     resolve: {
         alias: {

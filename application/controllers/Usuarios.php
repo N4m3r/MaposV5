@@ -11,10 +11,28 @@ class Usuarios extends MY_Controller
     use ApiCrudTrait;
 
     protected $api_table = 'usuarios';
+    protected $api_pk = 'idUsuarios';
     protected $api_search_fields = ['nome', 'email', 'usuario'];
     protected $api_default_order = ['idUsuarios', 'desc'];
     protected $api_required_permission = 'vUsuario';
-    protected $api_hidden = ['senha']; // nunca devolver hash de senha
+    protected $api_hidden = ['senha']; // nunca devolver hash
+    protected $api_rules = [
+        'nome'    => ['required', 'min:3', 'max:100'],
+        'usuario' => ['required', 'min:3', 'max:50'],
+        'email'   => ['email', 'max:100'],
+    ];
+
+    /**
+     * Hook: hash de senha antes de salvar (so se vier senha no payload).
+     * Usa o mesmo algoritmo do sistema legado (bcrypt via password_hash).
+     */
+    protected function _apiAfterSave($id, $isNew, $data)
+    {
+        if (!empty($data['senha']) && mb_strlen($data['senha']) >= 6) {
+            $hash = password_hash($data['senha'], PASSWORD_DEFAULT);
+            $this->db->where('idUsuarios', $id)->update('usuarios', ['senha' => $hash]);
+        }
+    }
 
     public function __construct()
     {

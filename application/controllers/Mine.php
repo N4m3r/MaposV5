@@ -58,6 +58,19 @@ class Mine extends CI_Controller
         $this->load->view('conecte/login');
     }
 
+    /**
+     * Login React standalone (novo).
+     * Carrega a view login_react.php que monta o bundle Vite
+     * com a UI React + glassmorphism.
+     */
+    public function loginReact()
+    {
+        if ($this->session->userdata('conectado')) {
+            redirect('mine/painel');
+        }
+        $this->load->view('conecte/login_react');
+    }
+
     public function sair()
     {
         $this->session->sess_destroy();
