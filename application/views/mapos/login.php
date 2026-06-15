@@ -674,7 +674,8 @@
                             $btn.css('background', 'linear-gradient(135deg, #10b981, #059669)');
 
                             setTimeout(function() {
-                                window.location.href = "<?= site_url('mapos'); ?>";
+                                // Nova UI: React + CoreUI 5 (sidebar dark, topbar, dashboard, kanban, etc)
+                                window.location.href = "<?= site_url('app/dashboard'); ?>";
                             }, 800);
                         } else {
                             // Erro - animacao shake
