@@ -23,6 +23,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/fullcalendar.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+  <!-- CoreUI shell (sidebar dark) usa Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous">
   <script type="text/javascript" src="<?= base_url(); ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="<?= base_url(); ?>assets/js/shortcut.js"></script>
   <script type="text/javascript" src="<?= base_url(); ?>assets/js/funcoesGlobal.js"></script>
@@ -83,7 +85,7 @@
   </script>
 </head>
 
-<body data-theme="<?= $configuration['app_theme'] ?? 'default' ?>">
+<body class="coreui-shell" data-theme="<?= $configuration['app_theme'] ?? 'default' ?>">
 
   <!-- F6.1 — Skip link para pular navegacao (WCAG 2.1) -->
   <a href="#content" class="ux-skip-link">Pular para o conteudo</a>
@@ -452,6 +454,13 @@
       <div class="topbar-action">
         <a href="<?= site_url('ajuda') ?>" title="Central de Ajuda" style="color:inherit;text-decoration:none;">
           <i class="bx bx-help-circle" style="font-size:20px;"></i>
+        </a>
+      </div>
+
+      <!-- R5: Botao de alternancia para a UI React (CoreUI 5) -->
+      <div class="topbar-action">
+        <a href="<?= site_url('app/dashboard') ?>" title="Nova UI (React + CoreUI 5)" style="color:inherit;text-decoration:none;">
+          <i class="bx bx-rocket" style="font-size:20px;"></i>
         </a>
       </div>
 

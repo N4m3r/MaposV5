@@ -14,6 +14,8 @@
 <!--end-Footer-part-->
 <script src="<?= base_url() ?>assets/js/bootstrap5.bundle.min.js"></script>
 <script src="<?= base_url() ?>assets/js/matrix.js"></script>
+<!-- CoreUI shell handlers (sidebar, theme switcher) -->
+<script src="<?= base_url() ?>assets/js/coreui-shell.js?v=<?= @filemtime(FCPATH.'assets/js/coreui-shell.js') ?>"></script>
 <script type="text/javascript">
 // ==============================
 // NOTIFICAÇÕES

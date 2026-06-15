@@ -1,0 +1,12 @@
+# Bloqueia acesso direto aos HTMLs gerados pelo Vite
+# Estes arquivos sao apenas para dev (npm run dev) e nao devem
+# ser servidos pelo Apache — o CodeIgniter serve o bundle via /app/*.
+<FilesMatch "\.(html|htm)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

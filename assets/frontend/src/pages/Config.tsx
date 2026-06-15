@@ -10,7 +10,7 @@ const LINKS = [
     { to: '/index.php/mapos',                        icon: 'cilSpeedometer', label: 'Painel administrativo',     desc: 'Visao geral do sistema.' },
     { to: '/index.php/permissoes',                   icon: 'cilLockLocked',  label: 'Permissoes',                desc: 'Grupos e permissoes de usuarios.' },
     { to: '/index.php/usuarios',                     icon: 'cilUser',        label: 'Usuarios',                  desc: 'Cadastro de usuarios.' },
-    { to: '/index.php/notificacoesConfig',           icon: 'cilBell',        label: 'Notificacoes',              desc: 'Configurar alertas do sistema.' },
+    { to: '/index.php/notificacoesConfig',       icon: 'cilBell',        label: 'Notificacoes',              desc: 'Configurar alertas do sistema (WhatsApp, e-mail, push).' },
     { to: '/index.php/impostos',                     icon: 'cilCalculator',  label: 'Impostos',                  desc: 'Tributos e aliquotas.' },
     { to: '/index.php/backup',                       icon: 'cilDataTransferDown', label: 'Backup',               desc: 'Backup e restauracao do banco.' },
     { to: '/index.php/agente_ia',                    icon: 'cilRobot',       label: 'Agente IA',                 desc: 'Assistente IA do sistema.' },

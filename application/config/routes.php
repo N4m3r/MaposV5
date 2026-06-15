@@ -391,3 +391,8 @@ $route['atividades/listar_por_obra/(:num)'] = 'atividades/listar_por_obra/$1';
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
 $route['modulos'] = 'modulos';
+
+// React App (CoreUI 5) — todas as rotas /app/* vao para o App controller
+// que serve o bundle React. O React Router assume a sub-rota.
+$route['app'] = 'app/home';
+$route['app/(:any)'] = 'app/index/$1';

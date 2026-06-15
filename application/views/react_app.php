@@ -1,7 +1,7 @@
 <?php
 /**
  * Entry point da aplicacao React (CoreUI).
- * Carregado pelo MY_Controller quando o usuario acessa uma rota React.
+ * Carregado pelo controller App quando o usuario acessa /app/*.
  *
  * O bundle eh gerado por Vite em assets/frontend/dist/assets/
  * Este arquivo:
@@ -11,40 +11,42 @@
  *   4. Carrega o CSS do Vite
  */
 
-$appConfig = [
+$appConfig = isset($app_config) ? $app_config : [
     'baseUrl'    => base_url() . 'index.php/',
-    'userName'   => $this->session->userdata('nome') ?: 'Usuario',
-    'userEmail'  => $this->session->userdata('email') ?: '',
+    'userName'   => 'Usuario',
+    'userEmail'  => '',
     'userAvatar' => null,
-    'permissions' => is_array($this->session->userdata('permissoes'))
-        ? $this->session->userdata('permissoes')
-        : [],
-    'theme' => $configuration['app_theme'] ?? 'white',
+    'permissions' => [],
+    'theme' => 'white',
 ];
 
 $distPath = FCPATH . 'assets/frontend/dist/';
 $entryJs     = '';
 $entryCss    = '';
 $vendorJs    = [];
-$appTheme    = $appConfig['theme'];
+$appTheme    = $appConfig['theme'] ?? 'white';
 
 if (is_dir($distPath . 'assets')) {
-    // Entry JS = index-*.js (o unico que monta a app)
-    $jsFiles = glob($distPath . 'assets/index-*.js');
+    // Entry JS = main-*.js (o unico que monta a app)
+    $jsFiles = glob($distPath . 'assets/main-*.js');
     if (!empty($jsFiles)) {
         $entryJs = basename($jsFiles[0]);
     }
 
-    // Vendor chunks = tudo que NAO eh index- (manualChunks)
+    // Login JS = login-*.js (bundle separado da tela de login)
+    $loginFiles = glob($distPath . 'assets/login-*.js');
+    $loginJs = !empty($loginFiles) ? basename($loginFiles[0]) : null;
+
+    // Vendor chunks = tudo que NAO eh main-/login-/Toast (manualChunks)
     foreach (glob($distPath . 'assets/*-*.js') as $f) {
         $bn = basename($f);
-        if ($bn !== $entryJs) {
+        if ($bn !== $entryJs && $bn !== $loginJs && strpos($bn, 'Toast-') !== 0) {
             $vendorJs[] = $bn;
         }
     }
 
     // CSS
-    $cssFiles = glob($distPath . 'assets/index-*.css');
+    $cssFiles = glob($distPath . 'assets/main-*.css');
     if (!empty($cssFiles)) {
         $entryCss = basename($cssFiles[0]);
     }
