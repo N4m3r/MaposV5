@@ -1,0 +1,130 @@
+{
+  "_meta": {
+    "locale": "en-US",
+    "name": "English (US)",
+    "english_name": "English (United States)",
+    "rtl": false,
+    "version": 1
+  },
+
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "no_records": "No records found.",
+    "actions": "Actions",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "close": "Close",
+    "open": "Open",
+    "add": "Add",
+    "new": "New",
+    "create": "Create",
+    "update": "Update",
+    "remove": "Remove",
+    "all": "All",
+    "none": "None",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "this_week": "This week",
+    "this_month": "This month",
+    "this_year": "This year",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Sign in",
+    "help": "Help",
+    "shortcuts": "Shortcuts",
+    "theme": "Theme",
+    "language": "Language"
+  },
+
+  "modules": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "products": "Products",
+    "services": "Services",
+    "orders": "Service Orders",
+    "os": "SO",
+    "finance": "Finance",
+    "sales": "Sales",
+    "users": "Users",
+    "reports": "Reports",
+    "settings": "Settings",
+    "calendar": "Calendar",
+    "kanban": "Board",
+    "emails": "E-mails",
+    "logs": "Logs",
+    "audit": "Audit",
+    "backup": "Backup"
+  },
+
+  "status": {
+    "pending": "Pending",
+    "in_progress": "In progress",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "overdue": "Overdue",
+    "draft": "Draft",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+
+  "messages": {
+    "save_success": "Record saved successfully!",
+    "save_error": "Error saving the record.",
+    "delete_success": "Record deleted successfully!",
+    "delete_error": "Error deleting the record.",
+    "delete_confirm": "Do you really want to delete this record?",
+    "required_fields": "Please fill in all required fields.",
+    "invalid_email": "Invalid e-mail.",
+    "session_expired": "Your session has expired. Please sign in again.",
+    "access_denied": "Access denied.",
+    "loading_data": "Loading data...",
+    "no_data": "No data available."
+  },
+
+  "buttons": {
+    "new_client": "Add Client",
+    "new_product": "Add Product",
+    "new_service": "Add Service",
+    "new_os": "New SO",
+    "new_sale": "New Sale",
+    "new_lancamento": "New Entry",
+    "export_pdf": "Export PDF",
+    "export_excel": "Export Excel",
+    "send_email": "Send by e-mail",
+    "print": "Print"
+  },
+
+  "auth": {
+    "username": "Username",
+    "password": "Password",
+    "remember_me": "Keep me signed in",
+    "forgot_password": "Forgot my password",
+    "login_button": "Sign in",
+    "logout_confirm": "Do you really want to sign out?",
+    "welcome": "Welcome, :name!"
+  },
+
+  "errors": {
+    "generic": "An error occurred. Please try again.",
+    "network": "Connection error. Check your internet.",
+    "server": "Server error. Please try again in a few minutes.",
+    "forbidden": "You do not have permission for this action.",
+    "not_found": "Resource not found."
+  }
+}

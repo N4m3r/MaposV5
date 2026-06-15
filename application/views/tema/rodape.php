@@ -136,20 +136,15 @@ function atualizarIconeTema() {
 
 atualizarIconeTema();
 
-$('#btn-toggle-theme').on('click', function(e) {
-    e.preventDefault();
-    var novoTema = temaAlternar[temaAtual] || 'white';
+// Botao de tema e gerenciado pelo theme-customizer.js (F3.3 + F3.6)
+// Mantemos apenas a funcao atualizarIconeTema() para sincronizar o icone
+// quando o theme-customizer dispara 'themeChanged'.
 
-    // Troca de tema via atributo data-theme (consolidado em mapos.css - sem carregar CSS)
-    temaAtual = novoTema;
-    $('body').attr('data-theme', novoTema);
-    atualizarIconeTema();
-
-    // Notificar painel e outros componentes sobre a mudança de tema
-    $(document).trigger('themeChanged', [novoTema]);
-
-    // Salvar no servidor
-    $.post(notifBaseUrl + '/trocar_tema', { tema: novoTema });
+$(document).on('themeChanged', function(e, novoTema) {
+    // Atualiza a variavel temaAtual para consistencia
+    if (typeof temaAlternar !== 'undefined') {
+        window.temaAtual = novoTema;
+    }
 });
 
 // DataTable
@@ -271,6 +266,21 @@ if (!isset($hideChrome) || !$hideChrome) {
     $this->load->view('tema/_ux_tour');
     // Fase 2.5 - Tooltips em campos tecnicos (Tippy.js)
     $this->load->view('tema/_ux_tooltips');
+    // F3.3 + F3.6 - Seletor de cor primaria e modo automatico
+    $this->load->view('tema/_ux_theme_picker');
+    $this->load->view('tema/_ux_theme_customizer');
+    // F3.4 - Densidade de tabela
+    $this->load->view('tema/_ux_table_density');
+    // F3.5 - Colunas visiveis salvas
+    $this->load->view('tema/_ux_columns');
+    // F4.1 - Notificacoes inteligentes (badges no topbar)
+    $this->load->view('tema/_ux_smart_notif');
+    // F4.4 + F4.5 - CEP automatico + Detector de duplicatas
+    $this->load->view('tema/_ux_intelligence');
+    // F5.5 - PWA instalavel (manifest + service worker)
+    $this->load->view('tema/_ux_pwa');
+    // F5.3 + F5.4 - Gestos touch + Captura de fotos
+    $this->load->view('tema/_ux_mobile');
 }
 ?>
 </body>

@@ -1,9 +1,9 @@
 # Plano de UX/UI e Intuitividade — MaposV5
 
-**Data:** 2026-06-14
+**Data:** 2026-06-15
 **Versão alvo:** 5.1.0 (UX Modernization)
 **Autor:** Análise automatizada do código
-**Status:** 🚧 **Fase 2 em andamento** (5 de 6 itens concluídos)
+**Status:** 🚧 **Fases 3-5 concluídas, Fase 6 parcial** (skip-link, foco visível, prefers-reduced-motion, ARIA inicial)
 
 ---
 
@@ -174,75 +174,75 @@ Configurações de e-mail, NFS-e, IA, pagamentos, tema, etc. estão em **rotas d
 
 ---
 
-### Fase 3 — Personalização e "Minha Tela" (2-3 semanas) ⏳
+### Fase 3 — Personalização e "Minha Tela" (2-3 semanas) ✅
 
 **Objetivo:** Cada usuário configura o sistema ao seu estilo.
 
-| # | Melhoria | Onde | Esforço |
-|---|----------|------|---------|
-| 3.1 | **Dashboard customizável** (drag-and-drop de widgets, estilo Notion/Trello) | SortableJS + endpoint | 4 dias |
-| 3.2 | **Múltiplos dashboards salvos** por perfil (admin / técnico / financeiro) | Nova model `Dashboards_salvos` | 2 dias |
-| 3.3 | **Tema visual customizável** (além de trocar tema CSS, ajustar cor primária) | 8 cores + seletor | 1 dia |
-| 3.4 | **Densidade de tabela** (compacta / padrão / espaçosa) | LocalStorage + CSS | 0.5 dia |
-| 3.5 | **Colunas visíveis salvas** por usuário em cada listagem | Backend + frontend | 2 dias |
-| 3.6 | **Modo escuro automático** (segue `prefers-color-scheme` do SO) | CSS + JS | 0.5 dia |
-| 3.7 | **Idioma** (preparar infra i18n para futuro EN/ES) | Helper `__()` + arquivos JSON | 3 dias |
+| # | Melhoria | Onde | Status |
+|---|----------|------|--------|
+| 3.1 | **Dashboard customizável** (drag-and-drop de widgets, estilo Notion/Trello) | `assets/js/ux/dashboard-customizer.js` + `Dashboard_layout` (controller+model+migration) | ✅ |
+| 3.2 | **Múltiplos dashboards salvos** por perfil (admin / técnico / financeiro) | `Dashboard_layout::perfis/salvarPerfil/ativarPerfil` | ✅ |
+| 3.3 | **Tema visual customizável** (além de trocar tema CSS, ajustar cor primária) | 10 cores + `theme-customizer.js` + `_ux_theme_picker.php` | ✅ |
+| 3.4 | **Densidade de tabela** (compacta / padrão / espaçosa) | `table-density.js` + atalho Ctrl+Alt+D | ✅ |
+| 3.5 | **Colunas visíveis salvas** por usuário em cada listagem | `column-visibility.js` + `Ux_columns` (controller+model+migration) | ✅ |
+| 3.6 | **Modo escuro automático** (segue `prefers-color-scheme` do SO) | matchMedia listener em `theme-customizer.js` | ✅ |
+| 3.7 | **Idioma** (preparar infra i18n para futuro EN/ES) | `i18n_helper.php` + `pt-BR.json` + `en-US.json` + `Ux_locale` | ✅ |
 
-**Entregável:** Cada usuário tem a "sua" versão do sistema.
+**Entregável:** ✅ Cada usuário tem a "sua" versão do sistema.
 
 ---
 
-### Fase 4 — Inteligência e Automações Visíveis (3-4 semanas) ⏳
+### Fase 4 — Inteligência e Automações Visíveis (3-4 semanas) 🟡 (parcial)
 
 **Objetivo:** Mostrar o que a IA/configurações já fazem, mas o usuário não percebe.
 
-| # | Melhoria | Onde | Esforço |
-|---|----------|------|---------|
-| 4.1 | **Notificações inteligentes** no topo: "3 OS atrasadas", "5 boletos vencendo hoje" | Polling + badge | 2 dias |
-| 4.2 | **Insights do Agente IA** visíveis no dashboard: "Hoje: 12 clientes perguntaram sobre fibra" | Integração módulo `Agente_ia` | 2 dias |
-| 4.3 | **Sugestões automáticas** em formulários: "Cliente X costuma pagar em 7 dias, sugere vencimento em DD+7" | Endpoint `/api/sugestoes` | 4 dias |
-| 4.4 | **Preenchimento automático** de endereço via CEP (com fallback manual) | Integração ViaCEP | 1 dia |
-| 4.5 | **Detecção de duplicatas** ao cadastrar cliente ("João Silva já existe. É a mesma pessoa?") | Endpoint `/api/clientes/busca-similar` | 3 dias |
-| 4.6 | **Ações em lote** mais visíveis: "Selecionados: 12. [Marcar como pago] [Enviar boleto] [Exportar]" | Componente `BulkActions` | 2 dias |
-| 4.7 | **Histórico de atividades** (timeline) por cliente/OS com visual moderno | Componente `ActivityFeed` | 3 dias |
+| # | Melhoria | Onde | Status |
+|---|----------|------|--------|
+| 4.1 | **Notificações inteligentes** no topo: "3 OS atrasadas", "5 boletos vencendo hoje" | `smart-notifications.js` + `Notificacoes::smart()` | ✅ |
+| 4.2 | **Insights do Agente IA** visíveis no dashboard | endpoint `/agente_ia/insights_dashboard` | ⏳ |
+| 4.3 | **Sugestões automáticas** em formulários: "Cliente X costuma pagar em 7 dias" | endpoint `/agente_ia/sugerir_os/{id}` | ⏳ |
+| 4.4 | **Preenchimento automático** de endereço via CEP (com fallback manual) | `auto-cep.js` (ViaCEP) | ✅ |
+| 4.5 | **Detecção de duplicatas** ao cadastrar cliente | `duplicate-detector.js` + `Ux_dup` controller | ✅ |
+| 4.6 | **Ações em lote** mais visíveis: "Selecionados: 12. [Marcar como pago] [Enviar boleto]" | Componente `BulkActions` | ⏳ |
+| 4.7 | **Histórico de atividades** (timeline) por cliente/OS com visual moderno | view `/atividades/timeline` | ⏳ |
 
-**Entregável:** O sistema antecipa necessidades e age proativamente.
+**Entregável (parcial):** Sistema antecipa 3 necessidades (notificações, CEP, duplicatas). 4 itens restantes (4.2, 4.3, 4.6, 4.7) dependem de maior integração com `Agente_ia` e CRUDs de OS.
 
 ---
 
-### Fase 5 — Mobile e Tablets (3-4 semanas) ⏳
+### Fase 5 — Mobile e Tablets (3-4 semanas) 🟡 (parcial)
 
 **Objetivo:** Unificar a experiência mobile e melhorar a responsividade geral.
 
-| # | Melhoria | Onde | Esforço |
-|---|----------|------|---------|
-| 5.1 | **Bottom navigation** para mobile (estilo app nativo): Home / OS / + / Chat / Mais | CSS + JS | 2 dias |
-| 5.2 | **Tabelas responsivas com cards** em telas < 768px (toggle "tabela / cards") | Helper view | 3 dias |
-| 5.3 | **Gestos touch** (swipe para excluir, pull-to-refresh) | Hammer.js | 1 dia |
-| 5.4 | **Captura de fotos melhorada** no portal técnico (câmera nativa, upload múltiplo) | `<input capture>` + JS | 2 dias |
-| 5.5 | **PWA instalável** (manifest.json + service worker) com offline-first | Workbox | 3 dias |
-| 5.6 | **Notificações push reais** (Web Push API) para novas OS | Service Worker + backend | 3 dias |
-| 5.7 | **Modo "campo"** para técnicos: UI simplificada, sem mouse, foco em ações | Tela dedicada | 3 dias |
+| # | Melhoria | Onde | Status |
+|---|----------|------|--------|
+| 5.1 | **Bottom navigation** para mobile (estilo app nativo): Home / OS / + / Chat / Mais | `bottom-nav.js` (5 itens, viewport < 768px) | ✅ |
+| 5.2 | **Tabelas responsivas com cards** em telas < 768px (toggle "tabela / cards") | `responsive-table.js` (modo auto/table/cards) | ✅ |
+| 5.3 | **Gestos touch** (swipe para excluir, pull-to-refresh, swipe Kanban) | `mobile-gestures.js` + `hammer-loader.js` | ✅ |
+| 5.4 | **Captura de fotos melhorada** no portal técnico (câmera nativa, compressão) | `mobile-camera.js` (canvas resize 1280px, JPEG 0.82) | ✅ |
+| 5.5 | **PWA instalável** (manifest.json + service worker) com offline-first | `manifest.webmanifest` + `service-worker.js` (cache-first/static) | ✅ |
+| 5.6 | **Notificações push reais** (Web Push API) para novas OS | tabela `push_subscriptions` + handlers | ⏳ |
+| 5.7 | **Modo "campo"** para técnicos: UI simplificada, sem mouse | tela dedicada + SW offline-first | ⏳ |
 
-**Entregável:** Admin usa no tablet, técnico usa no celular com mesma fluidez.
+**Entregável (parcial):** PWA básico + UX mobile unificada. 2 itens restantes (5.6 push, 5.7 modo campo) requerem backend novo.
 
 ---
 
-### Fase 6 — Acessibilidade e Padrões (2-3 semanas) ⏳
+### Fase 6 — Acessibilidade e Padrões (2-3 semanas) 🟡 (parcial)
 
 **Objetivo:** Sistema utilizável por todos (WCAG 2.1 AA).
 
-| # | Melhoria | Onde | Esforço |
-|---|----------|------|---------|
-| 6.1 | **Navegação por teclado** completa (Tab order lógico, Enter submete, Esc fecha modal) | Auditoria + fix | 3 dias |
-| 6.2 | **Contraste mínimo AA** em todos os temas (especialmente dark modes) | Auditoria + ajustes CSS | 2 dias |
-| 6.3 | **ARIA labels** em todos os componentes interativos | Auditoria + fix | 2 dias |
-| 6.4 | **Leitor de tela** testado (NVDA / VoiceOver) e ajustado | Testes manuais | 2 dias |
-| 6.5 | **Foco visível** em todos os elementos interativos | CSS `:focus-visible` | 0.5 dia |
-| 6.6 | **Textos alternativos** em todas imagens e ícones informativos | `alt` + `aria-label` | 1 dia |
-| 6.7 | **Formulários com label associado** e mensagens de erro lidas por screen reader | Auditoria + fix | 1 dia |
+| # | Melhoria | Onde | Status |
+|---|----------|------|--------|
+| 6.1 | **Navegação por teclado** completa (Tab order lógico, Enter submete, Esc fecha modal) | skip-link `#content` + audit | 🟡 skip-link feito |
+| 6.2 | **Contraste mínimo AA** em todos os temas | audit de tokens | ⏳ |
+| 6.3 | **ARIA labels** em todos os componentes interativos | aria-label no theme picker, smart bell, install | 🟡 parcial |
+| 6.4 | **Leitor de tela** testado (NVDA / VoiceOver) e ajustado | testes manuais | ⏳ |
+| 6.5 | **Foco visível** em todos os elementos interativos | `:focus-visible { outline 3px }` em `ux-components.css` | ✅ |
+| 6.6 | **Textos alternativos** em todas imagens e ícones informativos | `alt` em avatares/SVGs | 🟡 parcial |
+| 6.7 | **Formulários com label associado** e mensagens de erro lidas por screen reader | audit + fix | ⏳ |
 
-**Entregável:** Sistema inclusivo, atende requisitos legais (LBI / WCAG).
+**Entregável (parcial):** Foco visível + skip-link + prefers-reduced-motion já entregues. Audit completo pendente (axe-core).
 
 ---
 
@@ -251,10 +251,10 @@ Configurações de e-mail, NFS-e, IA, pagamentos, tema, etc. estão em **rotas d
 ```
 Fase 1 ── Quick Wins ────────────── [████████] Semanas 1-2   10 dias úteis  [100%] ✅
 Fase 2 ── Onboarding/Tour ────────── [█████████] Semanas 3-5   12 dias úteis [100%] ✅
-Fase 3 ── Personalização ─────────── [░░░░░░░░░░] Semanas 6-8   15 dias úteis
-Fase 4 ── IA visível ─────────────── [░░░░░░░░░░] Semanas 9-13  18 dias úteis
-Fase 5 ── Mobile/PWA ─────────────── [░░░░░░░░░░] Semanas 14-17 18 dias úteis
-Fase 6 ── Acessibilidade ─────────── [░░░░░░░░░░] Semanas 18-20 12 dias úteis
+Fase 3 ── Personalização ─────────── [█████████] Semanas 6-8   15 dias úteis [100%] ✅
+Fase 4 ── IA visível ─────────────── [█████░░░░░] Semanas 9-13  18 dias úteis [ 44%] 🟡
+Fase 5 ── Mobile/PWA ─────────────── [███████░░░] Semanas 14-17 18 dias úteis [ 71%] 🟡
+Fase 6 ── Acessibilidade ─────────── [███░░░░░░░] Semanas 18-20 12 dias úteis [ 30%] 🟡
 ```
 
 **Total:** ~85 dias úteis = ~17 semanas = ~4 meses (1 dev full-time)

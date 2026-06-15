@@ -489,6 +489,12 @@
             Dashboard - Visão Geral
         </div>
         <div class="dashboard-actions">
+            <button id="ux-dashboard-edit-btn" class="btn-action btn-secondary" type="button" title="Reordenar e ocultar widgets">
+                <i class="bx bx-layout"></i> Editar layout
+            </button>
+            <button id="ux-dashboard-reset-btn" class="btn-action btn-secondary" type="button" title="Restaurar layout padrao" style="display:none;">
+                <i class="bx bx-reset"></i> Restaurar
+            </button>
             <button class="btn-action btn-primary" onclick="carregarDados()">
                 <i class="bx bx-refresh"></i> Atualizar
             </button>
@@ -518,7 +524,7 @@
     <?php $this->load->view('tema/_primeiros_passos'); ?>
 
     <!-- KPIs -->
-    <div class="kpi-cards" id="tour-kpis">
+    <div class="kpi-cards" id="tour-kpis" data-widget-key="kpis" data-widget-handle>
         <div class="kpi-card">
             <div class="kpi-header">
                 <div class="kpi-icon"><i class="bx bx-file"></i></div>
@@ -579,7 +585,7 @@
     </div>
 
     <!-- Acesso Rápido - Menu Principal -->
-    <div class="quick-access">
+    <div class="quick-access" data-widget-key="quick-actions" data-widget-handle>
         <div class="quick-access-title">
             <i class="bx bx-rocket"></i>
             Acesso Rápido - Funcionalidades
@@ -759,7 +765,7 @@
     </div>
 
     <!-- Gráficos -->
-    <div class="charts-section">
+    <div class="charts-section" data-widget-key="charts" data-widget-handle>
         <div class="charts-row">
             <div class="chart-container">
                 <div class="chart-title">
@@ -798,7 +804,7 @@
     </div>
 
     <!-- Atividades Recentes -->
-    <div class="activities-section">
+    <div class="activities-section" data-widget-key="atividades" data-widget-handle>
         <div class="activities-header">
             <div class="activities-title">
                 <i class="bx bx-time-five"></i>
@@ -826,6 +832,9 @@
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha384-5blFK2FKMMdt1Rq7WZjP3J3Iq0qD2awZ+da3O7c0vJARG7P4h0CG7q7y6OR6fJ" crossorigin="anonymous"></script>
+
+<!-- F3.1 + F3.2: Dashboard customizer (drag-and-drop de widgets) -->
+<?php $this->load->view('dashboard/_ux_dashboard'); ?>
 
 <script>
 // Variáveis globais para os gráficos

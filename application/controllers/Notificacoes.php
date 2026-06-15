@@ -121,4 +121,68 @@ class Notificacoes extends MY_Controller
 
         echo json_encode(['success' => true, 'tema' => $tema]);
     }
+
+    /**
+     * GET /notificacoes/smart
+     * Retorna contadores para badges inteligentes no topo (F4.1):
+     *   - OS atrasadas
+     *   - Boletos vencendo hoje
+     *   - Lancamentos atrasados
+     *   - OS aguardando aprovacao (se for gerente)
+     *   - Clientes novos (ultimos 7 dias)
+     */
+    public function smart()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+        $this->load->database();
+
+        $smart = [
+            'os_atrasadas'         => 0,
+            'boletos_hoje'         => 0,
+            'lancamentos_atrasados'=> 0,
+            'os_aguardando'        => 0,
+            'clientes_novos'       => 0,
+        ];
+
+        // 1) OS atrasadas (dataFinal < hoje e status nao eh 'Finalizado'/'Cancelado')
+        if ($this->db->table_exists('os')) {
+            $smart['os_atrasadas'] = (int) $this->db
+                ->where('dataFinal <', date('Y-m-d'))
+                ->where_not_in('status', ['Finalizado', 'Cancelado', 'Faturado'])
+                ->count_all_results('os');
+            // OS aguardando aprovacao
+            $smart['os_aguardando'] = (int) $this->db
+                ->where('status', 'Aguardando Aprovação')
+                ->count_all_results('os');
+        }
+
+        // 2) Boletos vencendo hoje
+        if ($this->db->table_exists('cobrancas')) {
+            $smart['boletos_hoje'] = (int) $this->db
+                ->where('vencimento', date('Y-m-d'))
+                ->where('status', 'pendente')
+                ->count_all_results('cobrancas');
+        }
+
+        // 3) Lancamentos atrasados
+        if ($this->db->table_exists('lancamentos')) {
+            $smart['lancamentos_atrasados'] = (int) $this->db
+                ->where('vencimento <', date('Y-m-d'))
+                ->where('status', 'pendente')
+                ->count_all_results('lancamentos');
+        }
+
+        // 4) Clientes novos (7 dias)
+        if ($this->db->table_exists('clientes')) {
+            $smart['clientes_novos'] = (int) $this->db
+                ->where('created_at >=', date('Y-m-d', strtotime('-7 days')))
+                ->count_all_results('clientes');
+        }
+
+        $total = array_sum($smart);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'smart' => $smart, 'total' => $total]);
+    }
 }

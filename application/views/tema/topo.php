@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?= e(str_replace('_', '-', current_locale())) ?>">
 
 <head>
   <title><?= ($configuration['app_name'] ?? null) ?: 'Map-OS' ?></title>
@@ -8,6 +8,14 @@
   <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
   <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
   <link rel="shortcut icon" type="image/png" href="<?= base_url(); ?>assets/img/favicon.png" />
+  <link rel="apple-touch-icon" href="<?= base_url(); ?>assets/img/favicon.png" />
+  <link rel="manifest" href="<?= base_url(); ?>manifest.webmanifest" />
+  <meta name="theme-color" content="#0467fc" />
+  <meta name="application-name" content="MaposV5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MaposV5" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/bootstrap5.min.css" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/mapos.css?v=<?= filemtime(FCPATH . 'assets/css/mapos.css') ?>" />
   <link rel="stylesheet" href="<?= base_url(); ?>assets/css/ux-components.css?v=<?= @filemtime(FCPATH . 'assets/css/ux-components.css') ?>" />
@@ -76,6 +84,9 @@
 </head>
 
 <body data-theme="<?= $configuration['app_theme'] ?? 'default' ?>">
+
+  <!-- F6.1 — Skip link para pular navegacao (WCAG 2.1) -->
+  <a href="#content" class="ux-skip-link">Pular para o conteudo</a>
 
   <?php
   // Banner de atalhos F1-F12 (Fase 1.3 do Plano UX)
@@ -441,6 +452,16 @@
           <i class="bx bx-help-circle" style="font-size:20px;"></i>
         </a>
       </div>
+
+      <!-- F3.3: Seletor de aparencia (cor + modo) -->
+      <div class="topbar-action">
+        <a href="#" title="Aparência" data-ux-theme-open style="color:inherit;text-decoration:none;">
+          <i class="bx bx-palette" style="font-size:20px;"></i>
+        </a>
+      </div>
+
+      <!-- F4.1: Smart notifications (badges inteligentes) -->
+      <div class="topbar-action" id="ux-smart-bell-container" style="position:relative;"></div>
 
       <!-- Notifications -->
       <div class="topbar-dropdown topbar-notif-dropdown" id="notifications-dropdown">
