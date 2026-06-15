@@ -1,6 +1,7 @@
 /**
  * Pagina Clientes com CRUD completo.
  */
+import { Link } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import { CrudTable } from '../components/ui/CrudTable';
 import { StatusBadge } from '../components/ui/DataTable';
@@ -43,6 +44,16 @@ export default function ClientesPage() {
                 fields={fields}
                 defaultValue={{ nomeCliente: '', documento: '', email: '', telefone: '', celular: '', ativo: 1 }}
                 entityName="Cliente"
+                renderRowActions={(r) => (
+                    <Link
+                        to={`/clientes/${r.idClientes}`}
+                        className="btn btn-sm btn-link p-0 me-2"
+                        title="Visualizar detalhes"
+                        aria-label="Visualizar detalhes"
+                    >
+                        <CIcon icon="cilEye" />
+                    </Link>
+                )}
             />
         </>
     );

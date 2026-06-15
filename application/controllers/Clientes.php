@@ -273,6 +273,133 @@ class Clientes extends MY_Controller
         return $this->layout();
     }
 
+    /**
+     * Detalhe completo de um Cliente para o React.
+     * GET /clientes/api_detail/<id>
+     *
+     * Retorna:
+     *   - cliente: dados do cliente
+     *   - ordens: lista de OS do cliente
+     *   - vendas: lista de vendas do cliente
+     *   - cobrancas: cobranças vinculadas (via vendas)
+     *   - lancamentos: lançamentos financeiros
+     *   - stats: contadores e totais agregados
+     */
+    public function api_detail($cliente_id = null)
+    {
+        if (!$cliente_id || !is_numeric($cliente_id)) {
+            $this->output
+                ->set_status_header(400)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'Cliente inválido']));
+            return;
+        }
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) {
+            $this->output
+                ->set_status_header(403)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'Sem permissão']));
+            return;
+        }
+
+        $this->load->model('clientes_model');
+        $this->load->model('os_model');
+        $this->load->model('vendas_model');
+
+        $cliente = $this->clientes_model->getById((int) $cliente_id);
+        if (!$cliente) {
+            $this->output
+                ->set_status_header(404)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => 'Cliente não encontrado']));
+            return;
+        }
+
+        // Mascara senha se vier
+        if (isset($cliente->senha)) unset($cliente->senha);
+
+        // OS do cliente
+        $ordens = [];
+        try {
+            $ordens = $this->clientes_model->getOsByCliente((int) $cliente_id) ?: [];
+            // Converte para array se vier como stdClass
+            $ordens = json_decode(json_encode($ordens), true);
+        } catch (\Throwable $e) {
+            $ordens = [];
+        }
+
+        // Vendas do cliente
+        $vendas = [];
+        try {
+            $vendas = $this->clientes_model->getAllVendasByClient((int) $cliente_id) ?: [];
+            $vendas = json_decode(json_encode($vendas), true);
+        } catch (\Throwable $e) {
+            $vendas = [];
+        }
+
+        // Cobranças (via vendas do cliente)
+        $cobrancas = [];
+        try {
+            $this->db->select('c.*, v.idVendas');
+            $this->db->from('cobrancas c');
+            $this->db->join('vendas v', 'v.idVendas = c.vendas_id', 'left');
+            $this->db->where('v.clientes_id', (int) $cliente_id);
+            $this->db->order_by('c.idCobranca', 'desc');
+            $cobrancas = $this->db->get()->result_array();
+        } catch (\Throwable $e) {
+            $cobrancas = [];
+        }
+
+        // Lançamentos financeiros (receitas/despesas)
+        $lancamentos = [];
+        try {
+            $this->db->from('lancamentos');
+            $this->db->where('clientes_id', (int) $cliente_id);
+            $this->db->order_by('data_vencimento', 'desc');
+            $this->db->limit(50);
+            $lancamentos = $this->db->get()->result_array();
+        } catch (\Throwable $e) {
+            $lancamentos = [];
+        }
+
+        // Stats agregadas
+        $totalOs = count($ordens);
+        $totalVendas = count($vendas);
+        $valorOs = array_sum(array_map(fn($o) => (float)($o['valorTotal'] ?? 0), $ordens));
+        $valorVendas = array_sum(array_map(fn($v) => (float)($v['valorTotal'] ?? 0), $vendas));
+        $valorCobrancasPago = array_sum(array_map(
+            fn($c) => (in_array($c['status'] ?? '', ['pago', 'paid', 'received', 'Pago', 'Confirmado', 'Confirmada'], true) ? (float)($c['valor'] ?? 0) : 0),
+            $cobrancas
+        ));
+        $valorCobrancasPendente = array_sum(array_map(
+            fn($c) => (!in_array($c['status'] ?? '', ['pago', 'paid', 'received', 'Pago', 'Confirmado', 'Confirmada', 'canceled', 'cancelado', 'expirado', 'expired'], true) ? (float)($c['valor'] ?? 0) : 0),
+            $cobrancas
+        ));
+
+        $stats = [
+            'totalOs'         => $totalOs,
+            'totalVendas'     => $totalVendas,
+            'totalCobrancas'  => count($cobrancas),
+            'valorOs'         => round($valorOs, 2),
+            'valorVendas'     => round($valorVendas, 2),
+            'valorCobrancasPago'     => round($valorCobrancasPago, 2),
+            'valorCobrancasPendente' => round($valorCobrancasPendente, 2),
+        ];
+
+        $this->output
+            ->set_status_header(200)
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'success'     => true,
+                'cliente'     => $cliente,
+                'ordens'      => $ordens,
+                'vendas'      => $vendas,
+                'cobrancas'   => $cobrancas,
+                'lancamentos' => $lancamentos,
+                'stats'       => $stats,
+            ], JSON_UNESCAPED_UNICODE));
+    }
+
     public function excluir()
     {
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'dCliente')) {

@@ -10,6 +10,7 @@ import { CSpinner } from '@coreui/react';
 // Bundle inicial so inclui Dashboard + NotFound (o minimo absoluto).
 const Dashboard     = lazy(() => import('./pages/Dashboard'));
 const Clientes      = lazy(() => import('./pages/Clientes'));
+const ClientesDetail = lazy(() => import('./pages/ClientesDetail'));
 const Kanban        = lazy(() => import('./pages/Kanban'));
 const OsPage        = lazy(() => import('./pages/Os'));
 const OsDetail      = lazy(() => import('./pages/OsDetail'));
@@ -66,6 +67,7 @@ function App() {
                         <Route path="/os/:id"      element={<OsDetail />} />
                         <Route path="/kanban"      element={<Kanban />} />
                         <Route path="/clientes"    element={<Clientes />} />
+                        <Route path="/clientes/:id" element={<ClientesDetail />} />
                         <Route path="/produtos"    element={<ProdutosPage />} />
                         <Route path="/vendas"      element={<VendasPage />} />
                         <Route path="/vendas/:id"  element={<VendasDetail />} />
