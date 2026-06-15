@@ -1,14 +1,14 @@
 /**
- * Pagina Produtos.
- * Lista produtos com estoque e preco.
+ * Pagina Produtos com CRUD completo.
+ * Destaque visual para estoque baixo.
  */
 import CIcon from '@coreui/icons-react';
-import { DataTable } from '../components/ui/DataTable';
+import { CrudTable } from '../components/ui/CrudTable';
+import type { FieldDef } from '../components/ui/FormModal';
 import type { Row, ColumnDef } from '../types';
 
 function fmtCurrency(v: unknown): string {
-    const n = Number(v || 0);
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0));
 }
 
 const columns: ColumnDef<Row>[] = [
@@ -27,6 +27,16 @@ const columns: ColumnDef<Row>[] = [
     { key: 'precoVenda',  label: 'Preco',     width: '120px', sortable: true, className: 'text-end', render: (r) => fmtCurrency(r.precoVenda) },
 ];
 
+const fields: FieldDef[] = [
+    { key: 'descricao',     label: 'Descricao',     type: 'text',     required: true },
+    { key: 'unidade',       label: 'Unidade',       type: 'text',     placeholder: 'UN, KG, LT...' },
+    { key: 'codDeBarra',    label: 'Codigo Barras', type: 'text' },
+    { key: 'precoVenda',    label: 'Preco Venda',   type: 'number',   step: '0.01', min: 0 },
+    { key: 'precoCusto',    label: 'Preco Custo',   type: 'number',   step: '0.01', min: 0 },
+    { key: 'estoque',       label: 'Estoque Atual', type: 'number',   min: 0 },
+    { key: 'estoqueMinimo', label: 'Estoque Minimo', type: 'number',  min: 0 },
+];
+
 export default function ProdutosPage() {
     return (
         <>
@@ -35,25 +45,16 @@ export default function ProdutosPage() {
                     <CIcon icon="cilBox" className="me-2" />
                     Produtos
                 </h2>
-                <button type="button" className="btn btn-sm btn-success">
-                    <CIcon icon="cilPlus" className="me-1" />Novo Produto
-                </button>
             </div>
-            <DataTable<Row>
+            <CrudTable<Row>
                 controller="produtos"
-                title=""
+                title="Produtos"
+                icon="cilBox"
                 columns={columns}
-                initialPageSize={50}
-                renderActions={(r) => (
-                    <>
-                        <button className="btn btn-sm btn-link p-0 me-2" title="Visualizar" aria-label="Visualizar">
-                            <CIcon icon="cilEye" />
-                        </button>
-                        <button className="btn btn-sm btn-link p-0" title="Editar" aria-label="Editar">
-                            <CIcon icon="cilPencil" />
-                        </button>
-                    </>
-                )}
+                fields={fields}
+                defaultValue={{ descricao: '', unidade: 'UN', precoVenda: 0, precoCusto: 0, estoque: 0, estoqueMinimo: 0 }}
+                idKey="idProdutos"
+                entityName="Produto"
             />
         </>
     );

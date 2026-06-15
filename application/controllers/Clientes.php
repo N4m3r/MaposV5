@@ -5,11 +5,20 @@ if (! defined('BASEPATH')) {
 }
 
 require_once APPPATH . 'libraries/Webhooks/WebhookManager.php';
+require_once APPPATH . 'traits/ApiCrudTrait.php';
 
 use Libraries\Webhooks\WebhookManager;
 
 class Clientes extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'clientes';
+    protected $api_pk = 'idClientes';
+    protected $api_search_fields = ['nomeCliente', 'documento', 'email', 'celular', 'telefone'];
+    protected $api_default_order = ['idClientes', 'desc'];
+    protected $api_required_permission = 'vCliente';
+
     private WebhookManager $webhookManager;
 
     public function __construct()

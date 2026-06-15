@@ -4,8 +4,18 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'traits/ApiCrudTrait.php';
+
 class Usuarios extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'usuarios';
+    protected $api_search_fields = ['nome', 'email', 'usuario'];
+    protected $api_default_order = ['idUsuarios', 'desc'];
+    protected $api_required_permission = 'vUsuario';
+    protected $api_hidden = ['senha']; // nunca devolver hash de senha
+
     public function __construct()
     {
         parent::__construct();

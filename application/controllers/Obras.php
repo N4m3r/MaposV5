@@ -3,11 +3,21 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'traits/ApiCrudTrait.php';
+
 /**
  * Controller de Gestão de Obras (Área Administrativa)
  */
 class Obras extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'obras';
+    protected $api_pk = 'idObras';
+    protected $api_search_fields = ['descricao', 'endereco'];
+    protected $api_default_order = ['idObras', 'desc'];
+    protected $api_required_permission = 'vObra';
+
     public function __construct()
     {
         parent::__construct();

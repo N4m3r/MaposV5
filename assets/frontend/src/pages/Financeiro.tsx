@@ -1,15 +1,16 @@
 /**
- * Pagina Financeiro.
- * Lista lancamentos (contas a pagar e receber) com filtros por tipo e status.
+ * Pagina Financeiro com CRUD completo.
+ * Inclui filtro chip por tipo (receita/despesa).
  */
 import { useState } from 'react';
 import CIcon from '@coreui/icons-react';
-import { DataTable, StatusBadge } from '../components/ui/DataTable';
+import { CrudTable } from '../components/ui/CrudTable';
+import { StatusBadge } from '../components/ui/DataTable';
+import type { FieldDef } from '../components/ui/FormModal';
 import type { Row, ColumnDef } from '../types';
 
 function fmtCurrency(v: unknown): string {
-    const n = Number(v || 0);
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0));
 }
 
 function fmtDate(v: unknown): string {
@@ -18,13 +19,13 @@ function fmtDate(v: unknown): string {
 }
 
 const TIPO_MAP: Record<string, { label: string; color: string }> = {
-    receita:  { label: 'Receita',  color: 'success' },
-    despesa:  { label: 'Despesa',  color: 'danger' },
+    receita: { label: 'Receita', color: 'success' },
+    despesa: { label: 'Despesa', color: 'danger' },
 };
 
 const PAGO_MAP: Record<string, { label: string; color: string }> = {
-    '1': { label: 'Pago',    color: 'success' },
-    '0': { label: 'Aberto',  color: 'warning' },
+    '1': { label: 'Pago',   color: 'success' },
+    '0': { label: 'Aberto', color: 'warning' },
 };
 
 const columns: ColumnDef<Row>[] = [
@@ -33,6 +34,19 @@ const columns: ColumnDef<Row>[] = [
     { key: 'tipo',            label: 'Tipo',       width: '110px', render: (r) => <StatusBadge value={String(r.tipo || '').toLowerCase()} map={TIPO_MAP} /> },
     { key: 'valor',           label: 'Valor',      width: '140px', sortable: true, className: 'text-end', render: (r) => fmtCurrency(r.valor) },
     { key: 'pago',            label: 'Status',     width: '110px', render: (r) => <StatusBadge value={String(r.pago ?? '0')} map={PAGO_MAP} /> },
+];
+
+const fields: FieldDef[] = [
+    { key: 'descricao',       label: 'Descricao',  type: 'text',     required: true },
+    { key: 'tipo',            label: 'Tipo',       type: 'select',   required: true, options: [
+        { value: 'receita', label: 'Receita' },
+        { value: 'despesa', label: 'Despesa' },
+    ] },
+    { key: 'valor',           label: 'Valor (R$)', type: 'number',   required: true, step: '0.01', min: 0 },
+    { key: 'data_vencimento', label: 'Vencimento', type: 'date',     required: true },
+    { key: 'data_pagamento',  label: 'Pagamento',  type: 'date' },
+    { key: 'pago',            label: 'Pago',       type: 'checkbox' },
+    { key: 'observacao',      label: 'Observacao', type: 'textarea', rows: 2 },
 ];
 
 const FILTROS = [
@@ -61,17 +75,17 @@ export default function FinanceiroPage() {
                             {f.label}
                         </button>
                     ))}
-                    <button type="button" className="btn btn-sm btn-success">
-                        <CIcon icon="cilPlus" className="me-1" />Novo Lancamento
-                    </button>
                 </div>
             </div>
-            <DataTable<Row>
+            <CrudTable<Row>
                 controller="financeiro"
-                title=""
+                title="Lancamentos"
+                icon="cilWallet"
                 columns={columns}
+                fields={fields}
+                defaultValue={{ descricao: '', tipo: 'receita', valor: 0, data_vencimento: new Date().toISOString().slice(0, 10), pago: 0 }}
+                entityName="Lancamento"
                 fixedParams={tipo ? { tipo } : undefined}
-                initialPageSize={50}
             />
         </>
     );

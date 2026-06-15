@@ -11,6 +11,7 @@ class Garantias extends MY_Controller
     use ApiCrudTrait;
 
     protected $api_table = 'garantias';
+    protected $api_pk = 'idGarantias';
     protected $api_search_fields = ['descricao'];
     protected $api_default_order = ['idGarantias', 'desc'];
     protected $api_required_permission = 'vGarantia';

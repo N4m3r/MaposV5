@@ -1,14 +1,36 @@
 /**
- * Pagina Vendas.
- * Lista vendas com busca, paginacao, ordenacao.
+ * Pagina Vendas com CRUD completo (lista + cria + edita + exclui).
  */
 import CIcon from '@coreui/icons-react';
-import { DataTable } from '../components/ui/DataTable';
+import { CrudTable } from '../components/ui/CrudTable';
+import type { FieldDef } from '../components/ui/FormModal';
+import { StatusBadge } from '../components/ui/DataTable';
 import type { Row, ColumnDef } from '../types';
 
+const STATUS_OPTIONS = [
+    { value: 'Orcamento',  label: 'Orcamento' },
+    { value: 'Aprovado',   label: 'Aprovado' },
+    { value: 'Em Andamento', label: 'Em Andamento' },
+    { value: 'Finalizado', label: 'Finalizado' },
+    { value: 'Cancelado',  label: 'Cancelado' },
+];
+
+const TIPO_OPTIONS = [
+    { value: 'OS',         label: 'Ordem de Servico' },
+    { value: 'Venda',      label: 'Venda Direta' },
+    { value: 'Orcamento',  label: 'Orcamento' },
+];
+
+const STATUS_MAP: Record<string, { label: string; color: string }> = {
+    Orcamento:    { label: 'Orcamento',    color: 'info' },
+    Aprovado:     { label: 'Aprovado',     color: 'success' },
+    'Em Andamento': { label: 'Em Andamento', color: 'primary' },
+    Finalizado:   { label: 'Finalizado',   color: 'success' },
+    Cancelado:    { label: 'Cancelado',    color: 'danger' },
+};
+
 function fmtCurrency(v: unknown): string {
-    const n = Number(v || 0);
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0));
 }
 
 function fmtDate(v: unknown): string {
@@ -17,12 +39,21 @@ function fmtDate(v: unknown): string {
 }
 
 const columns: ColumnDef<Row>[] = [
-    { key: 'idVendas',     label: '#',        width: '80px',  sortable: true, className: 'fw-bold' },
-    { key: 'dataVenda',    label: 'Data',     width: '120px', sortable: true, render: (r) => fmtDate(r.dataVenda) },
-    { key: 'cliente_nome', label: 'Cliente',  sortable: false, render: (r) => String(r.cliente_nome || r.nomeCliente || '-') },
-    { key: 'status',       label: 'Status',   width: '120px', render: (r) => String(r.status || '-') },
-    { key: 'tipo',         label: 'Tipo',     width: '120px', render: (r) => String(r.tipo || '-') },
-    { key: 'valorTotal',   label: 'Valor',    width: '130px', sortable: true, className: 'text-end', render: (r) => fmtCurrency(r.valorTotal) },
+    { key: 'idVendas',     label: '#',         width: '80px',  sortable: true, className: 'fw-bold' },
+    { key: 'dataVenda',    label: 'Data',      width: '120px', sortable: true, render: (r) => fmtDate(r.dataVenda) },
+    { key: 'cliente_nome', label: 'Cliente',   render: (r) => String(r.cliente_nome || r.nomeCliente || '-') },
+    { key: 'tipo',         label: 'Tipo',      width: '150px' },
+    { key: 'status',       label: 'Status',    width: '130px', render: (r) => <StatusBadge value={String(r.status || '')} map={STATUS_MAP} /> },
+    { key: 'valorTotal',   label: 'Valor',     width: '130px', sortable: true, className: 'text-end', render: (r) => fmtCurrency(r.valorTotal) },
+];
+
+const fields: FieldDef[] = [
+    { key: 'dataVenda',  label: 'Data',       type: 'date',         required: true },
+    { key: 'cliente_id', label: 'Cliente',    type: 'number',       required: true, help: 'ID do cliente' },
+    { key: 'tipo',       label: 'Tipo',       type: 'select',       required: true, options: TIPO_OPTIONS },
+    { key: 'status',     label: 'Status',     type: 'select',       required: true, options: STATUS_OPTIONS },
+    { key: 'valorTotal', label: 'Valor (R$)', type: 'number',       step: '0.01', min: 0 },
+    { key: 'descricao',  label: 'Observacoes', type: 'textarea',    rows: 3 },
 ];
 
 export default function VendasPage() {
@@ -33,25 +64,16 @@ export default function VendasPage() {
                     <CIcon icon="cilCart" className="me-2" />
                     Vendas
                 </h2>
-                <button type="button" className="btn btn-sm btn-success">
-                    <CIcon icon="cilPlus" className="me-1" />Nova Venda
-                </button>
             </div>
-            <DataTable<Row>
+            <CrudTable<Row>
                 controller="vendas"
-                title=""
+                title="Vendas"
+                icon="cilCart"
                 columns={columns}
-                initialPageSize={50}
-                renderActions={(r) => (
-                    <>
-                        <button className="btn btn-sm btn-link p-0 me-2" title="Visualizar" aria-label="Visualizar">
-                            <CIcon icon="cilEye" />
-                        </button>
-                        <button className="btn btn-sm btn-link p-0" title="Editar" aria-label="Editar">
-                            <CIcon icon="cilPencil" />
-                        </button>
-                    </>
-                )}
+                fields={fields}
+                defaultValue={{ dataVenda: new Date().toISOString().slice(0, 10), tipo: 'Venda', status: 'Aprovado', valorTotal: 0, cliente_id: 0 }}
+                idKey="idVendas"
+                entityName="Venda"
             />
         </>
     );

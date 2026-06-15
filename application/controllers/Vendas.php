@@ -14,6 +14,7 @@ class Vendas extends MY_Controller
     use ApiCrudTrait;
 
     protected $api_table = 'vendas';
+    protected $api_pk = 'idVendas';
     protected $api_search_fields = ['idVendas'];
     protected $api_default_order = ['idVendas', 'desc'];
     protected $api_required_permission = 'vVenda';

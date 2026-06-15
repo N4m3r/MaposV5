@@ -4,8 +4,17 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'traits/ApiCrudTrait.php';
+
 class Arquivos extends MY_Controller
 {
+    use ApiCrudTrait;
+
+    protected $api_table = 'arquivos';
+    protected $api_search_fields = ['nome', 'descricao'];
+    protected $api_default_order = ['id', 'desc'];
+    protected $api_required_permission = 'vArquivo';
+
     public function __construct()
     {
         parent::__construct();

@@ -4,6 +4,8 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+require_once APPPATH . 'traits/ApiCrudTrait.php';
+
 /**
  * Relatorioatendimentos Controller
  *
@@ -13,6 +15,9 @@ if (!defined('BASEPATH')) {
  */
 
 class Relatorioatendimentos extends MY_Controller
+{
+    // Sem tabela unica: usa $this->db direto em metodos custom.
+    // (Nao aplica ApiCrudTrait - cada relatorio eh um SELECT diferente.)
 {
     public function __construct()
     {

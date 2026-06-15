@@ -114,7 +114,7 @@ trait ApiCrudTrait
                 $this->db->join($j['table'], $j['on'], $j['type'] ?? 'left', false);
             }
         }
-        $row = $this->db->where($this->api_table.'.id', $id)->get()->row_array();
+        $row = $this->db->where($this->api_table.'.'.($this->api_pk ?? 'id'), $id)->get()->row_array();
         if (!$row) { $this->_apiNotFound(); return; }
 
         $row = $this->_apiHideFields([$row])[0];
@@ -149,8 +149,11 @@ trait ApiCrudTrait
         $fields = $this->db->list_fields($this->api_table);
         $data = array_intersect_key($data, array_flip($fields));
 
+        // Se a PK nao eh 'id', o caller deve enviar o campo da PK dentro do payload
+        // (ex: {idOs: 5, status: 'Finalizado'}). Enviamos o id certo no where.
+        $pk = $this->api_pk ?? 'id';
         if ($id > 0) {
-            $this->db->where('id', $id)->update($this->api_table, $data);
+            $this->db->where($pk, $id)->update($this->api_table, $data);
         } else {
             $this->db->insert($this->api_table, $data);
             $id = (int) $this->db->insert_id();
@@ -170,7 +173,8 @@ trait ApiCrudTrait
         if (!$this->_apiCheckPermission()) { $this->_apiForbidden(); return; }
         $id = (int) ($id ?: $this->input->post('id'));
         if ($id <= 0) { $this->_apiNotFound(); return; }
-        $this->db->where('id', $id)->delete($this->api_table);
+        $pk = $this->api_pk ?? 'id';
+        $this->db->where($pk, $id)->delete($this->api_table);
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode(['success' => true]));

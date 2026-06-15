@@ -14,6 +14,7 @@ class Produtos extends MY_Controller
     use ApiCrudTrait;
 
     protected $api_table = 'produtos';
+    protected $api_pk = 'idProdutos';
     protected $api_search_fields = ['descricao', 'codDeBarra', 'unidade'];
     protected $api_default_order = ['idProdutos', 'desc'];
     protected $api_required_permission = 'vProduto';

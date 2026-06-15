@@ -11,6 +11,11 @@ import ProdutosPage from './pages/Produtos';
 import CobrancasPage from './pages/Cobrancas';
 import GarantiasPage from './pages/Garantias';
 import NfsePage from './pages/Nfse';
+import ObrasPage from './pages/Obras';
+import ArquivosPage from './pages/Arquivos';
+import RelatoriosPage from './pages/Relatorios';
+import UsuariosPage from './pages/Usuarios';
+import ConfigPage from './pages/Config';
 import NotFound from './pages/NotFound';
 import { getConfig } from './config';
 
@@ -35,6 +40,11 @@ function App() {
                 <Route path="/cobrancas"   element={<CobrancasPage />} />
                 <Route path="/garantias"   element={<GarantiasPage />} />
                 <Route path="/nfse"        element={<NfsePage />} />
+                <Route path="/obras"       element={<ObrasPage />} />
+                <Route path="/arquivos"    element={<ArquivosPage />} />
+                <Route path="/relatorios"  element={<RelatoriosPage />} />
+                <Route path="/usuarios"    element={<UsuariosPage />} />
+                <Route path="/config"      element={<ConfigPage />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </AppShell>
