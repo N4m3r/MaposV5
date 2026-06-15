@@ -110,3 +110,48 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+
+// =====================================================================
+// F5.6 — Push notifications
+// =====================================================================
+self.addEventListener('push', function(event) {
+  var data = { title: 'MaposV5', body: 'Nova atualizacao', icon: '/assets/img/favicon.png' };
+  if (event.data) {
+    try {
+      data = Object.assign(data, event.data.json());
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+  var options = {
+    body: data.body,
+    icon: data.icon || '/assets/img/favicon.png',
+    badge: data.badge || '/assets/img/favicon.png',
+    data: data.data || {},
+    tag: data.tag || 'mapos-push',
+    renotify: true,
+    requireInteraction: data.requireInteraction || false,
+    vibrate: [200, 100, 200],
+  };
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Click na notificacao
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  var url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
+      for (var i = 0; i < list.length; i++) {
+        var c = list[i];
+        if (c.url.indexOf(self.location.origin) === 0 && 'focus' in c) {
+          c.navigate(url);
+          return c.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
+});

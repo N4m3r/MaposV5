@@ -144,6 +144,7 @@
         </a>
         <ul class="dropdown-menu">
           <li><a href="<?= site_url('tecnicos/dashboard') ?>"><?= svg_icon('home-alt', 16, 16) ?> Dashboard</a></li>
+          <li><a href="<?= site_url('campo') ?>"><?= svg_icon('hard-hat', 16, 16) ?> Modo Campo</a></li>
           <li><a href="<?= site_url('tecnicos/perfil') ?>"><?= svg_icon('user', 16, 16) ?> Meu Perfil</a></li>
           <li class="dropdown-divider"></li>
           <li><a href="<?= site_url('tecnicos/logout') ?>" style="color:#e05555;"><?= svg_icon('log-out', 16, 16) ?> Sair</a></li>
@@ -418,12 +419,13 @@
       <!-- Admin: Registro de Atividades -->
       <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
       <div class="topbar-nav-dropdown dropdown">
-        <a href="#" class="topbar-nav-link btn <?php if (isset($menuAtividadesDashboard) || isset($menuAtividadesRelatorio)) { echo 'active'; }; ?>" data-bs-toggle="dropdown" data-bs-auto-close="true">
+        <a href="#" class="topbar-nav-link btn <?php if (isset($menuAtividadesDashboard) || isset($menuAtividadesRelatorio) || isset($menuTimeline)) { echo 'active'; }; ?>" data-bs-toggle="dropdown" data-bs-auto-close="true">
           <?= svg_icon('timer', 16, 16) ?> Atividades <?= svg_icon('chevron-down', 10, 10, 'nav-chevron') ?>
         </a>
         <ul class="dropdown-menu">
           <li><a href="<?= site_url('atividades') ?>"><?= svg_icon('timer', 16, 16) ?> Dashboard Atividades</a></li>
           <li><a href="<?= site_url('atividades/relatorio') ?>"><?= svg_icon('chart', 16, 16) ?> Relatorio de Atividades</a></li>
+          <li><a href="<?= site_url('timeline') ?>"><?= svg_icon('time', 16, 16) ?> Timeline (F4.7)</a></li>
         </ul>
       </div>
       <?php } ?>
@@ -670,6 +672,8 @@
       <a href="<?= site_url('webhooks') ?>" class="nav-link-item nav-link-sub"><?= svg_icon('webhook', 16, 16) ?> Webhooks</a>
       <a href="<?= site_url('api/docs') ?>" class="nav-link-item nav-link-sub"><?= svg_icon('code-alt', 16, 16) ?> API v2</a>
       <a href="<?= site_url('agente_ia') ?>" class="nav-link-item nav-link-sub"><?= svg_icon('bot', 16, 16) ?> Agente IA</a>
+      <a href="<?= site_url('a11y_audit') ?>" class="nav-link-item nav-link-sub"><?= svg_icon('check-shield', 16, 16) ?> Auditoria A11y</a>
+      <a href="<?= site_url('timeline') ?>" class="nav-link-item nav-link-sub"><?= svg_icon('time', 16, 16) ?> Timeline</a>
       <?php } ?>
       <?php } ?>
 

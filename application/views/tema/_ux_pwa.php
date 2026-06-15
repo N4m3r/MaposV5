@@ -1,9 +1,9 @@
 <?php
 /**
- * PWA install (F5.5)
- * - Botão de instalar (aparece no picker de tema / mobile)
- * - O manifesto é carregado em topo.php
- * - O Service Worker é registrado por pwa-manager.js
+ * PWA install (F5.5) + Push (F5.6)
+ * - Botao de instalar
+ * - Registra o Service Worker
+ * - Carrega o push-manager.js
  */
 ?>
 <button type="button" id="ux-pwa-install" class="btn btn-primary btn-sm"
@@ -23,3 +23,4 @@ $uxPwa = '<script>window.UX = window.UX || {};'
        . '</script>';
 echo $uxPwa;
 ?>
+<script src="<?= base_url() ?>assets/js/ux/push-manager.js"></script>

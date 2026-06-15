@@ -17,6 +17,30 @@ class Notificacoes extends MY_Controller
         }
     }
 
+    /**
+     * Hook: apos registrar uma notificacao no banco, dispara um push
+     * para todos os usuarios com permissao relacionada. Idempotente:
+     * se o push service nao estiver habilitado, nao faz nada.
+     */
+    private function disparaPush($titulo, $mensagem, $url = null, $userIds = null)
+    {
+        try {
+            $this->load->library('push_service');
+            if (!$this->push_service->enabled()) return;
+            if (is_array($userIds) && !empty($userIds)) {
+                $enviados = 0;
+                foreach ($userIds as $uid) {
+                    $enviados += $this->push_service->sendToUser((int)$uid, $titulo, $mensagem, $url);
+                }
+                return $enviados;
+            }
+            return $this->push_service->sendToAll($titulo, $mensagem, $url);
+        } catch (Exception $e) {
+            log_message('error', '[Notificacoes] Falha no push: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
     public function listar()
     {
         if (!$this->input->is_ajax_request()) {

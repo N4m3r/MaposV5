@@ -277,6 +277,12 @@ if (!isset($hideChrome) || !$hideChrome) {
     $this->load->view('tema/_ux_smart_notif');
     // F4.4 + F4.5 - CEP automatico + Detector de duplicatas
     $this->load->view('tema/_ux_intelligence');
+    // F4.2 + F4.3 + F4.7 - Insights, sugestoes e eventos do Agente IA
+    $this->load->view('tema/_ux_ai_insights');
+    // F4.6 - Acoes em lote
+    $this->load->view('tema/_ux_bulk');
+    // F6 - Acessibilidade (focus trap, esc, atalhos)
+    $this->load->view('tema/_ux_a11y');
     // F5.5 - PWA instalavel (manifest + service worker)
     $this->load->view('tema/_ux_pwa');
     // F5.3 + F5.4 - Gestos touch + Captura de fotos

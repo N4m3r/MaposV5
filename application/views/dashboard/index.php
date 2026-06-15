@@ -524,6 +524,23 @@
     <?php $this->load->view('tema/_primeiros_passos'); ?>
 
     <!-- KPIs -->
+    <!-- F4.2 — Insights do Agente IA -->
+    <div class="ux-ai-insights-widget" data-widget-key="ai-insights" data-widget-handle>
+        <div class="ux-ai-insights-header">
+            <h3><i class="bx bx-bot"></i> Insights do Agente IA</h3>
+            <button type="button" data-ux-ai-refresh class="ux-ai-refresh-btn" title="Atualizar">
+                <i class="bx bx-refresh"></i>
+            </button>
+        </div>
+        <div class="ux-ai-insights-body" data-ux-ai-insights>
+            <div class="ux-ai-loading"><i class="bx bx-loader-alt bx-spin"></i> Analisando dados...</div>
+        </div>
+        <div class="ux-ai-insights-footer">
+            <span>Atualizado <em data-ux-ai-updated-text>agora</em></span>
+            <a href="<?= site_url('agente_ia') ?>">Abrir agente IA <i class="bx bx-right-arrow-alt"></i></a>
+        </div>
+    </div>
+
     <div class="kpi-cards" id="tour-kpis" data-widget-key="kpis" data-widget-handle>
         <div class="kpi-card">
             <div class="kpi-header">
