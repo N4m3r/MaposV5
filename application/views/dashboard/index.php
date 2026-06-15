@@ -1,6 +1,4 @@
-<link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
-
-<style>
+﻿<style>
 .dashboard-container {
     padding: 20px;
 }

@@ -1,6 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/table-custom.css" />
-<script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
+﻿<script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
 <style>
   select[name="status"] {
@@ -22,8 +20,12 @@
         <form method="get" action="<?php echo base_url(); ?>index.php/os/gerenciar">
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aOs')) { ?>
                 <div class="col-3">
-                    <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="button btn btn-sm btn-success">
-                        <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a>
+                    <?= btn_action(
+                        base_url() . 'index.php/os/adicionar',
+                        'Adicionar OS',
+                        'primary',
+                        'bx-plus-circle'
+                    ) ?>
                 </div>
             <?php
             } ?>

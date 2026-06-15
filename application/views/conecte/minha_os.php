@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -10,8 +10,6 @@
     <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
     <link rel="shortcut icon" type="image/png" href="<?php echo base_url(); ?>assets/img/favicon.png" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-style.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/matrix-media.css" />
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/fullcalendar.css" />
     <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -211,7 +209,7 @@
                             var mywindow = window.open('', 'MapOs', 'height=600,width=800');
                             mywindow.document.write('<html><head><title>Map Os</title>');
                             mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap5.min.css' />");
-                            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-style.css' /> <link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-media.css' />");
+                            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/mapos.css' /> <link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/mapos.css' />");
 
 
                             mywindow.document.write('</head><body >');

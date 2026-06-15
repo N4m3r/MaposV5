@@ -7,7 +7,7 @@
 $ci = &get_instance();
 ?>
 
-<link rel="stylesheet" href="<?= base_url('assets/css/kanban.css') ?>">
+<!-- kanban.css foi consolidado em mapos.css (Bloco 13) -->
 
 <div class="row">
     <div class="col-12">

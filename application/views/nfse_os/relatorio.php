@@ -1,12 +1,9 @@
-<?php
+﻿<?php
 /**
  * Relatório de NFS-e e Boletos
  * Filtros e listagem completa
  */
 ?>
-
-<link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
-
 <div class="row" style="margin-top: 0">
     <div class="col-12">
         <div class="widget-box">

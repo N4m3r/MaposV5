@@ -1,5 +1,4 @@
-<div class="new122">
-    <link rel="stylesheet" href="<?= base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+﻿<div class="new122">
     <script type="text/javascript" src="<?= base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 
     <div class="col-12" style="margin-left: 0">

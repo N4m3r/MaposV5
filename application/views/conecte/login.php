@@ -9,9 +9,7 @@
     <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
     <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap5.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/matrix-login.css" />
-    <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/custom.css" />
-    <link href="<?= base_url('assets/css/particula.css'); ?>" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/mapos.css?v=<?= filemtime(FCPATH . 'assets/css/mapos.css') ?>" />
     <link href="<?php echo base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
@@ -19,7 +17,6 @@
     <link rel="shortcut icon" href="<?php echo base_url(); ?>assets/img/favicon.png">
     <script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
     <script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' integrity="sha384-B6nB7GjeyR0Ln2Rf3Znp7Z7r4B4eR3i0Uq8k5+u2C2YJXTHVDbB+m9Z8dDqWlZ4H" crossorigin="anonymous">
     <!-- Script webeddy.com.br -->
     <script>
         function formatar(mascara, documento) {

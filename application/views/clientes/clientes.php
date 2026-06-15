@@ -13,9 +13,12 @@
     <div class="col-12" style="margin-left: 0">
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aCliente')) { ?>
             <div class="col-3">
-                <a href="<?= base_url() ?>index.php/clientes/adicionar" class="button btn btn-sm btn-success">
-                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Cliente / Fornecedor</span>
-                </a>
+                <?= btn_action(
+                    base_url() . 'index.php/clientes/adicionar',
+                    'Adicionar Cliente',
+                    'primary',
+                    'bx-plus-circle'
+                ) ?>
             </div>
         <?php } ?>
         <form class="col-9" method="get" action="<?= base_url() ?>index.php/clientes"

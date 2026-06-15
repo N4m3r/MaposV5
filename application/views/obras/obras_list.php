@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 // Garantir que a variável $obras exista (controller pode passar como $results)
 $obras = isset($obras) ? $obras : (isset($results) ? $results : []);
 
@@ -11,8 +11,6 @@ if (empty($obras)) {
 ?>
 
 <!-- Tema Moderno Obras - CSS Unificado -->
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css?v=<?= filemtime(FCPATH . 'assets/css/obras-modern-theme.css') ?>">
-
 <style>
 /* ============================================
    SISTEMA DE OBRAS - TEMA UNIFICADO

@@ -114,15 +114,7 @@ setInterval(carregarNotificacoes, 60000);
 // TROCAR TEMA
 // ==============================
 var temaAtual = '<?= isset($configuration["app_theme"]) ? $configuration["app_theme"] : "default" ?>';
-var temaCssMap = {
-    'default': null,
-    'white': 'tema-white.css',
-    'puredark': 'tema-pure-dark.css',
-    'darkviolet': 'tema-dark-violet.css',
-    'darkorange': 'tema-dark-orange.css',
-    'whitegreen': 'tema-white-green.css',
-    'whiteblack': 'tema-white-black.css'
-};
+// Tema via atributo data-theme no body (consolidado em mapos.css) - nenhum arquivo precisa ser carregado
 var temaAlternar = { 'default': 'white', 'white': 'default', 'puredark': 'white', 'darkviolet': 'white', 'darkorange': 'white', 'whitegreen': 'default', 'whiteblack': 'default' };
 var temaIcone = { 'default': 'sun', 'white': 'moon', 'puredark': 'sun', 'darkviolet': 'sun', 'darkorange': 'sun', 'whitegreen': 'moon', 'whiteblack': 'moon' };
 var svgBaseUrl = '<?= base_url() ?>assets/svg/icons.svg';
@@ -148,23 +140,10 @@ $('#btn-toggle-theme').on('click', function(e) {
     e.preventDefault();
     var novoTema = temaAlternar[temaAtual] || 'white';
 
-    // Remover CSS do tema antigo
-    var cssOld = temaCssMap[temaAtual];
-    if (cssOld) {
-        $('link[href*="' + cssOld + '"]').remove();
-    }
-
-    // Adicionar CSS do novo tema
-    var cssNew = temaCssMap[novoTema];
-    if (cssNew) {
-        $('<link rel="stylesheet" href="<?= base_url() ?>assets/css/' + cssNew + '" />').appendTo('head');
-    }
-
+    // Troca de tema via atributo data-theme (consolidado em mapos.css - sem carregar CSS)
     temaAtual = novoTema;
-    atualizarIconeTema();
-
-    // Atualizar data attribute no body
     $('body').attr('data-theme', novoTema);
+    atualizarIconeTema();
 
     // Notificar painel e outros componentes sobre a mudança de tema
     $(document).trigger('themeChanged', [novoTema]);
@@ -281,5 +260,14 @@ $(document).ready(function() {
     });
 })(jQuery);
 </script>
+
+<?php
+// Fase 1.5 - Loading overlay + interceptacao AJAX global
+if (!isset($hideChrome) || !$hideChrome) {
+    $this->load->view('tema/_ux_loading');
+    // Fase 1.7 - Busca global Cmd/Ctrl+K
+    $this->load->view('tema/_ux_search');
+}
+?>
 </body>
 </html>

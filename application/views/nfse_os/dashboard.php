@@ -1,12 +1,9 @@
-<?php
+﻿<?php
 /**
  * Dashboard de NFS-e e Boletos
  * Visão geral de notas fiscais e cobranças vinculadas a OS
  */
 ?>
-
-<link href="<?= base_url('assets/css/custom.css'); ?>" rel="stylesheet">
-
 <div class="row" style="margin-top: 0">
     <div class="col-12">
         <div class="widget-box">

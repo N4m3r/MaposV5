@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // View do Wizard de Atividades para Obras - Design Moderno
 $obra = $obra ?? null;
 $etapa = $etapa ?? null;
@@ -24,8 +24,6 @@ if ($etapa_id && !empty($etapas)) {
 ?>
 
 <!-- Tema Moderno Obras -->
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/obras-modern-theme.css?v=<?= filemtime(FCPATH . 'assets/css/obras-modern-theme.css') ?>">
-
 <style>
     /* Header da Obra */
     .obra-header {

@@ -1,13 +1,14 @@
 <?php
 /**
  * Componente: Data Table
- * Props: columns, data, actions, emptyMessage, showActions
+ * Props: columns, data, actions, emptyMessage, emptyState (array com title, message, cta, icon), showActions
  */
 
 $columns = $columns ?? [];
 $data = $data ?? [];
 $actions = $actions ?? true;
 $emptyMessage = $emptyMessage ?? 'Nenhum registro encontrado.';
+$emptyState = $emptyState ?? null;
 $showActions = $showActions ?? true;
 
 // Colunas padrão de ações
@@ -32,9 +33,20 @@ if ($showActions) {
         <tbody>
             <?php if (empty($data)): ?>
                 <tr>
-                    <td colspan="<?= count($columns) ?>" class="text-center text-muted py-4">
-                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                        <?= htmlspecialchars($emptyMessage) ?>
+                    <td colspan="<?= count($columns) ?>" class="p-0">
+                        <?php if (is_array($emptyState)): ?>
+                            <?= empty_state(
+                                $emptyState['title'] ?? 'Nenhum registro',
+                                $emptyState['message'] ?? '',
+                                $emptyState['cta'] ?? [],
+                                $emptyState['icon'] ?? 'bx-inbox'
+                            ) ?>
+                        <?php else: ?>
+                            <div class="ux-empty-state ux-empty-state-inline">
+                                <div class="ux-empty-state-icon"><i class="bx bx-inbox"></i></div>
+                                <h3 class="ux-empty-state-title"><?= htmlspecialchars($emptyMessage) ?></h3>
+                            </div>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php else: ?>

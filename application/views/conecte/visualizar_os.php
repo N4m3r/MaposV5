@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Inicializar variáveis
 $totalServico = 0;
 $totalProdutos = 0;
@@ -642,8 +642,8 @@ function copyBarcode(barcode) {
 
             mywindow.document.write('<html><head><title>Map Os</title>');
             mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/bootstrap5.min.css' />");
-            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-style.css' />");
-            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/matrix-media.css' />");
+            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/mapos.css' />");
+            mywindow.document.write("<link rel='stylesheet' href='<?php echo base_url(); ?>assets/css/mapos.css' />");
 
             mywindow.document.write("</head><body >");
             mywindow.document.write(data);

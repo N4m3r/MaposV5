@@ -13,9 +13,12 @@
     <div class="col-12" style="margin-left: 0">
         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aProduto')) : ?>
             <div class="col-3 flexxn" style="display: flex;">
-                <a href="<?= base_url() ?>index.php/produtos/adicionar" class="button btn btn-sm btn-success">
-                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Produtos</span>
-                </a>
+                <?= btn_action(
+                    base_url() . 'index.php/produtos/adicionar',
+                    'Adicionar Produto',
+                    'primary',
+                    'bx-plus-circle'
+                ) ?>
                 <a href="#modal-etiquetas" role="button" data-bs-toggle="modal" class="button btn btn-sm btn-warning">
                     <span class="button__icon"><i class='bx bx-barcode-reader' ></i></span><span class="button__text2">Gerar Etiquetas</span>
                 </a>
