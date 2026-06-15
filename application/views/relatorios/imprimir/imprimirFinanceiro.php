@@ -8,8 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap5.min.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/fullcalendar.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/main.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/blue.css" class="skin-color" />
+    <?php /* main.css e blue.css removidos na consolidacao (404); estilos estao em mapos.css */ ?>
 </head>
 
 <body style="background-color: transparent">

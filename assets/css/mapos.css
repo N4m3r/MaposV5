@@ -1762,6 +1762,26 @@ body[data-theme="darkviolet"] .btn-close, body[data-theme="darkorange"] .btn-clo
     .left-login img, .left-login svg { max-width: 180px; }
 }
 
+/* Compat com login cliente (conecte/login.php) — aliases de classes legadas */
+.h-one { color: #fff; font-weight: 300; font-size: 28px; margin: 0 0 20px; text-align: center; letter-spacing: 1px; }
+.left-login-imagec { max-width: 320px; width: 100%; height: auto; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.2)); }
+.form-vertical .form-group { margin-bottom: 16px; }
+.card-cad { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 28px 24px; }
+.content { padding: 0; }
+.icon2 { text-align: center; margin-bottom: 12px; }
+.icon2 img { max-width: 64px; }
+.title01 { text-align: center; margin-bottom: 18px; }
+.title01 img { max-width: 180px; }
+.main_input_box { display: flex; align-items: center; gap: 8px; background: var(--bg-input, #f5f7fa); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; }
+.main_input_box input { flex: 1; border: 0; outline: 0; background: transparent; padding: 6px 4px; font-size: 14px; color: var(--color-text); }
+.bg_lg, .bg_ly { background: var(--color-accent); color: #fff; border-radius: var(--radius-sm); width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.bg_ly { background: #5d6d7e; }
+.iconU { color: #fff; font-size: 16px; }
+.links-uteis { text-align: center; margin-top: 12px; font-size: 13px; }
+.links-uteis a { color: var(--color-accent); text-decoration: none; }
+.links-uteis a:hover { text-decoration: underline; }
+.controls { width: 100%; }
+
 
 /* =========================================================================
    12. PARTICULAS (fundo animado do login)  #particles-js
@@ -1864,12 +1884,27 @@ body[data-theme="darkviolet"] .btn-close, body[data-theme="darkorange"] .btn-clo
 .kanban-col-cancelada  .kanban-column-header { border-top: 3px solid var(--status-cancelada);  border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 .kanban-col-planejada  .kanban-column-header { border-top: 3px solid var(--status-planejada);  border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 
+/* Aliases para view kanban/board.php (nomes hifenizados simples) */
+.kanban-header { padding: 10px 12px; font-weight: 600; color: var(--color-heading); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.kanban-title { font-weight: 600; color: var(--color-heading); font-size: 0.9rem; }
+.kanban-count { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+.kanban-items { display: flex; flex-direction: column; gap: 8px; padding: 10px; min-height: 200px; }
+.kanban-card-id { font-size: 0.75rem; color: var(--color-text-muted); font-weight: 600; }
+.kanban-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.kanban-card-body { font-size: 0.85rem; color: var(--color-text); margin-bottom: 8px; }
+.kanban-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 6px; border-top: 1px solid var(--color-border-soft); }
+.kanban-card-actions { display: flex; gap: 4px; }
+.kanban-filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 12px; background: var(--bg-elevated, rgba(0,0,0,0.02)); border-radius: var(--radius-md); margin-bottom: 16px; }
+.kanban-filters .form-inline { display: flex; gap: 8px; align-items: center; }
+.buttons { display: flex; gap: 6px; align-items: center; }
+
 
 /* =========================================================================
    14. OBRAS MODERN  .obra-*, .obras-*, status badges, kanban cores
    ========================================================================= */
 
-.obras-container { padding: 20px; }
+.obras-container,
+.obras-modern-container { padding: 20px; } /* alias para view visualizar_obra.php */
 .obras-header {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
