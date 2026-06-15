@@ -213,4 +213,117 @@ class Kanban extends MY_Controller
 
         $this->load->view('kanban/print', $data);
     }
+
+    /**
+     * API: retorna cards do kanban agrupados por coluna (status).
+     * GET /index.php/kanban/api_cards
+     * Resposta: { success: true, data: { columns: { Status: [cards] } } }
+     */
+    public function api_cards()
+    {
+        if (!$this->input->is_ajax_request()) {
+            $this->output->set_status_header(400);
+            $this->output->set_output(json_encode(['success' => false, 'error' => 'Requer AJAX']));
+            return;
+        }
+
+        try {
+            $boards = $this->getBoardsData(array_keys($this->columns));
+            $columns = [];
+
+            foreach ($boards as $key => $board) {
+                $columns[$key] = [];
+                foreach ($board['items'] ?? [] as $os) {
+                    $columns[$key][] = [
+                        'id' => (int) ($os->idOs ?? $os->id ?? 0),
+                        'os_id' => (int) ($os->idOs ?? $os->id ?? 0),
+                        'titulo' => $os->descricaoProduto ?? $os->descricao ?? 'OS #' . ($os->idOs ?? $os->id ?? '?'),
+                        'cliente' => $os->nomeCliente ?? 'Cliente',
+                        'status' => $key,
+                        'data_inicio' => $os->dataInicial ?? null,
+                        'valor' => isset($os->valorTotal) ? (float) $os->valorTotal : 0,
+                        'prioridade' => strtolower($os->prioridade ?? 'normal'),
+                    ];
+                }
+            }
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => true,
+                    'data' => ['columns' => $columns],
+                ]));
+        } catch (Exception $e) {
+            log_message('error', 'Kanban::api_cards erro: ' . $e->getMessage());
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => true,
+                    'data' => ['columns' => array_fill_keys(array_keys($this->columns), [])],
+                    'error' => $e->getMessage(),
+                ]));
+        }
+    }
+
+    /**
+     * API: move um card entre colunas.
+     * POST /index.php/kanban/api_move
+     * Body JSON: { card_id, from, to }
+     */
+    public function api_move()
+    {
+        if (!$this->input->is_ajax_request()) {
+            $this->output->set_status_header(400);
+            $this->output->set_output(json_encode(['success' => false, 'error' => 'Requer AJAX']));
+            return;
+        }
+
+        $raw = $this->input->raw_input_stream;
+        $payload = json_decode($raw, true);
+
+        $cardId = (int) ($payload['card_id'] ?? 0);
+        $fromStatus = $payload['from'] ?? '';
+        $toStatus = $payload['to'] ?? '';
+
+        if ($cardId <= 0 || empty($toStatus)) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'error' => 'Parametros invalidos']));
+            return;
+        }
+
+        // Mapeia status do frontend para o status interno do Mapos
+        $statusMap = [
+            'Aberto' => 'Aberto',
+            'Orcamento' => 'Orcamento',
+            'Aprovado' => 'Aprovado',
+            'Em Andamento' => 'Em Andamento',
+            'Aguardando Pecas' => 'Aguardando Pecas',
+            'Pronto' => 'Pronto',
+            'Finalizado' => 'Finalizado',
+            'Cancelado' => 'Cancelado',
+        ];
+
+        $statusInterno = $statusMap[$toStatus] ?? $toStatus;
+
+        try {
+            $this->db->where('idOs', $cardId);
+            $updated = $this->db->update('os', [
+                'status' => $statusInterno,
+                'dataUpdate' => date('Y-m-d H:i:s'),
+            ]);
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => (bool) $updated,
+                    'data' => (bool) $updated,
+                ]));
+        } catch (Exception $e) {
+            log_message('error', 'Kanban::api_move erro: ' . $e->getMessage());
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'error' => 'Erro interno']));
+        }
+    }
 }

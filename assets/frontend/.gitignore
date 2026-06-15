@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output is COMMITTED (Kinghost shared hosting has no Node.js to rebuild)
+# dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+
+# Env
+.env
+.env.local
+.env.*.local

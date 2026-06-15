@@ -224,4 +224,70 @@ class Dashboard extends MY_Controller
 
         fclose($output);
     }
+
+    /**
+     * API: stats agregados para o dashboard React.
+     * GET /index.php/dashboard/api_stats
+     */
+    public function api_stats()
+    {
+        if (!$this->input->is_ajax_request()) {
+            $this->output->set_status_header(400);
+            $this->output->set_output(json_encode(['success' => false, 'error' => 'Requer AJAX']));
+            return;
+        }
+
+        try {
+            // Queries diretas (funciona mesmo sem metodos especificos no model)
+            $os_total = $this->db->count_all('os');
+            $os_pendentes = $this->db->where_in('status', ['Aberto', 'Orcamento'])->count_all_results('os');
+            $os_andamento = $this->db->where('status', 'Em Andamento')->count_all_results('os');
+            $os_finalizadas = $this->db->where_in('status', ['Finalizado', 'Pronto'])->count_all_results('os');
+            $clientes_total = $this->db->where('ativo', 1)->count_all_results('clientes');
+            $vendas_mes = $this->db->where('MONTH(dataVenda) =', date('n'))->where('YEAR(dataVenda) =', date('Y'))->count_all_results('vendas');
+            $faturamento_mes = $this->db->select_sum('valorTotal')->where('MONTH(dataVenda) =', date('n'))->where('YEAR(dataVenda) =', date('Y'))->get('vendas')->row()->valorTotal ?: 0;
+            $obras_andamento = $this->db->where('status', 'andamento')->count_all_results('obras');
+            $contas_receber = $this->db->select_sum('valor')->where('tipo', 'receita')->where('pago', 0)->get('lancamentos')->row()->valor ?: 0;
+            $contas_pagar = $this->db->select_sum('valor')->where('tipo', 'despesa')->where('pago', 0)->get('lancamentos')->row()->valor ?: 0;
+
+            $stats = [
+                'os_total' => (int) $os_total,
+                'os_pendentes' => (int) $os_pendentes,
+                'os_andamento' => (int) $os_andamento,
+                'os_finalizadas' => (int) $os_finalizadas,
+                'clientes_total' => (int) $clientes_total,
+                'vendas_mes' => (int) $vendas_mes,
+                'faturamento_mes' => (float) $faturamento_mes,
+                'obras_andamento' => (int) $obras_andamento,
+                'contas_receber' => (float) $contas_receber,
+                'contas_pagar' => (float) $contas_pagar,
+            ];
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => true, 'data' => $stats]));
+        } catch (Exception $e) {
+            log_message('error', 'Dashboard::api_stats erro: ' . $e->getMessage());
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'error' => 'Erro interno']));
+        }
+    }
+
+    /**
+     * API: atividade recente para o dashboard React.
+     * GET /index.php/dashboard/api_activity
+     */
+    public function api_activity()
+    {
+        if (!$this->input->is_ajax_request()) {
+            $this->output->set_status_header(400);
+            return;
+        }
+
+        // Stub: retorna vazio (pode ser expandido com logs do sistema)
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['success' => true, 'data' => []]));
+    }
 }
